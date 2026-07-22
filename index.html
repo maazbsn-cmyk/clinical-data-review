@@ -27,7 +27,7 @@
         .mobile-menu-toggle { display: none; background: #1e293b; color: #38bdf8; padding: 0.85rem 1rem; text-align: left; font-weight: bold; cursor: pointer; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
         
         /* 3-Column PC Layout Grid */
-        main { flex-grow: 1; max-width: 1440px; width: 100%; margin: 1.5rem auto; padding: 0 1rem; box-sizing: border-box; display: grid; grid-template-columns: 280px 1fr 310px; gap: 1.25rem; align-items: start; }
+        main { flex-grow: 1; max-width: 1480px; width: 100%; margin: 1.5rem auto; padding: 0 1rem; box-sizing: border-box; display: grid; grid-template-columns: 280px 1fr 320px; gap: 1.25rem; align-items: start; }
         
         aside { display: block; width: 100%; }
 
@@ -59,10 +59,10 @@
         textarea, select, input[type="number"] { width: 100%; max-width: 100%; box-sizing: border-box; padding: 0.65rem; border: 1px solid #334155; border-radius: 8px; margin-bottom: 0.5rem; font-family: inherit; font-size: 0.85rem; background: #070a12; color: #f8fafc; resize: vertical; }
         textarea:focus, select:focus, input:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2); }
         
-        .calc-group { margin-bottom: 0.75rem; font-size: 0.85rem; color: #94a3b8; }
-        .calc-group label { font-size: 0.8rem; color: #cbd5e1; display: block; margin-bottom: 0.2rem; font-weight: 600; }
+        .calc-group { margin-bottom: 0; font-size: 0.85rem; color: #94a3b8; }
+        .calc-group label { font-size: 0.85rem; color: #60a5fa; display: block; margin-bottom: 0.3rem; font-weight: 700; }
         .calc-row { display: flex; gap: 0.4rem; }
-        .calc-result { background: #070a12; padding: 0.5rem; border-radius: 6px; color: #38bdf8; font-weight: bold; text-align: center; margin-top: 0.3rem; border: 1px solid #1e293b; font-size: 0.85rem; }
+        .calc-result { background: #070a12; padding: 0.5rem; border-radius: 6px; color: #38bdf8; font-weight: bold; text-align: center; margin-top: 0.4rem; border: 1px solid #1e293b; font-size: 0.85rem; }
 
         .input-tools { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 0.75rem; width: 100%; }
         .input-tools button { width: 100%; padding: 0.65rem 0.5rem; font-size: 0.8rem; background: #1e293b; border: 1px solid #334155; color: #e2e8f0; border-radius: 6px; font-weight: 600; cursor: pointer; }
@@ -195,14 +195,12 @@
             <div id="resultsContainer" class="hidden"></div>
         </section>
 
-        <!-- Right Sidebar: Clinical Calculators (GCS Added) & Local Storage Vault -->
+        <!-- Right Sidebar: Separated Calculator Cards & Local Storage Vault -->
         <aside class="right-sidebar">
+            <!-- GCS Card -->
             <div class="card right-card">
-                <h3>Quick Calculators</h3>
-                
-                <!-- GCS Calculator -->
+                <h3>Glasgow Coma Scale (GCS)</h3>
                 <div class="calc-group">
-                    <label>Glasgow Coma Scale (GCS)</label>
                     <select id="gcsEye" onchange="calcGCS()">
                         <option value="4">Eye: Spontaneous (4)</option>
                         <option value="3">Eye: To Speech (3)</option>
@@ -226,10 +224,12 @@
                     </select>
                     <div id="gcsRes" class="calc-result">GCS: 15 (Mild / Normal)</div>
                 </div>
+            </div>
 
-                <!-- BMI Calculator -->
-                <div class="calc-group" style="margin-top: 0.75rem;">
-                    <label>BMI Calculator</label>
+            <!-- BMI Card -->
+            <div class="card right-card">
+                <h3>BMI Calculator</h3>
+                <div class="calc-group">
                     <input type="number" id="bmiWt" placeholder="Weight (kg)" oninput="calcBMI()">
                     <select id="bmiUnit" onchange="toggleHeightInputs(); calcBMI();">
                         <option value="m">Height in Meters (m)</option>
@@ -241,23 +241,32 @@
                     </div>
                     <div id="bmiRes" class="calc-result">BMI: --</div>
                 </div>
+            </div>
 
-                <!-- MAP Calculator -->
-                <div class="calc-group" style="margin-top: 0.75rem;">
-                    <label>Mean Arterial Pressure (MAP)</label>
+            <!-- MAP Card -->
+            <div class="card right-card">
+                <h3>Mean Arterial Pressure (MAP)</h3>
+                <div class="calc-group">
                     <input type="number" id="mapSbp" placeholder="Systolic Blood Pressure (mmHg)" oninput="calcMAP()">
                     <input type="number" id="mapDbp" placeholder="Diastolic Blood Pressure (mmHg)" oninput="calcMAP()">
                     <div id="mapRes" class="calc-result">MAP: -- mmHg</div>
                 </div>
+            </div>
 
-                <!-- Maintenance Fluid Calculator (4-2-1 Rule) -->
-                <div class="calc-group" style="margin-top: 0.75rem;">
-                    <label>Maintenance Fluids (4-2-1 Rule)</label>
+            <!-- Maintenance Fluids Card (4-2-1 Rule with Age Category) -->
+            <div class="card right-card">
+                <h3>Maintenance Fluids (4-2-1 Rule)</h3>
+                <div class="calc-group">
+                    <select id="fluidAgeCat" onchange="calcFluids()" style="margin-bottom: 0.5rem;">
+                        <option value="adult">Adult / Child (&gt; 10 kg)</option>
+                        <option value="neonate">Neonate (&lt; 28 days)</option>
+                    </select>
                     <input type="number" id="fluidWt" placeholder="Weight (kg)" oninput="calcFluids()">
                     <div id="fluidRes" class="calc-result">Rate: -- mL/hr</div>
                 </div>
             </div>
 
+            <!-- History Vault Card -->
             <div class="card right-card">
                 <h3>Local History Vault</h3>
                 <p style="font-size: 0.75rem; color: #64748b; margin-top: 0; margin-bottom: 0.5rem;">Recent evaluated ward reports saved locally.</p>
@@ -378,15 +387,23 @@
 
         function calcFluids() {
             const wt = parseFloat(document.getElementById('fluidWt').value);
+            const ageCat = document.getElementById('fluidAgeCat').value;
             const res = document.getElementById('fluidRes');
+            
             if (wt > 0) {
                 let rate = 0;
-                if (wt <= 10) {
-                    rate = wt * 4;
-                } else if (wt <= 20) {
-                    rate = 40 + ((wt - 10) * 2);
+                if (ageCat === 'neonate') {
+                    // Neonatal maintenance calculation rule (approx 60-80 mL/kg/day converted to mL/hr)
+                    rate = Math.round((wt * 80) / 24);
                 } else {
-                    rate = 60 + ((wt - 20) * 1);
+                    // Standard 4-2-1 Rule
+                    if (wt <= 10) {
+                        rate = wt * 4;
+                    } else if (wt <= 20) {
+                        rate = 40 + ((wt - 10) * 2);
+                    } else {
+                        rate = 60 + ((wt - 20) * 1);
+                    }
                 }
                 res.innerText = `Rate: ${rate} mL/hr`;
             } else {
