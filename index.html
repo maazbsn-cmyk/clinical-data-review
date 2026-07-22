@@ -26,6 +26,7 @@
         
         .mobile-menu-toggle { display: none; background: #1e293b; color: #38bdf8; padding: 0.85rem 1rem; text-align: left; font-weight: bold; cursor: pointer; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
         
+        /* 3-Column PC Layout Grid */
         main { flex-grow: 1; max-width: 1440px; width: 100%; margin: 1.5rem auto; padding: 0 1rem; box-sizing: border-box; display: grid; grid-template-columns: 260px 1fr 300px; gap: 1.25rem; align-items: start; }
         
         aside { display: block; width: 100%; }
@@ -38,8 +39,8 @@
         @media (max-width: 960px) {
             .mobile-menu-toggle { display: block; }
             main { grid-template-columns: 1fr; margin: 0.75rem auto; padding: 0 0.75rem; }
-            aside { display: none; }
-            aside.mobile-open { display: block; margin-bottom: 1rem; }
+            aside { display: none; width: 100%; }
+            aside.mobile-open { display: block !important; margin-bottom: 1rem; }
         }
 
         .card { background: var(--card-bg); padding: 1.25rem; border-radius: 12px; box-shadow: 0 6px 20px rgba(0,0,0,0.4); margin-bottom: 1.25rem; border: 1px solid var(--border); width: 100%; }
@@ -99,6 +100,11 @@
         .history-list { list-style: none; padding: 0; margin: 0; max-height: 200px; overflow-y: auto; font-size: 0.8rem; }
         .history-list li { padding: 0.4rem 0.5rem; border-bottom: 1px solid #1e293b; cursor: pointer; color: #94a3b8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .history-list li:hover { background: #1e293b; color: #38bdf8; }
+
+        /* On-Screen Notification Banner */
+        .notification-banner { background: #1e293b; border-left: 4px solid #38bdf8; padding: 0.75rem 1rem; border-radius: 6px; margin-bottom: 1rem; font-size: 0.9rem; color: #e2e8f0; display: flex; justify-content: space-between; align-items: center; }
+        .notification-banner span { cursor: pointer; color: #94a3b8; font-weight: bold; }
+        .notification-banner span:hover { color: #fff; }
         
         footer { background: #070a12; color: #64748b; text-align: center; padding: 1.25rem 1rem; font-size: 0.8rem; margin-top: auto; border-top: 1px solid var(--border); }
     </style>
@@ -114,7 +120,7 @@
     </div>
 
     <main>
-        <!-- Left Sidebar: Vitals & Protocols -->
+        <!-- Left Sidebar: Vitals & Protocols (Mobile Hamburger & PC Sidebar) -->
         <aside id="sidebarNav">
             <div class="card sidebar-card">
                 <h3>Vitals Reference Guide</h3>
@@ -140,6 +146,8 @@
         <section>
             <div class="section-heading">Clinical Evaluation & Ward Dashboard</div>
             
+            <div id="notificationArea"></div>
+
             <div id="inputCard" class="card">
                 <div class="label-row">
                     <label for="scenario">Patient Scenario / Ward Data</label>
@@ -242,6 +250,17 @@
             sidebar.classList.toggle('mobile-open');
         }
 
+        function showNotification(message) {
+            const area = document.getElementById('notificationArea');
+            area.innerHTML = `
+                <div class="notification-banner">
+                    <div>${message}</div>
+                    <span onclick="this.parentElement.remove()">✕</span>
+                </div>
+            `;
+            setTimeout(() => { if(area.innerHTML) area.innerHTML = ''; }, 6000);
+        }
+
         function insertSample() {
             extractedSheets = [];
             document.getElementById('scenario').value = "History: 58-year-old male, smoker (30 pack-years), hypertension (10 yrs), on amlodipine 10mg.\nPresentation: Sudden onset crushing substernal chest pain 1 hour ago, radiating to left arm, diaphoresis, nausea. No shortness of breath currently.\nVitals: BP 160/95, HR 104, RR 20, SpO2 96% on room air, Temp 36.8C, Pain 8/10.";
@@ -291,7 +310,7 @@
                 else if (bmi >= 25.0 && bmi <= 29.9) category = " (Overweight)";
                 else category = " (Obese)";
 
-                res.innerText = `BMI: ${bmi}${category}`;
+                res.innerText = `${bmi}${category}`;
             } else {
                 res.innerText = `BMI: --`;
             }
@@ -332,7 +351,7 @@
             if (!files.length) return;
 
             if (files.length > 10) {
-                alert("Maximum 10 images allowed at once.");
+                showNotification("Maximum 10 images allowed at once.");
                 return;
             }
 
@@ -360,9 +379,9 @@
                 await worker.terminate();
 
                 document.getElementById('scenario').value = extractedSheets.map((s, idx) => `[Sheet ${idx + 1}: ${s.name}]\n${s.text}`).join("\n\n");
-                alert(`Successfully extracted text from ${files.length} ward sheet(s)! Each sheet will be evaluated separately.`);
+                showNotification(`Successfully extracted text from ${files.length} ward sheet(s)!`);
             } catch (err) {
-                alert("OCR Extraction failed: " + err.message);
+                showNotification("OCR Extraction failed: " + err.message);
                 extractedSheets = [];
             } finally {
                 loading.classList.add('hidden');
@@ -373,7 +392,7 @@
         function startVoiceInput() {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             if (!SpeechRecognition) {
-                alert("Speech recognition is not supported in this browser. Please use Google Chrome or Edge.");
+                showNotification("Speech recognition is not supported in this browser.");
                 return;
             }
             const recognition = new SpeechRecognition();
@@ -392,7 +411,7 @@
             };
 
             recognition.onerror = () => {
-                alert("Voice recognition error occurred.");
+                showNotification("Voice recognition error occurred.");
             };
 
             recognition.onend = () => {
@@ -450,7 +469,10 @@
             const loadingText = document.getElementById('loadingText');
             const progressBar = document.getElementById('progressBar');
 
-            if (!rawText) { alert("Please enter or upload a patient scenario."); return; }
+            if (!rawText) { 
+                showNotification("Please enter or upload a patient scenario."); 
+                return; 
+            }
 
             isCancelled = false;
             let scenariosToProcess = [];
@@ -546,11 +568,11 @@
 
                 loading.classList.add('hidden');
                 if (isCancelled) {
-                    alert(`Evaluation cancelled. Showing ${completedCount} completed report(s).`);
+                    showNotification(`Evaluation cancelled. Showing ${completedCount} completed report(s).`);
                 }
             } catch (error) {
                 loading.classList.add('hidden');
-                alert("Connection Error: " + error.message);
+                showNotification("Connection Error: " + error.message);
             } finally {
                 btn.disabled = false;
             }
@@ -582,7 +604,6 @@
             evaluatedReportsStore.forEach((rep, idx) => {
                 const li = document.createElement('li');
                 li.innerText = `[${rep.date}] ${rep.title}`;
-                // Render full report on screen when clicked instead of browser popup
                 li.onclick = () => {
                     const resultsContainer = document.getElementById('resultsContainer');
                     const inputCard = document.getElementById('inputCard');
@@ -628,7 +649,7 @@
 
         function exportBatchPDF() {
             if (!evaluatedReportsStore.length) {
-                alert("No evaluated reports in vault to export.");
+                showNotification("No evaluated reports in vault to export.");
                 return;
             }
             let masterText = "=== TPIHS KMU CLINICAL DECISION SUPPORT - MASTER BATCH REPORT ===\n\n";
@@ -657,7 +678,7 @@
         function copyCardText(button) {
             const content = button.closest('.output-card').querySelector('.result-content').innerText;
             navigator.clipboard.writeText(content).then(() => {
-                alert("Report copied successfully.");
+                showNotification("Report copied successfully.");
             });
         }
 
