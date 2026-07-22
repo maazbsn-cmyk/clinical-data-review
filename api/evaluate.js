@@ -24,10 +24,29 @@ module.exports = async (req, res) => {
         const apiKey = process.env.GROQ_API_KEY;
 
         if (!apiKey) {
-            return res.status(500).json({ evaluation: 'ERROR: GROQ_API_KEY is missing from Vercel Environment Variables. Please check Vercel settings.' });
+            return res.status(500).json({ evaluation: 'ERROR: GROQ_API_KEY is missing from Vercel Environment Variables.' });
         }
 
-        const prompt = `You are an expert clinical reasoning engine. The user is an 8th-semester KMU student in the ${discipline || 'Nursing'} department. Evaluate this patient case and provide a detailed, step-by-step clinical priority breakdown formatted with clear markdown headers and bullet points. Output a strict JSON object with a single key named "evaluation" containing this explanation. Case: ${scenario}`;
+        // Strict discipline prompts to force distinct outcomes and ban patient profiles
+        const prompts = {
+            "Nursing": "Focus strictly on immediate nursing care plans, triage level, vitals monitoring, IV access, bed position, nursing interventions, and emergency drug administration protocols.",
+            "Radiology": "Focus strictly on radiological imaging protocols, emergency imaging indications (X-Ray, CT, MRI, Ultrasound), contrast considerations, radiation safety, and critical image findings to report.",
+            "Dental": "Focus strictly on oral/maxillofacial considerations, emergency dental management, local anesthesia considerations, systemic medical emergency protocol in a dental clinic, and deferred oral procedures.",
+            "Anaesthesia": "Focus strictly on airway evaluation (Mallampati), hemodynamic stability, emergency anesthesia considerations, rapid sequence induction (RSI) risks, and critical care ventilation monitoring.",
+            "Pharmacy": "Focus strictly on pharmacological interventions, emergency drug dosages, drug interactions, contraindications, administration routes, and therapeutic drug monitoring.",
+            "Medical Laboratory Technology": "Focus strictly on urgent STAT laboratory investigations, blood sampling tubes, diagnostic markers (Troponin, CBC, Arterial Blood Gases), turnaround times, and critical lab values."
+        };
+
+        const specificInstruction = prompts[discipline] || prompts["Nursing"];
+
+        const systemPrompt = `You are an expert clinical reasoning engine for KMU health sciences. 
+CRITICAL RULE 1: DO NOT include any 'Patient Profile', 'Clinical Presentation', or 'Vital Signs' summary sections in your response. Jump DIRECTLY into clinical management.
+CRITICAL RULE 2: Tailor the output 100% specifically to the ${discipline} domain. 
+Specific Scope: ${specificInstruction}
+
+Format the output strictly as a JSON object with a single key named "evaluation". Use bolding and markdown bullet points for actionable steps.
+
+Case Scenario: ${scenario}`;
 
         const apiResponse = await fetch("https://api.groq.com/openai/v1/chat/completions", {
             method: "POST",
@@ -37,9 +56,9 @@ module.exports = async (req, res) => {
             },
             body: JSON.stringify({
                 model: "llama-3.3-70b-versatile",
-                messages: [{ role: "user", content: prompt }],
+                messages: [{ role: "user", content: systemPrompt }],
                 response_format: { type: "json_object" },
-                temperature: 0.2
+                temperature: 0.1
             })
         });
 
@@ -53,10 +72,6 @@ module.exports = async (req, res) => {
 
         if (!apiResponse.ok) {
             return res.status(500).json({ evaluation: `Groq API Error: ${data.error?.message || responseText}` });
-        }
-
-        if (!data.choices || !data.choices[0] || !data.choices[0].message) {
-            return res.status(500).json({ evaluation: `Invalid Groq structure: ${responseText}` });
         }
 
         const content = data.choices[0].message.content;
