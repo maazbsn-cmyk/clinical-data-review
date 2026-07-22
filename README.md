@@ -45,11 +45,33 @@ The backend utilizes dynamic prompt injection based on the selected medical disc
     *   `Marked.js` (Parsing AI Markdown responses into clean HTML).
 
 ## F. Application Screenshots
-[Replace this text with Dashboard Screenshot]
 
-[Replace this text with Mobile View Screenshot]
+PC Screenshots
+<img width="1920" height="925" alt="image" src="https://github.com/user-attachments/assets/caf96033-5f77-437d-997c-06f354b25aa4" />
 
-[Replace this text with AI Evaluation Screenshot]
+<img width="1920" height="916" alt="image" src="https://github.com/user-attachments/assets/0fdc6c6a-f6ff-4175-8b05-7e39b4a13fff" />
+
+<img width="1920" height="915" alt="image" src="https://github.com/user-attachments/assets/19871dcc-720b-485e-ab20-ecece4204f6a" />
+
+<img width="1920" height="915" alt="image" src="https://github.com/user-attachments/assets/696c1416-1fe0-4f8b-8fa1-d12935dabc0e" />
+
+<img width="308" height="653" alt="image" src="https://github.com/user-attachments/assets/d85d0a34-83e9-45a5-bc40-06f95d864e49" />
+
+<img width="321" height="738" alt="image" src="https://github.com/user-attachments/assets/646f10b8-db2c-4bfc-87ed-ad93444b14b9" />
+
+<img width="270" height="804" alt="image" src="https://github.com/user-attachments/assets/cc93fd93-b3d0-4bb8-add0-63b82634d94f" />
+
+Mobile Screenshots
+<img width="1080" height="2088" alt="Screenshot_20260722-213153 jpg" src="https://github.com/user-attachments/assets/f3b863d0-9cdc-47da-8813-466b5d4c5c7a" />
+
+<img width="1079" height="2083" alt="Screenshot_20260722-213208 jpg" src="https://github.com/user-attachments/assets/98615226-114c-4767-82d5-b110ea823f99" />
+
+<img width="1080" height="3259" alt="Screenshot_20260722-213427 jpg" src="https://github.com/user-attachments/assets/801ea953-4fd2-4f15-bede-e4f5009110d5" />
+
+<img width="1080" height="4885" alt="Screenshot_20260722-213453 jpg" src="https://github.com/user-attachments/assets/5d3bc3d6-14f1-4fb2-937e-03bd6c915f33" />
+
+<img width="1080" height="3045" alt="Screenshot_20260722-213512 jpg" src="https://github.com/user-attachments/assets/dc012e9d-ba4a-4dba-9f00-28beb5e20605" />
+
 
 ## G. How to Run the Project Locally
 1. **Clone the repository:**
