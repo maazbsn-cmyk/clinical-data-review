@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Clinical Data Review</title>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         :root { --primary: #0f172a; --secondary: #1e293b; --accent: #3b82f6; --bg: #f8fafc; --text: #334155; }
         body { font-family: system-ui, sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 0; display: flex; flex-direction: column; min-height: 100vh; }
@@ -12,14 +13,21 @@
         .subtitle { color: #94a3b8; font-size: 1.1rem; margin-top: 0.5rem; }
         main { flex-grow: 1; max-width: 800px; margin: 2rem auto; padding: 0 1rem; width: 100%; }
         .card { background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); margin-bottom: 2rem; }
-        label { display: block; font-weight: 600; margin-bottom: 0.5rem; color: var(--secondary); }
-        textarea, select { width: 100%; padding: 0.75rem; border: 1px solid #cbd5e1; border-radius: 4px; margin-bottom: 1.5rem; font-family: inherit; font-size: 1rem; }
+        .label-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
+        label { font-weight: 600; color: var(--secondary); margin: 0; }
+        .insert-sample { color: var(--accent); text-decoration: none; font-size: 0.9rem; cursor: pointer; }
+        .insert-sample:hover { text-decoration: underline; }
+        textarea, select { width: 100%; box-sizing: border-box; padding: 0.75rem; border: 1px solid #cbd5e1; border-radius: 4px; margin-bottom: 1.5rem; font-family: inherit; font-size: 1rem; }
         button { background: var(--accent); color: white; border: none; padding: 1rem; width: 100%; border-radius: 4px; font-size: 1.1rem; font-weight: bold; cursor: pointer; transition: background 0.2s; }
         button:hover { background: #2563eb; }
         button:disabled { background: #94a3b8; cursor: not-allowed; }
         .hidden { display: none !important; }
         .output-card { border-left: 4px solid var(--accent); }
         .output-card h2 { color: var(--primary); margin-top: 0; }
+        #resultText { line-height: 1.6; }
+        #resultText h3 { color: var(--secondary); margin-top: 1.5rem; }
+        #resultText ul { padding-left: 1.5rem; }
+        #resultText li { margin-bottom: 0.5rem; }
         .loader { border: 4px solid #f3f3f3; border-top: 4px solid var(--accent); border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; margin: 0 auto 1rem auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         footer { background: var(--secondary); color: #cbd5e1; text-align: center; padding: 1.5rem; font-size: 0.9rem; }
@@ -28,15 +36,18 @@
 <body>
     <header>
         <h1>Clinical Data Review</h1>
-        <div class="subtitle">TPIHS - KMU - 8th Semester </div>
+        <div class="subtitle">KMU - 8th Semester Revision</div>
     </header>
 
     <main>
         <div class="card">
-            <label for="scenario">Enter raw patient scenario (History, Presentation, Vitals)</label>
+            <div class="label-row">
+                <label for="scenario">Enter raw patient scenario (History, Presentation, Vitals)</label>
+                <a class="insert-sample" onclick="insertSample()">Insert sample</a>
+            </div>
             <textarea id="scenario" rows="6" placeholder="Example: 45 y/o male presents with severe chest pain..."></textarea>
 
-            <label for="discipline">Which discipline are you?</label>
+            <label for="discipline" style="display:block; margin-bottom:0.5rem;">Which discipline are you?</label>
             <select id="discipline">
                 <option value="Nursing">Nursing</option>
                 <option value="Radiology">Radiology</option>
@@ -56,7 +67,7 @@
 
         <div id="result" class="card output-card hidden">
             <h2 id="resultTitle">Evaluation</h2>
-            <div id="resultText" style="white-space: pre-wrap; line-height: 1.6;"></div>
+            <div id="resultText"></div>
         </div>
     </main>
 
@@ -65,6 +76,10 @@
     </footer>
 
     <script>
+        function insertSample() {
+            document.getElementById('scenario').value = "History: 58-year-old male, smoker (30 pack-years), hypertension (10 yrs), on amlodipine 10mg.\nPresentation: Sudden onset crushing substernal chest pain 1 hour ago, radiating to left arm, diaphoresis, nausea. No shortness of breath currently.\nVitals: BP 160/95, HR 104, RR 20, SpO2 96% on room air, Temp 36.8C, Pain 8/10.";
+        }
+
         async function evaluateCase() {
             const scenario = document.getElementById('scenario').value;
             const discipline = document.getElementById('discipline').value;
@@ -88,7 +103,13 @@
                 const data = await response.json();
                 
                 document.getElementById('resultTitle').innerText = `${discipline} Priorities`;
-                document.getElementById('resultText').innerText = data.evaluation || "Evaluation failed. Check API key.";
+                
+                if (data.evaluation) {
+                    document.getElementById('resultText').innerHTML = marked.parse(data.evaluation);
+                } else {
+                    document.getElementById('resultText').innerText = "Evaluation failed. Check API key.";
+                }
+                
                 result.classList.remove('hidden');
             } catch (error) {
                 alert("An error occurred connecting to the backend.");
