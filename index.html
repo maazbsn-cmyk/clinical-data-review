@@ -107,25 +107,25 @@
                     <option value="Medical Laboratory Technology">Medical Laboratory Technology</option>
                 </select>
 
-                <button id="submitBtn" onclick="evaluateCase()" style="width: 100%;">Evaluate Clinical Priorities</button>
+                <button id="submitBtn" onclick="evaluateCase(false)" style="width: 100%;">Evaluate Clinical Priorities</button>
             </div>
 
             <div id="loading" class="card hidden" style="text-align: center; padding: 3rem;">
                 <div class="loader"></div>
-                <p style="font-weight: 600; color: var(--secondary);">Querying verified clinical databases...</p>
+                <p id="loadingText" style="font-weight: 600; color: var(--secondary);">Querying clinical databases...</p>
             </div>
 
             <div id="result" class="card output-card hidden">
                 <div class="badges-row">
                     <div id="modelBadge" class="model-badge">Active Model: None</div>
-                    <div id="verificationBadge" class="verified-badge">Google Verified: Pending</div>
+                    <div id="verificationBadge" class="unverified-badge">Status: Standard Engine</div>
                 </div>
                 <h2 id="resultTitle">Evaluation</h2>
                 <div id="resultText"></div>
                 
                 <div class="action-bar">
                     <button class="btn-secondary" onclick="resetForm()">← New Case</button>
-                    <button class="btn-google" onclick="verifyOnGoogle()">Verify from Google</button>
+                    <button class="btn-google" onclick="evaluateCase(true)">Run Google Evidence Verification</button>
                     <button class="btn-success" onclick="copyResults()">Copy Results</button>
                     <button onclick="downloadResults()">Download Report</button>
                 </div>
@@ -142,13 +142,14 @@
             document.getElementById('scenario').value = "History: 58-year-old male, smoker (30 pack-years), hypertension (10 yrs), on amlodipine 10mg.\nPresentation: Sudden onset crushing substernal chest pain 1 hour ago, radiating to left arm, diaphoresis, nausea. No shortness of breath currently.\nVitals: BP 160/95, HR 104, RR 20, SpO2 96% on room air, Temp 36.8C, Pain 8/10.";
         }
 
-        async function evaluateCase() {
+        async function evaluateCase(verifyMode = false) {
             const scenario = document.getElementById('scenario').value;
             const discipline = document.getElementById('discipline').value;
             const btn = document.getElementById('submitBtn');
             const loading = document.getElementById('loading');
             const inputCard = document.getElementById('inputCard');
             const result = document.getElementById('result');
+            const loadingText = document.getElementById('loadingText');
 
             if (!scenario.trim()) { alert("Please enter a patient scenario."); return; }
 
@@ -157,11 +158,13 @@
             result.classList.add('hidden');
             loading.classList.remove('hidden');
 
+            loadingText.innerText = verifyMode ? "Cross-referencing PubMed & AHA/ACC Guidelines..." : "Evaluating clinical parameters...";
+
             try {
                 const response = await fetch('/api/evaluate', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ scenario, discipline })
+                    body: JSON.stringify({ scenario, discipline, verifyMode })
                 });
                 
                 const text = await response.text();
@@ -177,10 +180,10 @@
                 const vBadge = document.getElementById('verificationBadge');
                 if (data.isGoogleVerified) {
                     vBadge.className = "verified-badge";
-                    vBadge.innerText = "✓ Google Verified (AHA/ACC/WHO Guidelines)";
+                    vBadge.innerText = "✓ Google Evidence Verified (PMC / AHA / ACC)";
                 } else {
                     vBadge.className = "unverified-badge";
-                    vBadge.innerText = "⚠ Unverified / Manual Check Required";
+                    vBadge.innerText = "Status: Standard Output (Click Verify for Literature Audit)";
                 }
 
                 document.getElementById('resultTitle').innerText = `${discipline} Priorities`;
@@ -201,13 +204,6 @@
                 btn.disabled = false;
                 loading.classList.add('hidden');
             }
-        }
-
-        function verifyOnGoogle() {
-            const discipline = document.getElementById('resultTitle').innerText;
-            const scenarioText = document.getElementById('scenario').value.substring(0, 100);
-            const query = encodeURIComponent(`site:ncbi.nlm.nih.gov/pmc ${discipline} clinical guidelines management ${scenarioText}`);
-            window.open(`https://www.google.com/search?q=${query}`, '_blank');
         }
 
         function resetForm() {
