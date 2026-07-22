@@ -38,8 +38,8 @@ module.exports = async (req, res) => {
 
         const specificInstruction = prompts[discipline] || prompts["Nursing"];
 
-        const systemPrompt = `You are an expert clinical reasoning engine for KMU health sciences. 
-CRITICAL RULE 1: DO NOT include any 'Patient Profile', 'Clinical Presentation', or 'Vital Signs' summary sections in your response. Jump DIRECTLY into clinical management.
+        const systemPrompt = `You are an expert clinical reasoning engine for TPIHS KMU health sciences, utilizing verified international evidence-based clinical guidelines (AHA, ACC, WHO standards). 
+CRITICAL RULE 1: DO NOT include any 'Patient Profile', 'Clinical Presentation', or 'Vital Signs' summary sections. Jump DIRECTLY into clinical management.
 CRITICAL RULE 2: Tailor the output 100% specifically to the ${discipline} domain. 
 Specific Scope: ${specificInstruction}
 
@@ -47,30 +47,41 @@ Format the output strictly as a JSON object with a single key named "evaluation"
 
 Case Scenario: ${scenario}`;
 
-        const apiResponse = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-            method: "POST",
-            headers: {
-                "Authorization": `Bearer ${apiKey}`,
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                model: "llama-3.3-70b-versatile",
-                messages: [{ role: "user", content: systemPrompt }],
-                response_format: { type: "json_object" },
-                temperature: 0.1
-            })
-        });
+        // Fallback model array to bypass rate limits or model unavailability
+        const models = ["llama-3.3-70b-versatile", "llama-3.1-8b-instant", "mixtral-8x7b-32768"];
+        let data, usedModel;
 
-        const responseText = await apiResponse.text();
-        let data;
-        try {
-            data = JSON.parse(responseText);
-        } catch (err) {
-            return res.status(500).json({ evaluation: `Groq non-JSON response: ${responseText}` });
+        for (const model of models) {
+            try {
+                const apiResponse = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+                    method: "POST",
+                    headers: {
+                        "Authorization": `Bearer ${apiKey}`,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        model: model,
+                        messages: [{ role: "user", content: systemPrompt }],
+                        response_format: { type: "json_object" },
+                        temperature: 0.1
+                    })
+                });
+
+                if (apiResponse.ok) {
+                    const json = await apiResponse.json();
+                    if (json.choices && json.choices[0]) {
+                        data = json;
+                        usedModel = model;
+                        break;
+                    }
+                }
+            } catch (err) {
+                continue;
+            }
         }
 
-        if (!apiResponse.ok) {
-            return res.status(500).json({ evaluation: `Groq API Error: ${data.error?.message || responseText}` });
+        if (!data) {
+            return res.status(500).json({ evaluation: "All backup Groq models failed or hit rate limits. Please try again shortly." });
         }
 
         const content = data.choices[0].message.content;
@@ -81,6 +92,7 @@ Case Scenario: ${scenario}`;
             resultContent = { evaluation: content };
         }
 
+        resultContent.modelUsed = usedModel;
         return res.status(200).json(resultContent);
     } catch (error) {
         return res.status(500).json({ evaluation: "Server error: " + error.message });
