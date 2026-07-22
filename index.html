@@ -20,22 +20,25 @@
         * { box-sizing: border-box; word-break: break-word; overflow-wrap: break-word; }
         body { font-family: system-ui, -apple-system, sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 0; display: flex; flex-direction: column; min-height: 100vh; overflow-x: hidden; }
         
-        header { background: linear-gradient(135deg, #1e1b4b 0%, #0f172a 100%); color: white; padding: 1.25rem 1rem; text-align: center; border-bottom: 3px solid #3b82f6; box-shadow: 0 4px 20px rgba(59, 130, 246, 0.15); }
-        h1 { margin: 0; font-size: 1.5rem; letter-spacing: -0.5px; background: linear-gradient(90deg, #60a5fa, #38bdf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        header { background: linear-gradient(135deg, #1e1b4b 0%, #0f172a 100%); color: white; padding: 1.5rem 1rem; text-align: center; border-bottom: 3px solid #3b82f6; box-shadow: 0 4px 20px rgba(59, 130, 246, 0.15); }
+        h1 { margin: 0; font-size: 1.6rem; letter-spacing: -0.5px; background: linear-gradient(90deg, #60a5fa, #38bdf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .subtitle { color: #94a3b8; font-size: 0.9rem; margin-top: 0.3rem; font-weight: 500; }
         
-        /* Mobile-First Navigation Toggle Bar */
-        .mobile-menu-toggle { display: block; background: #1e293b; color: #38bdf8; padding: 0.85rem 1rem; text-align: left; font-weight: bold; cursor: pointer; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
+        /* Mobile Hamburger Toggle Bar - Hidden on PC */
+        .mobile-menu-toggle { display: none; background: #1e293b; color: #38bdf8; padding: 0.85rem 1rem; text-align: left; font-weight: bold; cursor: pointer; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
         
-        main { flex-grow: 1; max-width: 1200px; width: 100%; margin: 1rem auto; padding: 0 0.75rem; box-sizing: border-box; display: grid; grid-template-columns: 280px 1fr; gap: 1rem; align-items: start; }
+        main { flex-grow: 1; max-width: 1200px; width: 100%; margin: 1.5rem auto; padding: 0 1rem; box-sizing: border-box; display: grid; grid-template-columns: 300px 1fr; gap: 1.5rem; align-items: start; }
         
+        aside { display: block; width: 100%; }
+
         @media (max-width: 960px) {
-            main { grid-template-columns: 1fr; margin: 0.5rem auto; padding: 0 0.5rem; }
-            aside { display: none; width: 100%; }
+            .mobile-menu-toggle { display: block; }
+            main { grid-template-columns: 1fr; margin: 0.75rem auto; padding: 0 0.75rem; }
+            aside { display: none; }
             aside.mobile-open { display: block; margin-bottom: 1rem; }
         }
 
-        .card { background: var(--card-bg); padding: 1.25rem; border-radius: 12px; box-shadow: 0 6px 20px rgba(0,0,0,0.4); margin-bottom: 1rem; border: 1px solid var(--border); width: 100%; }
+        .card { background: var(--card-bg); padding: 1.5rem; border-radius: 12px; box-shadow: 0 6px 20px rgba(0,0,0,0.4); margin-bottom: 1.25rem; border: 1px solid var(--border); width: 100%; }
         
         .sidebar-card h3 { margin-top: 0; color: #60a5fa; font-size: 1rem; border-bottom: 2px solid var(--border); padding-bottom: 0.4rem; }
         .cheat-sheet-list { padding-left: 1.1rem; font-size: 0.85rem; line-height: 1.4; color: #94a3b8; margin: 0.5rem 0 0 0; }
@@ -91,11 +94,13 @@
         <div class="subtitle">TPIHS (KMU, BSN)</div>
     </header>
 
+    <!-- Mobile Hamburger Toggle Bar (Hidden on PC screens) -->
     <div class="mobile-menu-toggle" onclick="toggleMobileMenu()">
         ☰ Vitals Reference & Emergency Protocols (Tap to Toggle)
     </div>
 
     <main>
+        <!-- Sidebar Navigation: Visible directly on PC, toggled via hamburger on mobile -->
         <aside id="sidebarNav">
             <div class="card sidebar-card">
                 <h3>Vitals Reference Guide</h3>
@@ -160,7 +165,7 @@
     </main>
 
     <footer>
-        Clinical Decision Support - Educational use only. Developed by **Maaz Ahmad**.
+        Clinical Decision Support - Educational use only. Developed by <strong>Maaz Ahmad</strong>.
     </footer>
 
     <script>
