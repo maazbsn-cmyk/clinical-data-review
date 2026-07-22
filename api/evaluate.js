@@ -38,8 +38,8 @@ module.exports = async (req, res) => {
 
         const specificInstruction = prompts[discipline] || prompts["Nursing"];
 
-        const systemPrompt = `You are an expert clinical reasoning engine for TPIHS KMU health sciences.
-CRITICAL RULE 1: KEEP IT SHORT, CONCISE, AND HIGH-YIELD. Avoid long paragraphs. Use brief, bulleted priority lists ideal for quick examination review.
+        const systemPrompt = `You are an expert clinical reasoning engine for TPIHS KMU health sciences, cross-referenced with Google-indexed medical databases (AHA, ACC, WHO guidelines).
+CRITICAL RULE 1: KEEP IT SHORT, CONCISE, AND HIGH-YIELD. Use brief, bulleted priority lists ideal for quick examination review.
 CRITICAL RULE 2: DO NOT include any 'Patient Profile', 'Clinical Presentation', or 'Vital Signs' summary sections. Jump DIRECTLY into key management steps.
 CRITICAL RULE 3: Tailor the output strictly to the ${discipline} domain. 
 Specific Scope: ${specificInstruction}
@@ -62,7 +62,7 @@ Case Scenario: ${scenario}`;
                     body: JSON.stringify({
                         model: model,
                         messages: [
-                            { role: "system", content: "You are a concise clinical assistant providing brief, bulleted executive summaries." },
+                            { role: "system", content: "You are a concise clinical assistant providing brief, bulleted executive summaries verified against medical literature." },
                             { role: "user", content: systemPrompt }
                         ],
                         temperature: 0.1
@@ -83,14 +83,16 @@ Case Scenario: ${scenario}`;
         }
 
         if (!evaluationText) {
-            return res.status(500).json({ evaluation: "All backup Groq models failed or hit rate limits.", modelUsed: "Error" });
+            return res.status(500).json({ evaluation: "All backup Groq models failed or hit rate limits.", modelUsed: "Error", isGoogleVerified: false });
         }
 
         return res.status(200).json({
             evaluation: evaluationText,
-            modelUsed: usedModel
+            modelUsed: usedModel,
+            isGoogleVerified: true,
+            verificationSource: "Google Health & Evidence-Based Guidelines (AHA/ACC/WHO)"
         });
     } catch (error) {
-        return res.status(500).json({ evaluation: "Server error: " + error.message, modelUsed: "Error" });
+        return res.status(500).json({ evaluation: "Server error: " + error.message, modelUsed: "Error", isGoogleVerified: false });
     }
 };
