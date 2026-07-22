@@ -9,28 +9,55 @@
     <style>
         :root { 
             --primary: #0f172a; 
-            --secondary: #1e293b; 
             --accent: #2563eb; 
             --accent-gradient: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            /* Dark Theme Colors (Default) */
             --bg: #070a12; 
-            --text: #f8fafc; 
             --card-bg: #0f172a; 
             --border: #1e293b;
+            --input-bg: #070a12;
+            --input-border: #334155;
+            --tool-bg: #1e293b;
+            --heading: #f8fafc;
+            --text: #cbd5e1;
+            --muted: #94a3b8;
+            --highlight: #38bdf8;
+            --shadow: 0 6px 20px rgba(0,0,0,0.4);
         }
-        * { box-sizing: border-box; word-break: break-word; overflow-wrap: break-word; }
-        body { font-family: system-ui, -apple-system, sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 0; display: flex; flex-direction: column; min-height: 100vh; overflow-x: hidden; }
         
-        header { background: linear-gradient(135deg, #1e1b4b 0%, #0f172a 100%); color: white; padding: 1.5rem 1rem; text-align: center; border-bottom: 3px solid #3b82f6; box-shadow: 0 4px 20px rgba(59, 130, 246, 0.15); }
+        body.light-theme {
+            /* Light Theme Colors */
+            --bg: #f1f5f9; 
+            --card-bg: #ffffff; 
+            --border: #cbd5e1;
+            --input-bg: #f8fafc;
+            --input-border: #94a3b8;
+            --tool-bg: #e2e8f0;
+            --heading: #0f172a;
+            --text: #334155;
+            --muted: #64748b;
+            --highlight: #0284c7;
+            --shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        * { box-sizing: border-box; word-break: break-word; overflow-wrap: break-word; }
+        body { font-family: system-ui, -apple-system, sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 0; display: flex; flex-direction: column; min-height: 100vh; overflow-x: hidden; transition: background-color 0.3s ease, color 0.3s ease; }
+        
+        header { position: relative; background: linear-gradient(135deg, #1e1b4b 0%, #0f172a 100%); color: white; padding: 1.5rem 1rem; text-align: center; border-bottom: 3px solid #3b82f6; box-shadow: 0 4px 20px rgba(59, 130, 246, 0.15); }
         h1 { margin: 0; font-size: 1.6rem; letter-spacing: -0.5px; background: linear-gradient(90deg, #60a5fa, #38bdf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .subtitle { color: #94a3b8; font-size: 0.9rem; margin-top: 0.3rem; font-weight: 500; }
         
-        /* Mobile Dual Toggle Bars */
+        .theme-btn { position: absolute; top: 1.5rem; right: 1.5rem; width: auto; padding: 0.4rem 0.8rem; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; border-radius: 6px; font-size: 0.8rem; box-shadow: none; cursor: pointer; transition: all 0.2s; }
+        .theme-btn:hover { background: rgba(255,255,255,0.2); }
+        
+        @media (max-width: 600px) {
+            .theme-btn { top: 0.5rem; right: 0.5rem; font-size: 0.75rem; padding: 0.35rem 0.6rem; }
+        }
+
         .mobile-nav-bars { display: none; gap: 0.5rem; margin: 0.75rem 0.75rem 0 0.75rem; }
-        .mobile-toggle-btn { flex: 1; background: #1e293b; color: #38bdf8; padding: 0.75rem 0.5rem; text-align: center; font-weight: bold; cursor: pointer; border: 1px solid #334155; border-radius: 8px; font-size: 0.85rem; }
+        .mobile-toggle-btn { flex: 1; background: var(--tool-bg); color: var(--highlight); padding: 0.75rem 0.5rem; text-align: center; font-weight: bold; cursor: pointer; border: 1px solid var(--input-border); border-radius: 8px; font-size: 0.85rem; transition: background 0.3s; }
         
-        /* 3-Column PC Layout Grid */
         main { flex-grow: 1; max-width: 1480px; width: 100%; margin: 1.5rem auto; padding: 0 1rem; box-sizing: border-box; display: grid; grid-template-columns: 280px 1fr 320px; gap: 1.25rem; align-items: start; }
-        
         aside { display: block; width: 100%; }
 
         @media (max-width: 1150px) {
@@ -38,93 +65,91 @@
             .right-sidebar { grid-column: 1 / -1; }
         }
 
-        /* Mobile Adjustments */
         @media (max-width: 960px) {
             .mobile-nav-bars { display: flex; }
             main { grid-template-columns: 1fr; margin: 0.75rem auto; padding: 0 0.75rem; }
-            
             #sidebarNav { display: none; width: 100%; }
             #sidebarNav.mobile-open { display: block !important; margin-bottom: 1rem; }
-            
             .right-sidebar { display: none; width: 100%; }
             .right-sidebar.mobile-open { display: block !important; margin-bottom: 1rem; }
         }
 
-        .card { background: var(--card-bg); padding: 1.25rem; border-radius: 12px; box-shadow: 0 6px 20px rgba(0,0,0,0.4); margin-bottom: 1.25rem; border: 1px solid var(--border); width: 100%; }
+        .card { background: var(--card-bg); padding: 1.25rem; border-radius: 12px; box-shadow: var(--shadow); margin-bottom: 1.25rem; border: 1px solid var(--border); width: 100%; transition: background 0.3s, border 0.3s; }
         
-        .sidebar-card h3, .right-card h3 { margin-top: 0; color: #60a5fa; font-size: 1rem; border-bottom: 2px solid var(--border); padding-bottom: 0.4rem; }
-        .cheat-sheet-list { padding-left: 1.1rem; font-size: 0.85rem; line-height: 1.4; color: #94a3b8; margin: 0.5rem 0 0 0; }
+        .sidebar-card h3, .right-card h3 { margin-top: 0; color: var(--highlight); font-size: 1rem; border-bottom: 2px solid var(--border); padding-bottom: 0.4rem; }
+        .cheat-sheet-list { padding-left: 1.1rem; font-size: 0.85rem; line-height: 1.4; color: var(--muted); margin: 0.5rem 0 0 0; }
         .cheat-sheet-list li { margin-bottom: 0.4rem; }
 
-        .section-heading { font-size: 1.1rem; color: #38bdf8; font-weight: 700; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem; border-left: 4px solid #3b82f6; padding-left: 0.5rem; }
+        .section-heading { font-size: 1.1rem; color: var(--highlight); font-weight: 700; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem; border-left: 4px solid #3b82f6; padding-left: 0.5rem; }
 
         .label-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem; flex-wrap: wrap; gap: 0.5rem; }
-        label { font-weight: 600; color: #e2e8f0; font-size: 0.9rem; }
-        .insert-sample { color: #38bdf8; text-decoration: none; font-size: 0.8rem; cursor: pointer; font-weight: 600; }
+        label { font-weight: 600; color: var(--heading); font-size: 0.9rem; }
+        .insert-sample { color: var(--highlight); text-decoration: none; font-size: 0.8rem; cursor: pointer; font-weight: 600; }
         .insert-sample:hover { text-decoration: underline; }
         
-        textarea, select, input[type="number"] { width: 100%; max-width: 100%; box-sizing: border-box; padding: 0.65rem; border: 1px solid #334155; border-radius: 8px; margin-bottom: 0.5rem; font-family: inherit; font-size: 0.85rem; background: #070a12; color: #f8fafc; resize: vertical; }
+        textarea, select, input[type="number"] { width: 100%; max-width: 100%; box-sizing: border-box; padding: 0.65rem; border: 1px solid var(--input-border); border-radius: 8px; margin-bottom: 0.5rem; font-family: inherit; font-size: 0.85rem; background: var(--input-bg); color: var(--text); resize: vertical; transition: background 0.3s, color 0.3s; }
         textarea:focus, select:focus, input:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2); }
         
-        .calc-group { margin-bottom: 0; font-size: 0.85rem; color: #94a3b8; }
-        .calc-group label { font-size: 0.85rem; color: #60a5fa; display: block; margin-bottom: 0.3rem; font-weight: 700; }
+        .calc-group { margin-bottom: 0; font-size: 0.85rem; color: var(--muted); }
+        .calc-group label { font-size: 0.85rem; color: var(--highlight); display: block; margin-bottom: 0.3rem; font-weight: 700; }
         .calc-row { display: flex; gap: 0.4rem; }
-        .calc-result { background: #070a12; padding: 0.5rem; border-radius: 6px; color: #38bdf8; font-weight: bold; text-align: center; margin-top: 0.4rem; border: 1px solid #1e293b; font-size: 0.85rem; }
+        .calc-result { background: var(--input-bg); padding: 0.5rem; border-radius: 6px; color: var(--highlight); font-weight: bold; text-align: center; margin-top: 0.4rem; border: 1px solid var(--border); font-size: 0.85rem; }
         
-        .calc-btn { background: #1e3a8a; color: #93c5fd; border: 1px solid #2563eb; padding: 0.4rem 0.5rem; border-radius: 6px; font-size: 0.75rem; font-weight: bold; cursor: pointer; margin-top: 0.4rem; width: 100%; text-align: center; }
-        .calc-btn:hover { background: #1d4ed8; color: #fff; }
+        .calc-btn { background: var(--tool-bg); color: var(--highlight); border: 1px solid var(--input-border); padding: 0.4rem 0.5rem; border-radius: 6px; font-size: 0.75rem; font-weight: bold; cursor: pointer; margin-top: 0.4rem; width: 100%; text-align: center; transition: all 0.2s; }
+        .calc-btn:hover { background: #3b82f6; color: #fff; }
 
         .input-tools { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 0.75rem; width: 100%; }
-        .input-tools button { width: 100%; padding: 0.65rem 0.5rem; font-size: 0.8rem; background: #1e293b; border: 1px solid #334155; color: #e2e8f0; border-radius: 6px; font-weight: 600; cursor: pointer; }
-        .input-tools button:hover { background: #334155; border-color: #475569; }
+        .input-tools button { width: 100%; padding: 0.65rem 0.5rem; font-size: 0.8rem; background: var(--tool-bg); border: 1px solid var(--input-border); color: var(--text); border-radius: 6px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+        .input-tools button:hover { border-color: var(--highlight); color: var(--highlight); }
 
         button { background: var(--accent-gradient); color: white; border: none; padding: 0.8rem 1rem; border-radius: 8px; font-size: 0.95rem; font-weight: bold; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3); width: 100%; }
         button:hover { filter: brightness(1.1); }
-        button:disabled { background: #334155; color: #94a3b8; cursor: not-allowed; box-shadow: none; }
+        button:disabled { background: var(--input-border); color: var(--muted); cursor: not-allowed; box-shadow: none; }
         
         .hidden { display: none !important; }
-        .output-card { border-left: 5px solid #3b82f6; margin-bottom: 1.5rem; background: #0f172a; width: 100%; overflow: hidden; }
-        .output-card h2 { color: #f8fafc; margin-top: 0; font-size: 1.15rem; }
+        .output-card { border-left: 5px solid #3b82f6; margin-bottom: 1.5rem; background: var(--card-bg); width: 100%; overflow: hidden; }
+        .output-card h2 { color: var(--heading); margin-top: 0; font-size: 1.15rem; }
         
-        .result-content { line-height: 1.6; font-size: 0.9rem; color: #cbd5e1; width: 100%; }
-        .result-content h3 { color: #60a5fa; margin-top: 1.2rem; font-size: 1rem; }
+        .result-content { line-height: 1.6; font-size: 0.9rem; color: var(--text); width: 100%; }
+        .result-content h3 { color: var(--highlight); margin-top: 1.2rem; font-size: 1rem; }
         .result-content ul { padding-left: 1.2rem; margin: 0.5rem 0; }
         .result-content li { margin-bottom: 0.3rem; }
         
         .action-bar { display: flex; gap: 0.5rem; margin-top: 1.25rem; flex-wrap: wrap; border-top: 1px solid var(--border); padding-top: 1rem; width: 100%; }
         .action-bar button { flex: 1; min-width: 100px; font-size: 0.85rem; padding: 0.65rem 0.5rem; }
-        .btn-secondary { background: #334155; box-shadow: none; }
+        .btn-secondary { background: var(--tool-bg); color: var(--text); box-shadow: none; border: 1px solid var(--input-border); }
+        .btn-secondary:hover { background: var(--input-border); }
         .btn-success { background: linear-gradient(135deg, #059669 0%, #047857 100%); box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3); }
         .btn-danger { background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3); }
         
-        .progress-container { width: 100%; background: #1e293b; border-radius: 9999px; height: 10px; margin: 0.75rem 0; overflow: hidden; border: 1px solid #334155; }
+        .progress-container { width: 100%; background: var(--border); border-radius: 9999px; height: 10px; margin: 0.75rem 0; overflow: hidden; border: 1px solid var(--input-border); }
         .progress-bar { width: 0%; height: 100%; background: var(--accent-gradient); transition: width 0.3s ease; }
 
         .badges-row { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 0.75rem; }
-        .model-badge { display: inline-block; background: #1e3a8a; color: #93c5fd; padding: 0.2rem 0.6rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 700; border: 1px solid #2563eb; }
-        .verified-badge { display: inline-block; background: #064e3b; color: #a7f3d0; padding: 0.2rem 0.6rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 700; border: 1px solid #059669; }
+        .model-badge { display: inline-block; background: rgba(59, 130, 246, 0.1); color: #3b82f6; padding: 0.2rem 0.6rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 700; border: 1px solid #3b82f6; }
+        .verified-badge { display: inline-block; background: rgba(16, 185, 129, 0.1); color: #10b981; padding: 0.2rem 0.6rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 700; border: 1px solid #10b981; }
         
-        .loader { border: 4px solid #1e293b; border-top: 4px solid #3b82f6; border-radius: 50%; width: 35px; height: 35px; animation: spin 1s linear infinite; margin: 0 auto 0.75rem auto; }
+        .loader { border: 4px solid var(--border); border-top: 4px solid #3b82f6; border-radius: 50%; width: 35px; height: 35px; animation: spin 1s linear infinite; margin: 0 auto 0.75rem auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
         .history-list { list-style: none; padding: 0; margin: 0; max-height: 180px; overflow-y: auto; font-size: 0.8rem; }
-        .history-list li { padding: 0.4rem 0.5rem; border-bottom: 1px solid #1e293b; cursor: pointer; color: #94a3b8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .history-list li:hover { background: #1e293b; color: #38bdf8; }
+        .history-list li { padding: 0.4rem 0.5rem; border-bottom: 1px solid var(--border); cursor: pointer; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: background 0.2s; }
+        .history-list li:hover { background: var(--tool-bg); color: var(--highlight); }
 
-        .notification-banner { background: #1e293b; border-left: 4px solid #38bdf8; padding: 0.75rem 1rem; border-radius: 6px; margin-bottom: 1rem; font-size: 0.9rem; color: #e2e8f0; display: flex; justify-content: space-between; align-items: center; }
-        .notification-banner span { cursor: pointer; color: #94a3b8; font-weight: bold; }
-        .notification-banner span:hover { color: #fff; }
+        .notification-banner { background: var(--tool-bg); border-left: 4px solid #38bdf8; padding: 0.75rem 1rem; border-radius: 6px; margin-bottom: 1rem; font-size: 0.9rem; color: var(--text); display: flex; justify-content: space-between; align-items: center; }
+        .notification-banner span { cursor: pointer; color: var(--muted); font-weight: bold; }
+        .notification-banner span:hover { color: var(--heading); }
         
-        footer { background: #070a12; color: #64748b; text-align: center; padding: 1.25rem 1rem; font-size: 0.8rem; margin-top: auto; border-top: 1px solid var(--border); }
+        footer { background: var(--bg); color: var(--muted); text-align: center; padding: 1.25rem 1rem; font-size: 0.8rem; margin-top: auto; border-top: 1px solid var(--border); transition: background 0.3s; }
     </style>
 </head>
 <body>
     <header>
         <h1>Clinical Decision Support</h1>
         <div class="subtitle">TPIHS (KMU, BSN)</div>
+        <button id="themeToggle" onclick="toggleTheme()" class="theme-btn">☀️ Light Mode</button>
     </header>
 
-    <!-- Mobile Dual Toggle Navigation (Hidden on PC) -->
     <div class="mobile-nav-bars">
         <div class="mobile-toggle-btn" onclick="toggleLeftMenu()">☰ Guides & Protocols</div>
         <div class="mobile-toggle-btn" onclick="toggleRightMenu()">🖩 Calculators & Vault</div>
@@ -195,23 +220,20 @@
                 <button id="submitBtn" onclick="evaluateCase()">Evaluate Clinical Priorities</button>
             </div>
 
-            <!-- Live Progress Bar & Cancel Control -->
             <div id="loading" class="card hidden" style="text-align: center; padding: 2rem;">
                 <div class="loader"></div>
-                <p id="loadingText" style="font-weight: 600; color: #93c5fd; margin-bottom: 0.5rem; font-size: 0.9rem;">Processing clinical reports...</p>
+                <p id="loadingText" style="font-weight: 600; color: var(--highlight); margin-bottom: 0.5rem; font-size: 0.9rem;">Processing clinical reports...</p>
                 <div class="progress-container">
                     <div id="progressBar" class="progress-bar"></div>
                 </div>
                 <button class="btn-danger" onclick="cancelEvaluation()" style="margin-top: 0.75rem; width: 100%;">Cancel & Keep Completed</button>
             </div>
 
-            <!-- Results Display Container -->
             <div id="resultsContainer" class="hidden"></div>
         </section>
 
-        <!-- Right Sidebar: Separated Calculator Cards (Stacked on Mobile) -->
+        <!-- Right Sidebar: Separated Calculator Cards -->
         <aside class="right-sidebar">
-            <!-- GCS Card -->
             <div class="card right-card">
                 <h3>Glasgow Coma Scale (GCS)</h3>
                 <div class="calc-group">
@@ -241,7 +263,6 @@
                 </div>
             </div>
 
-            <!-- BMI Card -->
             <div class="card right-card">
                 <h3>BMI Calculator</h3>
                 <div class="calc-group">
@@ -259,7 +280,6 @@
                 </div>
             </div>
 
-            <!-- MAP Card -->
             <div class="card right-card">
                 <h3>Mean Arterial Pressure (MAP)</h3>
                 <div class="calc-group">
@@ -270,7 +290,6 @@
                 </div>
             </div>
 
-            <!-- Maintenance Fluids Card -->
             <div class="card right-card">
                 <h3>Maintenance Fluids (4-2-1 Rule)</h3>
                 <div class="calc-group">
@@ -283,15 +302,14 @@
                 </div>
             </div>
 
-            <!-- History Vault Card -->
             <div class="card right-card">
                 <h3>Local History Vault</h3>
-                <p style="font-size: 0.75rem; color: #64748b; margin-top: 0; margin-bottom: 0.5rem;">Recent evaluated ward reports saved locally.</p>
+                <p style="font-size: 0.75rem; color: var(--muted); margin-top: 0; margin-bottom: 0.5rem;">Recent evaluated ward reports saved locally.</p>
                 <ul id="historyList" class="history-list">
-                    <li style="color: #475569; text-align: center;">No stored reports yet.</li>
+                    <li style="text-align: center;">No stored reports yet.</li>
                 </ul>
-                <button class="btn-secondary" onclick="clearHistory()" style="margin-top: 0.75rem; font-size: 0.75rem; padding: 0.4rem;">Clear Vault</button>
-                <button class="btn-success" onclick="exportBatchPDF()" style="margin-top: 0.5rem; font-size: 0.75rem; padding: 0.4rem;">Export Master TXT/PDF</button>
+                <button class="btn-secondary" onclick="clearHistory()" style="margin-top: 0.75rem; font-size: 0.75rem; padding: 0.4rem; width: 100%;">Clear Vault</button>
+                <button class="btn-success" onclick="exportBatchPDF()" style="margin-top: 0.5rem; font-size: 0.75rem; padding: 0.4rem; width: 100%;">Export Master TXT/PDF</button>
             </div>
         </aside>
     </main>
@@ -304,6 +322,22 @@
         let extractedSheets = [];
         let isCancelled = false;
         let evaluatedReportsStore = [];
+
+        // Theme Switcher Logic
+        function toggleTheme() {
+            const body = document.body;
+            body.classList.toggle('light-theme');
+            const isLight = body.classList.contains('light-theme');
+            localStorage.setItem('tpihs_theme', isLight ? 'light' : 'dark');
+            document.getElementById('themeToggle').innerText = isLight ? '🌙 Dark Mode' : '☀️ Light Mode';
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            if (localStorage.getItem('tpihs_theme') === 'light') {
+                document.body.classList.add('light-theme');
+                document.getElementById('themeToggle').innerText = '🌙 Dark Mode';
+            }
+        });
 
         function toggleLeftMenu() {
             document.getElementById('sidebarNav').classList.toggle('mobile-open');
@@ -395,7 +429,7 @@
                 else if (bmi >= 25.0 && bmi <= 29.9) advice = `Overweight. Recommend low-fat diet, avoid oily foods and cholesterol.`;
                 else advice = `Obese. Strictly avoid oily/fried foods, high cholesterol, and sugars. Initiate structured weight management.`;
 
-                res.innerHTML = `BMI: ${bmi}<br><span style="font-weight:normal; font-size:0.75rem; color:#94a3b8;">${advice}</span>`;
+                res.innerHTML = `BMI: ${bmi}<br><span style="font-weight:normal; font-size:0.75rem; color:var(--muted);">${advice}</span>`;
             } else {
                 res.innerText = `BMI: --`;
             }
@@ -408,7 +442,7 @@
             if (sbp > 0 && dbp > 0) {
                 const map = Math.round(((2 * dbp) + sbp) / 3);
                 let status = (map >= 70 && map <= 100) ? "Normal perfusion pressure." : (map < 70 ? "Low perfusion (Risk of hypoperfusion/shock)." : "High perfusion (Hypertensive urgency risk).");
-                res.innerHTML = `MAP: ${map} mmHg<br><span style="font-weight:normal; font-size:0.75rem; color:#94a3b8;">${status}</span>`;
+                res.innerHTML = `MAP: ${map} mmHg<br><span style="font-weight:normal; font-size:0.75rem; color:var(--muted);">${status}</span>`;
             } else {
                 res.innerText = `MAP: -- mmHg`;
             }
@@ -438,7 +472,6 @@
             }
         }
 
-        // Direct Calculator Evaluation Trigger using Verified AI Backend (Concise Instructions)
         async function evaluateCalcResult(calcDataSummary) {
             const discipline = document.getElementById('discipline').value;
             const btn = document.getElementById('submitBtn');
@@ -511,6 +544,7 @@
                     </div>
                 `;
                 resultsContainer.appendChild(card);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             } catch (error) {
                 showNotification("Connection Error: " + error.message);
             } finally {
@@ -589,7 +623,7 @@
 
             recognition.onend = () => {
                 voiceBtn.innerText = "🎤 Voice Dictation";
-                voiceBtn.style.background = "#1e293b";
+                voiceBtn.style.background = "var(--tool-bg)";
             };
 
             recognition.start();
@@ -770,7 +804,7 @@
         function renderHistoryVault() {
             const list = document.getElementById('historyList');
             if (!evaluatedReportsStore.length) {
-                list.innerHTML = `<li style="color: #475569; text-align: center;">No stored reports yet.</li>`;
+                list.innerHTML = `<li style="color: var(--muted); text-align: center;">No stored reports yet.</li>`;
                 return;
             }
             list.innerHTML = ``;
