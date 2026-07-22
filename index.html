@@ -97,7 +97,7 @@
                     <label for="scenario">Enter raw patient scenario (History, Presentation, Vitals)</label>
                     <a class="insert-sample" onclick="insertSample()">Insert sample case</a>
                 </div>
-                <textarea id="scenario" rows="6" placeholder="Type scenario, upload up to 10 ward sheet photos, or use voice dictation..."></textarea>
+                <textarea id="scenario" rows="6" placeholder="Type scenario, upload up to 10 ward sheet photos, or paste multiple numbered scenarios..."></textarea>
 
                 <div class="input-tools">
                     <input type="file" id="imageInput" accept="image/*" multiple class="hidden" onchange="handleImageUpload(event)">
@@ -218,27 +218,41 @@
 
         async function evaluateCase() {
             const discipline = document.getElementById('discipline').value;
-            const scenarioText = document.getElementById('scenario').value.trim();
+            const rawText = document.getElementById('scenario').value.trim();
             const btn = document.getElementById('submitBtn');
             const loading = document.getElementById('loading');
             const inputCard = document.getElementById('inputCard');
             const resultsContainer = document.getElementById('resultsContainer');
             const loadingText = document.getElementById('loadingText');
 
-            if (!scenarioText) { alert("Please enter or upload a patient scenario."); return; }
+            if (!rawText) { alert("Please enter or upload a patient scenario."); return; }
 
-            // Determine scenarios to evaluate: if uploaded via images, evaluate each sheet separately
             let scenariosToProcess = [];
+
             if (extractedSheets.length > 0) {
+                // Multiple uploaded screenshots/photos
                 scenariosToProcess = extractedSheets.map((sheet, index) => ({
                     title: `Ward Sheet ${index + 1}: ${sheet.name}`,
                     scenario: sheet.text
                 }));
             } else {
-                scenariosToProcess = [{
-                    title: `Clinical Evaluation Report`,
-                    scenario: scenarioText
-                }];
+                // Smart Splitter for pasted text containing numbered items (e.g. "1. ", "2. ")
+                const parts = rawText.split(/(?=\n\s*\d+\.\s+)|(?=^\d+\.\s+)/gm);
+                if (parts.length > 1) {
+                    scenariosToProcess = parts.map((part, index) => {
+                        const firstLine = part.trim().split('\n')[0];
+                        const title = firstLine.length < 60 ? firstLine : `Scenario ${index + 1}`;
+                        return {
+                            title: title,
+                            scenario: part.trim()
+                        };
+                    }).filter(s => s.scenario.length > 0);
+                } else {
+                    scenariosToProcess = [{
+                        title: `Clinical Evaluation Report`,
+                        scenario: rawText
+                    }];
+                }
             }
 
             btn.disabled = true;
@@ -272,7 +286,6 @@
                         evalText = JSON.stringify(data, null, 2);
                     }
 
-                    // Create separate result card for each sheet
                     const card = document.createElement('div');
                     card.className = 'card output-card';
                     card.innerHTML = `
@@ -284,13 +297,12 @@
                         <div class="result-content">${marked.parse(evalText)}</div>
                         <div class="action-bar">
                             <button class="btn-success" onclick="copyCardText(this)">Copy Result</button>
-                            <button onclick="downloadCardText(this, '${scenariosToProcess[i].title.replace(/[^a-zA-Z0-9]/g, '_')}')">Download TXT</button>
+                            <button onclick="downloadCardText(this, 'Report_${i + 1}')">Download TXT</button>
                         </div>
                     `;
                     resultsContainer.appendChild(card);
                 }
 
-                // Add Back / New Case button at the bottom of container
                 const navBar = document.createElement('div');
                 navBar.className = 'card';
                 navBar.style.textAlign = 'center';
