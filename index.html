@@ -3,92 +3,134 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clinical Data Review</title>
+    <title>Clinical Data Review - TPIHS KMU</title>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
-        :root { --primary: #0f172a; --secondary: #1e293b; --accent: #3b82f6; --bg: #f8fafc; --text: #334155; }
-        body { font-family: system-ui, sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 0; display: flex; flex-direction: column; min-height: 100vh; }
-        header { background: var(--primary); color: white; padding: 2rem; text-align: center; }
-        h1 { margin: 0; font-size: 2rem; }
-        .subtitle { color: #94a3b8; font-size: 1.1rem; margin-top: 0.5rem; }
-        main { flex-grow: 1; max-width: 800px; margin: 2rem auto; padding: 0 1rem; width: 100%; box-sizing: border-box; }
-        .card { background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); margin-bottom: 2rem; }
+        :root { --primary: #0f172a; --secondary: #1e293b; --accent: #3b82f6; --bg: #f1f5f9; --text: #334155; --card-bg: #ffffff; }
+        body { font-family: system-ui, -apple-system, sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 0; display: flex; flex-direction: column; min-height: 100vh; }
+        header { background: var(--primary); color: white; padding: 1.5rem 2rem; text-align: center; border-bottom: 4px solid var(--accent); }
+        h1 { margin: 0; font-size: 1.8rem; letter-spacing: -0.5px; }
+        .subtitle { color: #94a3b8; font-size: 1rem; margin-top: 0.3rem; font-weight: 500; }
+        
+        main { flex-grow: 1; max-width: 1280px; width: 100%; margin: 2rem auto; padding: 0 1.5rem; box-sizing: border-box; display: grid; grid-template-columns: 320px 1fr; gap: 2rem; align-items: start; }
+        @media (max-width: 960px) { main { grid-template-columns: 1fr; } }
+
+        .card { background: var(--card-bg); padding: 1.75rem; border-radius: 10px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03); margin-bottom: 1.5rem; border: 1px solid #e2e8f0; }
+        
+        /* Sidebar Styles */
+        .sidebar-card h3 { margin-top: 0; color: var(--primary); font-size: 1.1rem; border-bottom: 2px solid #e2e8f0; padding-bottom: 0.5rem; }
+        .cheat-sheet-list { padding-left: 1.2rem; font-size: 0.9rem; line-height: 1.5; color: #475569; }
+        .cheat-sheet-list li { margin-bottom: 0.5rem; }
+
         .label-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
-        label { font-weight: 600; color: var(--secondary); margin: 0; }
-        .insert-sample { color: var(--accent); text-decoration: none; font-size: 0.9rem; cursor: pointer; }
+        label { font-weight: 600; color: var(--secondary); font-size: 0.95rem; }
+        .insert-sample { color: var(--accent); text-decoration: none; font-size: 0.85rem; cursor: pointer; font-weight: 600; }
         .insert-sample:hover { text-decoration: underline; }
-        textarea, select { width: 100%; box-sizing: border-box; padding: 0.75rem; border: 1px solid #cbd5e1; border-radius: 4px; margin-bottom: 1.5rem; font-family: inherit; font-size: 1rem; }
-        button { background: var(--accent); color: white; border: none; padding: 0.8rem 1rem; border-radius: 4px; font-size: 1rem; font-weight: bold; cursor: pointer; transition: background 0.2s; }
+        
+        textarea, select { width: 100%; box-sizing: border-box; padding: 0.75rem; border: 1px solid #cbd5e1; border-radius: 6px; margin-bottom: 1.25rem; font-family: inherit; font-size: 0.95rem; background: #f8fafc; }
+        textarea:focus, select:focus { outline: none; border-color: var(--accent); background: #fff; }
+        
+        button { background: var(--accent); color: white; border: none; padding: 0.85rem 1rem; border-radius: 6px; font-size: 1rem; font-weight: bold; cursor: pointer; transition: background 0.2s; }
         button:hover { background: #2563eb; }
         button:disabled { background: #94a3b8; cursor: not-allowed; }
+        
         .hidden { display: none !important; }
-        .output-card { border-left: 4px solid var(--accent); }
+        .output-card { border-left: 5px solid var(--accent); }
         .output-card h2 { color: var(--primary); margin-top: 0; }
-        #resultText { line-height: 1.6; }
-        #resultText h3 { color: var(--secondary); margin-top: 1.5rem; }
+        
+        #resultText { line-height: 1.7; font-size: 0.95rem; }
+        #resultText h3 { color: var(--secondary); margin-top: 1.5rem; font-size: 1.1rem; }
         #resultText ul { padding-left: 1.5rem; }
-        #resultText li { margin-bottom: 0.5rem; }
-        .action-bar { display: flex; gap: 0.75rem; margin-top: 2rem; flex-wrap: wrap; }
+        #resultText li { margin-bottom: 0.4rem; }
+        
+        .action-bar { display: flex; gap: 0.75rem; margin-top: 2rem; flex-wrap: wrap; border-top: 1px solid #e2e8f0; padding-top: 1.5rem; }
         .btn-secondary { background: #64748b; }
         .btn-secondary:hover { background: #475569; }
-        .btn-success { background: #10b981; }
-        .btn-success:hover { background: #059669; }
-        .model-badge { display: inline-block; background: #e2e8f0; color: #334155; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.8rem; font-weight: 600; margin-bottom: 1rem; }
-        .loader { border: 4px solid #f3f3f3; border-top: 4px solid var(--accent); border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; margin: 0 auto 1rem auto; }
+        .btn-success { background: #059669; }
+        .btn-success:hover { background: #047857; }
+        
+        .model-badge { display: inline-block; background: #e0f2fe; color: #0369a1; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.8rem; font-weight: 700; margin-bottom: 1rem; }
+        .loader { border: 4px solid #f3f3f3; border-top: 4px solid var(--accent); border-radius: 50%; width: 35px; height: 35px; animation: spin 1s linear infinite; margin: 0 auto 1rem auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        footer { background: var(--secondary); color: #cbd5e1; text-align: center; padding: 1.5rem; font-size: 0.9rem; }
+        
+        footer { background: var(--secondary); color: #94a3b8; text-align: center; padding: 1.25rem; font-size: 0.85rem; margin-top: auto; }
     </style>
 </head>
 <body>
     <header>
         <h1>Clinical Data Review</h1>
-        <div class="subtitle">TPIHS - KMU - BSN</div>
+        <div class="subtitle">TPIHS - KMU - BSN | 8th Semester Decision Support</div>
     </header>
 
     <main>
-        <!-- Input Section -->
-        <div id="inputCard" class="card">
-            <div class="label-row">
-                <label for="scenario">Enter raw patient scenario (History, Presentation, Vitals)</label>
-                <a class="insert-sample" onclick="insertSample()">Insert sample</a>
+        <!-- Left Sidebar: Quick Reference & Vitals Cheat Sheet -->
+        <aside>
+            <div class="card sidebar-card">
+                <h3>Vitals Reference Guide</h3>
+                <ul class="cheat-sheet-list">
+                    <li><strong>Blood Pressure:</strong> Normal &lt;120/80 mmHg</li>
+                    <li><strong>Heart Rate:</strong> 60 - 100 bpm</li>
+                    <li><strong>Respiratory Rate:</strong> 12 - 20 breaths/min</li>
+                    <li><strong>SpO2:</strong> 95% - 100% on room air</li>
+                    <li><strong>Temperature:</strong> 36.5°C - 37.5°C</li>
+                </ul>
             </div>
-            <textarea id="scenario" rows="6" placeholder="Example: 45 y/o male presents with severe chest pain..."></textarea>
-
-            <label for="discipline" style="display:block; margin-bottom:0.5rem;">Which discipline are you?</label>
-            <select id="discipline">
-                <option value="Nursing">Nursing</option>
-                <option value="Radiology">Radiology</option>
-                <option value="Dental">Dental</option>
-                <option value="Anaesthesia">Anaesthesia</option>
-                <option value="Pharmacy">Pharmacy</option>
-                <option value="Medical Laboratory Technology">Medical Laboratory Technology</option>
-            </select>
-
-            <button id="submitBtn" onclick="evaluateCase()" style="width: 100%;">Evaluate Clinical Priorities</button>
-        </div>
-
-        <!-- Loading Indicator -->
-        <div id="loading" class="card hidden" style="text-align: center;">
-            <div class="loader"></div>
-            <p>Evaluating clinical parameters via verified databases...</p>
-        </div>
-
-        <!-- Results Section -->
-        <div id="result" class="card output-card hidden">
-            <div id="modelBadge" class="model-badge">Active Model: None</div>
-            <h2 id="resultTitle">Evaluation</h2>
-            <div id="resultText"></div>
-            
-            <div class="action-bar">
-                <button class="btn-secondary" onclick="resetForm()">← Back / New Case</button>
-                <button class="btn-success" onclick="copyResults()">Copy Results</button>
-                <button onclick="downloadResults()">Download TXT</button>
+            <div class="card sidebar-card">
+                <h3>Emergency Protocols</h3>
+                <ul class="cheat-sheet-list">
+                    <li><strong>Chest Pain:</strong> ECG within 10 min, check O2, aspirin if indicated.</li>
+                    <li><strong>Triage Priority:</strong> ABCDE primary survey framework.</li>
+                    <li><strong>Guidelines:</strong> AHA / ACC Evidence-Based Standards.</li>
+                </ul>
             </div>
-        </div>
+        </aside>
+
+        <!-- Right / Main Section -->
+        <section>
+            <!-- Input Card -->
+            <div id="inputCard" class="card">
+                <div class="label-row">
+                    <label for="scenario">Enter raw patient scenario (History, Presentation, Vitals)</label>
+                    <a class="insert-sample" onclick="insertSample()">Insert sample case</a>
+                </div>
+                <textarea id="scenario" rows="6" placeholder="Example: 58-year-old male with crushing chest pain..."></textarea>
+
+                <label for="discipline" style="display:block; margin-bottom:0.5rem;">Select Professional Discipline</label>
+                <select id="discipline">
+                    <option value="Nursing">Nursing</option>
+                    <option value="Radiology">Radiology</option>
+                    <option value="Dental">Dental</option>
+                    <option value="Anaesthesia">Anaesthesia</option>
+                    <option value="Pharmacy">Pharmacy</option>
+                    <option value="Medical Laboratory Technology">Medical Laboratory Technology</option>
+                </select>
+
+                <button id="submitBtn" onclick="evaluateCase()" style="width: 100%;">Evaluate Clinical Priorities</button>
+            </div>
+
+            <!-- Loading State -->
+            <div id="loading" class="card hidden" style="text-align: center; padding: 3rem;">
+                <div class="loader"></div>
+                <p style="font-weight: 600; color: var(--secondary);">Querying verified clinical databases...</p>
+            </div>
+
+            <!-- Results Card -->
+            <div id="result" class="card output-card hidden">
+                <div id="modelBadge" class="model-badge">Active Model: None</div>
+                <h2 id="resultTitle">Evaluation</h2>
+                <div id="resultText"></div>
+                
+                <div class="action-bar">
+                    <button class="btn-secondary" onclick="resetForm()">← New Case</button>
+                    <button class="btn-success" onclick="copyResults()">Copy Results</button>
+                    <button onclick="downloadResults()">Download Report</button>
+                </div>
+            </div>
+        </section>
     </main>
 
     <footer>
-        Clinical Data Review - Educational use only. Developed by Maaz Ahmed.
+        Clinical Data Review - Educational use only. Developed for TPIHS KMU BSN Program.
     </footer>
 
     <script>
