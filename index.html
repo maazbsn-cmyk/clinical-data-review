@@ -24,7 +24,9 @@
         h1 { margin: 0; font-size: 1.6rem; letter-spacing: -0.5px; background: linear-gradient(90deg, #60a5fa, #38bdf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .subtitle { color: #94a3b8; font-size: 0.9rem; margin-top: 0.3rem; font-weight: 500; }
         
-        .mobile-menu-toggle { display: none; background: #1e293b; color: #38bdf8; padding: 0.85rem 1rem; text-align: left; font-weight: bold; cursor: pointer; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
+        /* Mobile Dual Toggle Bars */
+        .mobile-nav-bars { display: none; gap: 0.5rem; margin: 0.75rem 0.75rem 0 0.75rem; }
+        .mobile-toggle-btn { flex: 1; background: #1e293b; color: #38bdf8; padding: 0.75rem 0.5rem; text-align: center; font-weight: bold; cursor: pointer; border: 1px solid #334155; border-radius: 8px; font-size: 0.85rem; }
         
         /* 3-Column PC Layout Grid */
         main { flex-grow: 1; max-width: 1480px; width: 100%; margin: 1.5rem auto; padding: 0 1rem; box-sizing: border-box; display: grid; grid-template-columns: 280px 1fr 320px; gap: 1.25rem; align-items: start; }
@@ -36,13 +38,16 @@
             .right-sidebar { grid-column: 1 / -1; }
         }
 
-        /* Mobile Layout Fixes */
+        /* Mobile Adjustments */
         @media (max-width: 960px) {
-            .mobile-menu-toggle { display: block; }
+            .mobile-nav-bars { display: flex; }
             main { grid-template-columns: 1fr; margin: 0.75rem auto; padding: 0 0.75rem; }
+            
             #sidebarNav { display: none; width: 100%; }
             #sidebarNav.mobile-open { display: block !important; margin-bottom: 1rem; }
-            .right-sidebar { display: block; width: 100%; margin-top: 0.5rem; }
+            
+            .right-sidebar { display: none; width: 100%; }
+            .right-sidebar.mobile-open { display: block !important; margin-bottom: 1rem; }
         }
 
         .card { background: var(--card-bg); padding: 1.25rem; border-radius: 12px; box-shadow: 0 6px 20px rgba(0,0,0,0.4); margin-bottom: 1.25rem; border: 1px solid var(--border); width: 100%; }
@@ -119,8 +124,10 @@
         <div class="subtitle">TPIHS (KMU, BSN)</div>
     </header>
 
-    <div class="mobile-menu-toggle" onclick="toggleMobileMenu()">
-        ☰ ABGs, Emergency Protocols & Vitals (Tap to Toggle)
+    <!-- Mobile Dual Toggle Navigation (Hidden on PC) -->
+    <div class="mobile-nav-bars">
+        <div class="mobile-toggle-btn" onclick="toggleLeftMenu()">☰ Guides & Protocols</div>
+        <div class="mobile-toggle-btn" onclick="toggleRightMenu()">🖩 Calculators & Vault</div>
     </div>
 
     <main>
@@ -298,9 +305,14 @@
         let isCancelled = false;
         let evaluatedReportsStore = [];
 
-        function toggleMobileMenu() {
-            const sidebar = document.getElementById('sidebarNav');
-            sidebar.classList.toggle('mobile-open');
+        function toggleLeftMenu() {
+            document.getElementById('sidebarNav').classList.toggle('mobile-open');
+            document.querySelector('.right-sidebar').classList.remove('mobile-open');
+        }
+
+        function toggleRightMenu() {
+            document.querySelector('.right-sidebar').classList.toggle('mobile-open');
+            document.getElementById('sidebarNav').classList.remove('mobile-open');
         }
 
         function showNotification(message) {
