@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Clinical Data Review - TPIHS KMU</title>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
     <style>
         :root { --primary: #0f172a; --secondary: #1e293b; --accent: #3b82f6; --bg: #f1f5f9; --text: #334155; --card-bg: #ffffff; }
         body { font-family: system-ui, -apple-system, sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 0; display: flex; flex-direction: column; min-height: 100vh; }
@@ -26,9 +27,13 @@
         .insert-sample { color: var(--accent); text-decoration: none; font-size: 0.85rem; cursor: pointer; font-weight: 600; }
         .insert-sample:hover { text-decoration: underline; }
         
-        textarea, select { width: 100%; box-sizing: border-box; padding: 0.75rem; border: 1px solid #cbd5e1; border-radius: 6px; margin-bottom: 1.25rem; font-family: inherit; font-size: 0.95rem; background: #f8fafc; }
+        textarea, select { width: 100%; box-sizing: border-box; padding: 0.75rem; border: 1px solid #cbd5e1; border-radius: 6px; margin-bottom: 1rem; font-family: inherit; font-size: 0.95rem; background: #f8fafc; }
         textarea:focus, select:focus { outline: none; border-color: var(--accent); background: #fff; }
         
+        .input-tools { display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap; }
+        .input-tools button { flex: 1; padding: 0.6rem; font-size: 0.85rem; background: #475569; }
+        .input-tools button:hover { background: #334155; }
+
         button { background: var(--accent); color: white; border: none; padding: 0.80rem 1rem; border-radius: 6px; font-size: 0.95rem; font-weight: bold; cursor: pointer; transition: background 0.2s; }
         button:hover { background: #2563eb; }
         button:disabled { background: #94a3b8; cursor: not-allowed; }
@@ -92,7 +97,14 @@
                     <label for="scenario">Enter raw patient scenario (History, Presentation, Vitals)</label>
                     <a class="insert-sample" onclick="insertSample()">Insert sample case</a>
                 </div>
-                <textarea id="scenario" rows="6" placeholder="Example: 58-year-old male with crushing chest pain..."></textarea>
+                <textarea id="scenario" rows="6" placeholder="Type scenario, upload ward sheet image, or use voice dictation..."></textarea>
+
+                <!-- Ward Tools: Image OCR & Voice Dictation -->
+                <div class="input-tools">
+                    <input type="file" id="imageInput" accept="image/*" class="hidden" onchange="handleImageUpload(event)">
+                    <button type="button" onclick="document.getElementById('imageInput').click()">📷 Upload Ward Sheet / Photo</button>
+                    <button type="button" id="voiceBtn" onclick="startVoiceInput()">🎤 Voice Dictation</button>
+                </div>
 
                 <label for="discipline" style="display:block; margin-bottom:0.5rem;">Select Professional Discipline</label>
                 <select id="discipline">
@@ -109,7 +121,7 @@
 
             <div id="loading" class="card hidden" style="text-align: center; padding: 3rem;">
                 <div class="loader"></div>
-                <p style="font-weight: 600; color: var(--secondary);">Automatically verifying against medical databases...</p>
+                <p id="loadingText" style="font-weight: 600; color: var(--secondary);">Processing clinical data...</p>
             </div>
 
             <div id="result" class="card output-card hidden">
@@ -138,6 +150,66 @@
             document.getElementById('scenario').value = "History: 58-year-old male, smoker (30 pack-years), hypertension (10 yrs), on amlodipine 10mg.\nPresentation: Sudden onset crushing substernal chest pain 1 hour ago, radiating to left arm, diaphoresis, nausea. No shortness of breath currently.\nVitals: BP 160/95, HR 104, RR 20, SpO2 96% on room air, Temp 36.8C, Pain 8/10.";
         }
 
+        async function handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const loading = document.getElementById('loading');
+            const inputCard = document.getElementById('inputCard');
+            const loadingText = document.getElementById('loadingText');
+
+            inputCard.classList.add('hidden');
+            loading.classList.remove('hidden');
+            loadingText.innerText = "Extracting text from ward sheet image (OCR)...";
+
+            try {
+                const worker = await Tesseract.createWorker('eng');
+                const ret = await worker.recognize(file);
+                await worker.terminate();
+
+                document.getElementById('scenario').value = ret.data.text.trim();
+                alert("Ward sheet text successfully extracted!");
+            } catch (err) {
+                alert("OCR Extraction failed: " + err.message);
+            } finally {
+                loading.classList.add('hidden');
+                inputCard.classList.remove('hidden');
+            }
+        }
+
+        function startVoiceInput() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) {
+                alert("Speech recognition is not supported in this browser. Please use Google Chrome or Edge.");
+                return;
+            }
+            const recognition = new SpeechRecognition();
+            recognition.lang = 'en-US';
+            const voiceBtn = document.getElementById('voiceBtn');
+
+            recognition.onstart = () => {
+                voiceBtn.innerText = "🔴 Listening...";
+                voiceBtn.style.background = "#dc2626";
+            };
+
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                const scenarioBox = document.getElementById('scenario');
+                scenarioBox.value += (scenarioBox.value ? " " : "") + transcript;
+            };
+
+            recognition.onerror = () => {
+                alert("Voice recognition error occurred.");
+            };
+
+            recognition.onend = () => {
+                voiceBtn.innerText = "🎤 Voice Dictation";
+                voiceBtn.style.background = "#475569";
+            };
+
+            recognition.start();
+        }
+
         async function evaluateCase() {
             const scenario = document.getElementById('scenario').value;
             const discipline = document.getElementById('discipline').value;
@@ -145,13 +217,15 @@
             const loading = document.getElementById('loading');
             const inputCard = document.getElementById('inputCard');
             const result = document.getElementById('result');
+            const loadingText = document.getElementById('loadingText');
 
-            if (!scenario.trim()) { alert("Please enter a patient scenario."); return; }
+            if (!scenario.trim()) { alert("Please enter or upload a patient scenario."); return; }
 
             btn.disabled = true;
             inputCard.classList.add('hidden');
             result.classList.add('hidden');
             loading.classList.remove('hidden');
+            loadingText.innerText = "Automatically verifying against medical databases...";
 
             try {
                 const response = await fetch('/api/evaluate', {
@@ -193,6 +267,7 @@
             document.getElementById('result').classList.add('hidden');
             document.getElementById('inputCard').classList.remove('hidden');
             document.getElementById('scenario').value = '';
+            document.getElementById('imageInput').value = '';
         }
 
         function copyResults() {
