@@ -36,11 +36,13 @@
             .right-sidebar { grid-column: 1 / -1; }
         }
 
+        /* Mobile Layout Fixes */
         @media (max-width: 960px) {
             .mobile-menu-toggle { display: block; }
             main { grid-template-columns: 1fr; margin: 0.75rem auto; padding: 0 0.75rem; }
-            aside { display: none; width: 100%; }
-            aside.mobile-open { display: block !important; margin-bottom: 1rem; }
+            #sidebarNav { display: none; width: 100%; }
+            #sidebarNav.mobile-open { display: block !important; margin-bottom: 1rem; }
+            .right-sidebar { display: block; width: 100%; margin-top: 0.5rem; }
         }
 
         .card { background: var(--card-bg); padding: 1.25rem; border-radius: 12px; box-shadow: 0 6px 20px rgba(0,0,0,0.4); margin-bottom: 1.25rem; border: 1px solid var(--border); width: 100%; }
@@ -200,7 +202,7 @@
             <div id="resultsContainer" class="hidden"></div>
         </section>
 
-        <!-- Right Sidebar: Separated Calculator Cards with Concise Verified Guidance -->
+        <!-- Right Sidebar: Separated Calculator Cards (Stacked on Mobile) -->
         <aside class="right-sidebar">
             <!-- GCS Card -->
             <div class="card right-card">
@@ -261,7 +263,7 @@
                 </div>
             </div>
 
-            <!-- Maintenance Fluids Card (Removed evaluation button as requested) -->
+            <!-- Maintenance Fluids Card -->
             <div class="card right-card">
                 <h3>Maintenance Fluids (4-2-1 Rule)</h3>
                 <div class="calc-group">
