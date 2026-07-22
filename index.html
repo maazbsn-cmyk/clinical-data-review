@@ -63,6 +63,10 @@
         .calc-group label { font-size: 0.85rem; color: #60a5fa; display: block; margin-bottom: 0.3rem; font-weight: 700; }
         .calc-row { display: flex; gap: 0.4rem; }
         .calc-result { background: #070a12; padding: 0.5rem; border-radius: 6px; color: #38bdf8; font-weight: bold; text-align: center; margin-top: 0.4rem; border: 1px solid #1e293b; font-size: 0.85rem; }
+        
+        /* Calc Action Button */
+        .calc-btn { background: #1e3a8a; color: #93c5fd; border: 1px solid #2563eb; padding: 0.4rem 0.5rem; border-radius: 6px; font-size: 0.75rem; font-weight: bold; cursor: pointer; margin-top: 0.4rem; width: 100%; text-align: center; }
+        .calc-btn:hover { background: #1d4ed8; color: #fff; }
 
         .input-tools { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 0.75rem; width: 100%; }
         .input-tools button { width: 100%; padding: 0.65rem 0.5rem; font-size: 0.8rem; background: #1e293b; border: 1px solid #334155; color: #e2e8f0; border-radius: 6px; font-weight: 600; cursor: pointer; }
@@ -115,11 +119,11 @@
     </header>
 
     <div class="mobile-menu-toggle" onclick="toggleMobileMenu()">
-        ☰ ABGs, Vitals & Protocols (Tap to Toggle)
+        ☰ ABGs, Emergency Protocols & Vitals (Tap to Toggle)
     </div>
 
     <main>
-        <!-- Left Sidebar: ABG Normal Values & Interpretation Cheat Sheet -->
+        <!-- Left Sidebar: ABG Normal Values, Interpretation & Expanded Emergency Protocols -->
         <aside id="sidebarNav">
             <div class="card sidebar-card">
                 <h3>ABG Normal Values</h3>
@@ -134,17 +138,19 @@
             <div class="card sidebar-card">
                 <h3>ABG Interpretation</h3>
                 <ul class="cheat-sheet-list">
-                    <li><strong>ROME Rule:</strong><br><strong>R</strong>espiratory <strong>O</strong>pposite (pH & PaCO2 opposite directions)<br><strong>M</strong>etabolic <strong>E</strong>qual (pH & HCO3 same direction)</li>
+                    <li><strong>ROME Rule:</strong><br><strong>R</strong>espiratory <strong>O</strong>pposite (pH & PaCO2 opposite)<br><strong>M</strong>etabolic <strong>E</strong>qual (pH & HCO3 same)</li>
                     <li><strong>Acidosis:</strong> pH &lt; 7.35</li>
                     <li><strong>Alkalosis:</strong> pH &gt; 7.45</li>
                 </ul>
             </div>
             <div class="card sidebar-card">
-                <h3>Vitals & Emergency</h3>
+                <h3>Emergency Protocols</h3>
                 <ul class="cheat-sheet-list">
-                    <li><strong>HR:</strong> 60–100 bpm | <strong>RR:</strong> 12–20</li>
-                    <li><strong>BP:</strong> &lt;120/80 mmHg</li>
-                    <li><strong>Triage:</strong> ABCDE primary survey framework</li>
+                    <li><strong>Chest Pain:</strong> ECG within 10 min, check O2, Aspirin 325mg, Sublingual Nitroglycerin.</li>
+                    <li><strong>Stroke (CVA):</strong> Fast-track non-contrast CT head within 20 min of arrival.</li>
+                    <li><strong>Anaphylaxis:</strong> Immediate IM Epinephrine (1:1000) 0.5mg into mid-outer thigh.</li>
+                    <li><strong>Seizure/Status:</strong> Secure airway, IV Lorazepam/Diazepam, check blood glucose.</li>
+                    <li><strong>Triage Priority:</strong> ABCDE primary survey framework (AHA / ACC Standards).</li>
                 </ul>
             </div>
         </aside>
@@ -195,7 +201,7 @@
             <div id="resultsContainer" class="hidden"></div>
         </section>
 
-        <!-- Right Sidebar: Separated Calculator Cards & Local Storage Vault -->
+        <!-- Right Sidebar: Separated Calculator Cards with Verified Action Buttons -->
         <aside class="right-sidebar">
             <!-- GCS Card -->
             <div class="card right-card">
@@ -223,6 +229,7 @@
                         <option value="1">Motor: None (1)</option>
                     </select>
                     <div id="gcsRes" class="calc-result">GCS: 15 (Mild / Normal)</div>
+                    <button class="calc-btn" onclick="evaluateCalcResult('Glasgow Coma Scale score of ' + document.getElementById('gcsRes').innerText)">Evaluate GCS Interventions</button>
                 </div>
             </div>
 
@@ -240,6 +247,7 @@
                         <input type="number" id="bmiHt" placeholder="Height (e.g. 1.75)" oninput="calcBMI()">
                     </div>
                     <div id="bmiRes" class="calc-result">BMI: --</div>
+                    <button class="calc-btn" onclick="evaluateCalcResult('BMI calculation result: ' + document.getElementById('bmiRes').innerText)">Evaluate BMI Interventions</button>
                 </div>
             </div>
 
@@ -250,10 +258,11 @@
                     <input type="number" id="mapSbp" placeholder="Systolic Blood Pressure (mmHg)" oninput="calcMAP()">
                     <input type="number" id="mapDbp" placeholder="Diastolic Blood Pressure (mmHg)" oninput="calcMAP()">
                     <div id="mapRes" class="calc-result">MAP: -- mmHg</div>
+                    <button class="calc-btn" onclick="evaluateCalcResult('Mean Arterial Pressure calculation: ' + document.getElementById('mapRes').innerText)">Evaluate MAP Interventions</button>
                 </div>
             </div>
 
-            <!-- Maintenance Fluids Card (4-2-1 Rule with Age Category) -->
+            <!-- Maintenance Fluids Card -->
             <div class="card right-card">
                 <h3>Maintenance Fluids (4-2-1 Rule)</h3>
                 <div class="calc-group">
@@ -263,6 +272,7 @@
                     </select>
                     <input type="number" id="fluidWt" placeholder="Weight (kg)" oninput="calcFluids()">
                     <div id="fluidRes" class="calc-result">Rate: -- mL/hr</div>
+                    <button class="calc-btn" onclick="evaluateCalcResult('Maintenance fluid rate calculated at ' + document.getElementById('fluidRes').innerText)">Evaluate Fluid Interventions</button>
                 </div>
             </div>
 
@@ -393,10 +403,8 @@
             if (wt > 0) {
                 let rate = 0;
                 if (ageCat === 'neonate') {
-                    // Neonatal maintenance calculation rule (approx 60-80 mL/kg/day converted to mL/hr)
                     rate = Math.round((wt * 80) / 24);
                 } else {
-                    // Standard 4-2-1 Rule
                     if (wt <= 10) {
                         rate = wt * 4;
                     } else if (wt <= 20) {
@@ -408,6 +416,87 @@
                 res.innerText = `Rate: ${rate} mL/hr`;
             } else {
                 res.innerText = `Rate: -- mL/hr`;
+            }
+        }
+
+        // Direct Calculator Evaluation Trigger using Verified AI Backend
+        async function evaluateCalcResult(calcDataSummary) {
+            const discipline = document.getElementById('discipline').value;
+            const btn = document.getElementById('submitBtn');
+            const loading = document.getElementById('loading');
+            const inputCard = document.getElementById('inputCard');
+            const resultsContainer = document.getElementById('resultsContainer');
+            const loadingText = document.getElementById('loadingText');
+
+            isCancelled = false;
+            btn.disabled = true;
+            inputCard.classList.add('hidden');
+            resultsContainer.innerHTML = '';
+            resultsContainer.classList.remove('hidden');
+            loading.classList.remove('hidden');
+            loadingText.innerText = "Evaluating verified clinical interventions for calculation result...";
+
+            let navBar = document.getElementById('topNavBar');
+            if (!navBar) {
+                navBar = document.createElement('div');
+                navBar.id = 'topNavBar';
+                navBar.className = 'card';
+                navBar.style.textAlign = 'center';
+                navBar.innerHTML = `<button class="btn-secondary" onclick="resetForm()">← Back / Evaluate New Case(s)</button>`;
+                resultsContainer.appendChild(navBar);
+            }
+
+            try {
+                const response = await fetch('/api/evaluate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ scenario: `Clinical Calculator Assessment: ${calcDataSummary}`, discipline })
+                });
+                
+                const text = await response.text();
+                let data;
+                try {
+                    data = JSON.parse(text);
+                } catch (err) {
+                    data = { evaluation: "Server Error / Raw Output:\n" + text, modelUsed: "Error" };
+                }
+
+                let evalText = data.evaluation;
+                if (typeof evalText === 'object') {
+                    evalText = JSON.stringify(evalText, null, 2);
+                } else if (!evalText) {
+                    evalText = JSON.stringify(data, null, 2);
+                }
+
+                const reportObj = {
+                    title: `${discipline} — Calculator Assessment (${calcDataSummary.split(':')[0]})`,
+                    content: evalText,
+                    date: new Date().toLocaleTimeString()
+                };
+                evaluatedReportsStore.push(reportObj);
+                saveToLocalStorage();
+                renderHistoryVault();
+
+                const card = document.createElement('div');
+                card.className = 'card output-card';
+                card.innerHTML = `
+                    <div class="badges-row">
+                        <div class="model-badge">Model: ${data.modelUsed || 'AI'}</div>
+                        <div class="verified-badge">✓ Verified Guidelines</div>
+                    </div>
+                    <h2>${reportObj.title}</h2>
+                    <div class="result-content">${marked.parse(evalText)}</div>
+                    <div class="action-bar">
+                        <button class="btn-success" onclick="copyCardText(this)">Copy</button>
+                        <button class="btn-secondary" onclick="downloadCardText(this, 'Calc_Report')">Download TXT</button>
+                    </div>
+                `;
+                resultsContainer.appendChild(card);
+            } catch (error) {
+                showNotification("Connection Error: " + error.message);
+            } finally {
+                loading.classList.add('hidden');
+                btn.disabled = false;
             }
         }
 
