@@ -24,12 +24,17 @@
         h1 { margin: 0; font-size: 1.6rem; letter-spacing: -0.5px; background: linear-gradient(90deg, #60a5fa, #38bdf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .subtitle { color: #94a3b8; font-size: 0.9rem; margin-top: 0.3rem; font-weight: 500; }
         
-        /* Mobile Hamburger Toggle Bar - Hidden on PC */
         .mobile-menu-toggle { display: none; background: #1e293b; color: #38bdf8; padding: 0.85rem 1rem; text-align: left; font-weight: bold; cursor: pointer; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
         
-        main { flex-grow: 1; max-width: 1200px; width: 100%; margin: 1.5rem auto; padding: 0 1rem; box-sizing: border-box; display: grid; grid-template-columns: 300px 1fr; gap: 1.5rem; align-items: start; }
+        /* 3-Column PC Layout Grid */
+        main { flex-grow: 1; max-width: 1440px; width: 100%; margin: 1.5rem auto; padding: 0 1rem; box-sizing: border-box; display: grid; grid-template-columns: 260px 1fr 300px; gap: 1.25rem; align-items: start; }
         
         aside { display: block; width: 100%; }
+
+        @media (max-width: 1100px) {
+            main { grid-template-columns: 260px 1fr; }
+            .right-sidebar { grid-column: 1 / -1; }
+        }
 
         @media (max-width: 960px) {
             .mobile-menu-toggle { display: block; }
@@ -38,20 +43,26 @@
             aside.mobile-open { display: block; margin-bottom: 1rem; }
         }
 
-        .card { background: var(--card-bg); padding: 1.5rem; border-radius: 12px; box-shadow: 0 6px 20px rgba(0,0,0,0.4); margin-bottom: 1.25rem; border: 1px solid var(--border); width: 100%; }
+        .card { background: var(--card-bg); padding: 1.25rem; border-radius: 12px; box-shadow: 0 6px 20px rgba(0,0,0,0.4); margin-bottom: 1.25rem; border: 1px solid var(--border); width: 100%; }
         
-        .sidebar-card h3 { margin-top: 0; color: #60a5fa; font-size: 1rem; border-bottom: 2px solid var(--border); padding-bottom: 0.4rem; }
+        .sidebar-card h3, .right-card h3 { margin-top: 0; color: #60a5fa; font-size: 1rem; border-bottom: 2px solid var(--border); padding-bottom: 0.4rem; }
         .cheat-sheet-list { padding-left: 1.1rem; font-size: 0.85rem; line-height: 1.4; color: #94a3b8; margin: 0.5rem 0 0 0; }
         .cheat-sheet-list li { margin-bottom: 0.4rem; }
+
+        .section-heading { font-size: 1.1rem; color: #38bdf8; font-weight: 700; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem; border-left: 4px solid #3b82f6; padding-left: 0.5rem; }
 
         .label-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem; flex-wrap: wrap; gap: 0.5rem; }
         label { font-weight: 600; color: #e2e8f0; font-size: 0.9rem; }
         .insert-sample { color: #38bdf8; text-decoration: none; font-size: 0.8rem; cursor: pointer; font-weight: 600; }
         .insert-sample:hover { text-decoration: underline; }
         
-        textarea, select { width: 100%; max-width: 100%; box-sizing: border-box; padding: 0.75rem; border: 1px solid #334155; border-radius: 8px; margin-bottom: 0.75rem; font-family: inherit; font-size: 0.95rem; background: #070a12; color: #f8fafc; resize: vertical; }
-        textarea:focus, select:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2); }
+        textarea, select, input[type="number"] { width: 100%; max-width: 100%; box-sizing: border-box; padding: 0.7rem; border: 1px solid #334155; border-radius: 8px; margin-bottom: 0.6rem; font-family: inherit; font-size: 0.9rem; background: #070a12; color: #f8fafc; resize: vertical; }
+        textarea:focus, select:focus, input:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2); }
         
+        .calc-group { margin-bottom: 0.75rem; font-size: 0.85rem; color: #94a3b8; }
+        .calc-group label { font-size: 0.8rem; color: #cbd5e1; display: block; margin-bottom: 0.2rem; }
+        .calc-result { background: #070a12; padding: 0.5rem; border-radius: 6px; color: #38bdf8; font-weight: bold; text-align: center; margin-top: 0.4rem; border: 1px solid #1e293b; }
+
         .input-tools { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 0.75rem; width: 100%; }
         .input-tools button { width: 100%; padding: 0.65rem 0.5rem; font-size: 0.8rem; background: #1e293b; border: 1px solid #334155; color: #e2e8f0; border-radius: 6px; font-weight: 600; cursor: pointer; }
         .input-tools button:hover { background: #334155; border-color: #475569; }
@@ -70,7 +81,7 @@
         .result-content li { margin-bottom: 0.3rem; }
         
         .action-bar { display: flex; gap: 0.5rem; margin-top: 1.25rem; flex-wrap: wrap; border-top: 1px solid var(--border); padding-top: 1rem; width: 100%; }
-        .action-bar button { flex: 1; min-width: 120px; font-size: 0.85rem; padding: 0.65rem 0.5rem; }
+        .action-bar button { flex: 1; min-width: 100px; font-size: 0.85rem; padding: 0.65rem 0.5rem; }
         .btn-secondary { background: #334155; box-shadow: none; }
         .btn-success { background: linear-gradient(135deg, #059669 0%, #047857 100%); box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3); }
         .btn-danger { background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3); }
@@ -84,6 +95,10 @@
         
         .loader { border: 4px solid #1e293b; border-top: 4px solid #3b82f6; border-radius: 50%; width: 35px; height: 35px; animation: spin 1s linear infinite; margin: 0 auto 0.75rem auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        .history-list { list-style: none; padding: 0; margin: 0; max-height: 200px; overflow-y: auto; font-size: 0.8rem; }
+        .history-list li { padding: 0.4rem 0.5rem; border-bottom: 1px solid #1e293b; cursor: pointer; color: #94a3b8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .history-list li:hover { background: #1e293b; color: #38bdf8; }
         
         footer { background: #070a12; color: #64748b; text-align: center; padding: 1.25rem 1rem; font-size: 0.8rem; margin-top: auto; border-top: 1px solid var(--border); }
     </style>
@@ -94,13 +109,12 @@
         <div class="subtitle">TPIHS (KMU, BSN)</div>
     </header>
 
-    <!-- Mobile Hamburger Toggle Bar (Hidden on PC screens) -->
     <div class="mobile-menu-toggle" onclick="toggleMobileMenu()">
         ☰ Vitals Reference & Emergency Protocols (Tap to Toggle)
     </div>
 
     <main>
-        <!-- Sidebar Navigation: Visible directly on PC, toggled via hamburger on mobile -->
+        <!-- Left Sidebar: Vitals & Protocols (Visible on PC, Hamburger toggle on Mobile) -->
         <aside id="sidebarNav">
             <div class="card sidebar-card">
                 <h3>Vitals Reference Guide</h3>
@@ -122,13 +136,16 @@
             </div>
         </aside>
 
+        <!-- Middle Column: Main Evaluation Workspace -->
         <section>
+            <div class="section-heading">Clinical Evaluation & Ward Dashboard</div>
+            
             <div id="inputCard" class="card">
                 <div class="label-row">
                     <label for="scenario">Patient Scenario / Ward Data</label>
                     <a class="insert-sample" onclick="insertSample()">Insert sample case</a>
                 </div>
-                <textarea id="scenario" rows="5" placeholder="Type scenario, upload up to 10 ward sheet photos, or paste multiple numbered scenarios..."></textarea>
+                <textarea id="scenario" rows="5" placeholder="Type scenario, upload up to 10 ward sheet photos, or paste multiple unformatted patient data..."></textarea>
 
                 <div class="input-tools">
                     <input type="file" id="imageInput" accept="image/*" multiple class="hidden" onchange="handleImageUpload(event)">
@@ -162,6 +179,35 @@
             <!-- Results Display Container -->
             <div id="resultsContainer" class="hidden"></div>
         </section>
+
+        <!-- Right Sidebar: Clinical Calculators & Local Storage Vault -->
+        <aside class="right-sidebar">
+            <div class="card right-card">
+                <h3>Quick Calculators</h3>
+                <div class="calc-group">
+                    <label>BMI Calculator (Wt kg / Ht m²)</label>
+                    <input type="number" id="bmiWt" placeholder="Weight (kg)" oninput="calcBMI()">
+                    <input type="number" id="bmiHt" placeholder="Height (m)" oninput="calcBMI()">
+                    <div id="bmiRes" class="calc-result">BMI: --</div>
+                </div>
+                <div class="calc-group" style="margin-top: 1rem;">
+                    <label>MAP Calculator ((2*DBP + SBP) / 3)</label>
+                    <input type="number" id="mapSbp" placeholder="SBP (mmHg)" oninput="calcMAP()">
+                    <input type="number" id="mapDbp" placeholder="DBP (mmHg)" oninput="calcMAP()">
+                    <div id="mapRes" class="calc-result">MAP: -- mmHg</div>
+                </div>
+            </div>
+
+            <div class="card right-card">
+                <h3>Local History Vault</h3>
+                <p style="font-size: 0.75rem; color: #64748b; margin-top: 0; margin-bottom: 0.5rem;">Recent evaluated ward reports saved locally.</p>
+                <ul id="historyList" class="history-list">
+                    <li style="color: #475569; text-align: center;">No stored reports yet.</li>
+                </ul>
+                <button class="btn-secondary" onclick="clearHistory()" style="margin-top: 0.75rem; font-size: 0.75rem; padding: 0.4rem;">Clear Vault</button>
+                <button class="btn-success" onclick="exportBatchPDF()" style="margin-top: 0.5rem; font-size: 0.75rem; padding: 0.4rem;">Export Master TXT/PDF</button>
+            </div>
+        </aside>
     </main>
 
     <footer>
@@ -171,6 +217,7 @@
     <script>
         let extractedSheets = [];
         let isCancelled = false;
+        let evaluatedReportsStore = [];
 
         function toggleMobileMenu() {
             const sidebar = document.getElementById('sidebarNav');
@@ -180,6 +227,30 @@
         function insertSample() {
             extractedSheets = [];
             document.getElementById('scenario').value = "History: 58-year-old male, smoker (30 pack-years), hypertension (10 yrs), on amlodipine 10mg.\nPresentation: Sudden onset crushing substernal chest pain 1 hour ago, radiating to left arm, diaphoresis, nausea. No shortness of breath currently.\nVitals: BP 160/95, HR 104, RR 20, SpO2 96% on room air, Temp 36.8C, Pain 8/10.";
+        }
+
+        function calcBMI() {
+            const wt = parseFloat(document.getElementById('bmiWt').value);
+            const ht = parseFloat(document.getElementById('bmiHt').value);
+            const res = document.getElementById('bmiRes');
+            if (wt > 0 && ht > 0) {
+                const bmi = (wt / (ht * ht)).toFixed(1);
+                res.innerText = `BMI: ${bmi} kg/m²`;
+            } else {
+                res.innerText = `BMI: --`;
+            }
+        }
+
+        function calcMAP() {
+            const sbp = parseFloat(document.getElementById('mapSbp').value);
+            const dbp = parseFloat(document.getElementById('mapDbp').value);
+            const res = document.getElementById('mapRes');
+            if (sbp > 0 && dbp > 0) {
+                const map = Math.round(((2 * dbp) + sbp) / 3);
+                res.innerText = `MAP: ${map} mmHg`;
+            } else {
+                res.innerText = `MAP: -- mmHg`;
+            }
         }
 
         async function handleImageUpload(event) {
@@ -262,6 +333,42 @@
             isCancelled = true;
         }
 
+        // Smart Multi-Patient Parser for messy, unformatted raw input data
+        function smartSplitScenarios(rawText) {
+            // Split by explicit numbering or distinct patient keywords/paragraphs if multiple exist
+            const lines = rawText.split('\n');
+            let scenarios = [];
+            let currentTitle = "Patient Case 1";
+            let currentBody = [];
+
+            let pattern = /^(\d+[\.\)]\s*|patient\s*\d+|case\s*\d+)/i;
+
+            for (let line of lines) {
+                if (pattern.test(line.trim()) && currentBody.length > 0) {
+                    scenarios.push({
+                        title: currentTitle,
+                        scenario: currentBody.join('\n').trim()
+                    });
+                    currentTitle = line.trim().substring(0, 40);
+                    currentBody = [line];
+                } else {
+                    currentBody.push(line);
+                }
+            }
+            if (currentBody.length > 0) {
+                scenarios.push({
+                    title: currentTitle,
+                    scenario: currentBody.join('\n').trim()
+                });
+            }
+
+            // Fallback if splitter didn't isolate multiple
+            if (scenarios.length === 0 || scenarios.every(s => s.scenario.length < 5)) {
+                return [{ title: "Clinical Evaluation Report", scenario: rawText }];
+            }
+            return scenarios;
+        }
+
         async function evaluateCase() {
             const discipline = document.getElementById('discipline').value;
             const rawText = document.getElementById('scenario').value.trim();
@@ -283,22 +390,7 @@
                     scenario: sheet.text
                 }));
             } else {
-                const parts = rawText.split(/(?=\n\s*\d+\.\s+)|(?=^\d+\.\s+)/gm);
-                if (parts.length > 1) {
-                    scenariosToProcess = parts.map((part, index) => {
-                        const firstLine = part.trim().split('\n')[0];
-                        const title = firstLine.length < 50 ? firstLine : `Scenario ${index + 1}`;
-                        return {
-                            title: title,
-                            scenario: part.trim()
-                        };
-                    }).filter(s => s.scenario.length > 0);
-                } else {
-                    scenariosToProcess = [{
-                        title: `Clinical Evaluation Report`,
-                        scenario: rawText
-                    }];
-                }
+                scenariosToProcess = smartSplitScenarios(rawText);
             }
 
             btn.disabled = true;
@@ -355,6 +447,15 @@
                     completedCount++;
                     progressBar.style.width = `${Math.round((completedCount / total) * 100)}%`;
 
+                    const reportObj = {
+                        title: `${discipline} — ${scenariosToProcess[i].title}`,
+                        content: evalText,
+                        date: new Date().toLocaleTimeString()
+                    };
+                    evaluatedReportsStore.push(reportObj);
+                    saveToLocalStorage();
+                    renderHistoryVault();
+
                     const card = document.createElement('div');
                     card.className = 'card output-card';
                     card.innerHTML = `
@@ -362,11 +463,11 @@
                             <div class="model-badge">Model: ${data.modelUsed || 'AI'}</div>
                             <div class="verified-badge">✓ Verified Guidelines</div>
                         </div>
-                        <h2>${discipline} — ${scenariosToProcess[i].title}</h2>
+                        <h2>${reportObj.title}</h2>
                         <div class="result-content">${marked.parse(evalText)}</div>
                         <div class="action-bar">
                             <button class="btn-success" onclick="copyCardText(this)">Copy</button>
-                            <button class="btn-secondary" onclick="downloadCardText(this, 'Report_${completedCount}')">Download</button>
+                            <button class="btn-secondary" onclick="downloadCardText(this, 'Report_${completedCount}')">Download TXT</button>
                         </div>
                     `;
                     resultsContainer.appendChild(card);
@@ -382,6 +483,61 @@
             } finally {
                 btn.disabled = false;
             }
+        }
+
+        function saveToLocalStorage() {
+            localStorage.setItem('tpihs_reports', JSON.stringify(evaluatedReportsStore));
+        }
+
+        function loadFromLocalStorage() {
+            const saved = localStorage.getItem('tpihs_reports');
+            if (saved) {
+                try {
+                    evaluatedReportsStore = JSON.parse(saved);
+                    renderHistoryVault();
+                } catch (e) {
+                    evaluatedReportsStore = [];
+                }
+            }
+        }
+
+        function renderHistoryVault() {
+            const list = document.getElementById('historyList');
+            if (!evaluatedReportsStore.length) {
+                list.innerHTML = `<li style="color: #475569; text-align: center;">No stored reports yet.</li>`;
+                return;
+            }
+            list.innerHTML = '';
+            evaluatedReportsStore.forEach((rep, idx) => {
+                const li = document.createElement('li');
+                li.innerText = `[${rep.date}] ${rep.title}`;
+                li.onclick = () => alert(rep.content);
+                list.appendChild(li);
+            });
+        }
+
+        function clearHistory() {
+            evaluatedReportsStore = [];
+            localStorage.removeItem('tpihs_reports');
+            renderHistoryVault();
+        }
+
+        function exportBatchPDF() {
+            if (!evaluatedReportsStore.length) {
+                alert("No evaluated reports in vault to export.");
+                return;
+            }
+            let masterText = "=== TPIHS KMU CLINICAL DECISION SUPPORT - MASTER BATCH REPORT ===\n\n";
+            evaluatedReportsStore.forEach((r, idx) => {
+                masterText += `--- REPORT ${idx + 1}: ${r.title} (${r.date}) ---\n${r.content}\n\n==============================\n\n`;
+            });
+            const blob = new Blob([masterText], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `Master_Clinical_Batch_Report.txt`;
+            a.click();
+            URL.revokeObjectURL(url);
         }
 
         function resetForm() {
@@ -411,6 +567,8 @@
             a.click();
             URL.revokeObjectURL(url);
         }
+
+        loadFromLocalStorage();
     </script>
 </body>
 </html>
