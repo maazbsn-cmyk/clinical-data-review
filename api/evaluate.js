@@ -38,18 +38,17 @@ module.exports = async (req, res) => {
 
         const specificInstruction = prompts[discipline] || prompts["Nursing"];
 
-        const systemPrompt = `You are an expert clinical reasoning engine for TPIHS KMU health sciences, utilizing verified international evidence-based clinical guidelines (AHA, ACC, WHO standards). 
+        const systemPrompt = `You are an expert clinical reasoning engine for TPIHS KMU health sciences, utilizing verified evidence-based clinical standards.
 CRITICAL RULE 1: DO NOT include any 'Patient Profile', 'Clinical Presentation', or 'Vital Signs' summary sections. Jump DIRECTLY into clinical management.
 CRITICAL RULE 2: Tailor the output 100% specifically to the ${discipline} domain. 
 Specific Scope: ${specificInstruction}
 
-Format the output strictly as a JSON object with a single key named "evaluation". Use bolding and markdown bullet points for actionable steps.
+Output PURE MARKDOWN text with clear section headers (###) and bullet points. Do not wrap the response in JSON object syntax.
 
 Case Scenario: ${scenario}`;
 
-        // Fallback model array to bypass rate limits or model unavailability
         const models = ["llama-3.3-70b-versatile", "llama-3.1-8b-instant", "mixtral-8x7b-32768"];
-        let data, usedModel;
+        let evaluationText, usedModel;
 
         for (const model of models) {
             try {
@@ -61,16 +60,18 @@ Case Scenario: ${scenario}`;
                     },
                     body: JSON.stringify({
                         model: model,
-                        messages: [{ role: "user", content: systemPrompt }],
-                        response_format: { type: "json_object" },
-                        temperature: 0.1
+                        messages: [
+                            { role: "system", content: "You are a precise clinical assistant that outputs clean markdown text without JSON formatting." },
+                            { role: "user", content: systemPrompt }
+                        ],
+                        temperature: 0.2
                     })
                 });
 
                 if (apiResponse.ok) {
                     const json = await apiResponse.json();
-                    if (json.choices && json.choices[0]) {
-                        data = json;
+                    if (json.choices && json.choices[0] && json.choices[0].message) {
+                        evaluationText = json.choices[0].message.content;
                         usedModel = model;
                         break;
                     }
@@ -80,21 +81,15 @@ Case Scenario: ${scenario}`;
             }
         }
 
-        if (!data) {
-            return res.status(500).json({ evaluation: "All backup Groq models failed or hit rate limits. Please try again shortly." });
+        if (!evaluationText) {
+            return res.status(500).json({ evaluation: "All backup Groq models failed or hit rate limits. Please try again shortly.", modelUsed: "Error" });
         }
 
-        const content = data.choices[0].message.content;
-        let resultContent;
-        try {
-            resultContent = JSON.parse(content);
-        } catch (e) {
-            resultContent = { evaluation: content };
-        }
-
-        resultContent.modelUsed = usedModel;
-        return res.status(200).json(resultContent);
+        return res.status(200).json({
+            evaluation: evaluationText,
+            modelUsed: usedModel
+        });
     } catch (error) {
-        return res.status(500).json({ evaluation: "Server error: " + error.message });
+        return res.status(500).json({ evaluation: "Server error: " + error.message, modelUsed: "Error" });
     }
 };
