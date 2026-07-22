@@ -3,84 +3,120 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clinical Data Review - TPIHS KMU</title>
+    <title>Clinical Decision Support - TPIHS</title>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
     <style>
-        :root { --primary: #0f172a; --secondary: #1e293b; --accent: #3b82f6; --bg: #f1f5f9; --text: #334155; --card-bg: #ffffff; }
+        :root { 
+            --primary: #0f172a; 
+            --secondary: #1e293b; 
+            --accent: #2563eb; 
+            --accent-gradient: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            --bg: #090d16; 
+            --text: #f8fafc; 
+            --card-bg: #111827; 
+            --border: #1f2937;
+        }
         body { font-family: system-ui, -apple-system, sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 0; display: flex; flex-direction: column; min-height: 100vh; }
-        header { background: var(--primary); color: white; padding: 1.5rem 2rem; text-align: center; border-bottom: 4px solid var(--accent); }
-        h1 { margin: 0; font-size: 1.8rem; letter-spacing: -0.5px; }
-        .subtitle { color: #94a3b8; font-size: 1rem; margin-top: 0.3rem; font-weight: 500; }
         
-        .mobile-menu-toggle { display: none; background: var(--secondary); color: white; padding: 0.75rem 1rem; text-align: left; font-weight: bold; cursor: pointer; border-bottom: 1px solid #334155; }
+        header { background: linear-gradient(135deg, #1e1b4b 0%, #0f172a 100%); color: white; padding: 1.75rem 2rem; text-align: center; border-bottom: 3px solid #3b82f6; box-shadow: 0 4px 20px rgba(59, 130, 246, 0.15); }
+        h1 { margin: 0; font-size: 2rem; letter-spacing: -0.5px; background: linear-gradient(90deg, #60a5fa, #38bdf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .subtitle { color: #94a3b8; font-size: 1.05rem; margin-top: 0.4rem; font-weight: 500; }
         
-        main { flex-grow: 1; max-width: 1280px; width: 100%; margin: 2rem auto; padding: 0 1.5rem; box-sizing: border-box; display: grid; grid-template-columns: 320px 1fr; gap: 2rem; align-items: start; }
+        .mobile-menu-toggle { display: none; background: #1e293b; color: #38bdf8; padding: 0.85rem 1.25rem; text-align: left; font-weight: bold; cursor: pointer; border-bottom: 1px solid var(--border); font-size: 0.95rem; }
+        
+        /* Dashboard Quick-Access Shortcuts Bar */
+        .dashboard-bar { max-width: 1280px; width: 100%; margin: 1.5rem auto 0 auto; padding: 0 1.5rem; box-sizing: border-box; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
+        .shortcut-card { background: linear-gradient(145deg, #1e293b, #0f172a); border: 1px solid #334155; padding: 1rem 1.25rem; border-radius: 10px; cursor: pointer; transition: transform 0.2s, border-color 0.2s; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+        .shortcut-card:hover { transform: translateY(-3px); border-color: #3b82f6; }
+        .shortcut-card h4 { margin: 0 0 0.25rem 0; color: #60a5fa; font-size: 0.95rem; }
+        .shortcut-card p { margin: 0; color: #94a3b8; font-size: 0.8rem; }
+
+        main { flex-grow: 1; max-width: 1280px; width: 100%; margin: 1.5rem auto; padding: 0 1.5rem; box-sizing: border-box; display: grid; grid-template-columns: 320px 1fr; gap: 2rem; align-items: start; }
         
         @media (max-width: 960px) {
             .mobile-menu-toggle { display: block; }
             main { grid-template-columns: 1fr; margin: 1rem auto; padding: 0 1rem; }
             aside { display: none; }
             aside.mobile-open { display: block; margin-bottom: 1.5rem; }
+            .dashboard-bar { padding: 0 1rem; grid-template-columns: 1fr 1fr; }
         }
 
-        .card { background: var(--card-bg); padding: 1.75rem; border-radius: 10px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03); margin-bottom: 1.5rem; border: 1px solid #e2e8f0; }
+        .card { background: var(--card-bg); padding: 1.75rem; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.3); margin-bottom: 1.5rem; border: 1px solid var(--border); }
         
-        .sidebar-card h3 { margin-top: 0; color: var(--primary); font-size: 1.1rem; border-bottom: 2px solid #e2e8f0; padding-bottom: 0.5rem; }
-        .cheat-sheet-list { padding-left: 1.2rem; font-size: 0.9rem; line-height: 1.5; color: #475569; }
+        .sidebar-card h3 { margin-top: 0; color: #60a5fa; font-size: 1.1rem; border-bottom: 2px solid var(--border); padding-bottom: 0.5rem; }
+        .cheat-sheet-list { padding-left: 1.2rem; font-size: 0.9rem; line-height: 1.5; color: #94a3b8; }
         .cheat-sheet-list li { margin-bottom: 0.5rem; }
 
-        .label-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
-        label { font-weight: 600; color: var(--secondary); font-size: 0.95rem; }
-        .insert-sample { color: var(--accent); text-decoration: none; font-size: 0.85rem; cursor: pointer; font-weight: 600; }
+        .label-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; flex-wrap: wrap; gap: 0.5rem; }
+        label { font-weight: 600; color: #e2e8f0; font-size: 0.95rem; }
+        .insert-sample { color: #38bdf8; text-decoration: none; font-size: 0.85rem; cursor: pointer; font-weight: 600; }
         .insert-sample:hover { text-decoration: underline; }
         
-        textarea, select { width: 100%; box-sizing: border-box; padding: 0.75rem; border: 1px solid #cbd5e1; border-radius: 6px; margin-bottom: 1rem; font-family: inherit; font-size: 0.95rem; background: #f8fafc; }
-        textarea:focus, select:focus { outline: none; border-color: var(--accent); background: #fff; }
+        textarea, select { width: 100%; box-sizing: border-box; padding: 0.85rem; border: 1px solid #334155; border-radius: 8px; margin-bottom: 1rem; font-family: inherit; font-size: 0.95rem; background: #0b0f19; color: #f8fafc; }
+        textarea:focus, select:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2); }
         
-        .input-tools { display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap; }
-        .input-tools button { flex: 1; padding: 0.6rem; font-size: 0.85rem; background: #475569; }
-        .input-tools button:hover { background: #334155; }
+        .input-tools { display: flex; gap: 0.75rem; margin-bottom: 1rem; flex-wrap: wrap; }
+        .input-tools button { flex: 1; min-width: 140px; padding: 0.7rem; font-size: 0.85rem; background: #1e293b; border: 1px solid #334155; color: #e2e8f0; }
+        .input-tools button:hover { background: #334155; border-color: #475569; }
 
-        button { background: var(--accent); color: white; border: none; padding: 0.80rem 1rem; border-radius: 6px; font-size: 0.95rem; font-weight: bold; cursor: pointer; transition: background 0.2s; }
-        button:hover { background: #2563eb; }
-        button:disabled { background: #94a3b8; cursor: not-allowed; }
+        button { background: var(--accent-gradient); color: white; border: none; padding: 0.85rem 1.25rem; border-radius: 8px; font-size: 0.95rem; font-weight: bold; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3); }
+        button:hover { filter: brightness(1.1); transform: translateY(-1px); }
+        button:disabled { background: #334155; color: #94a3b8; cursor: not-allowed; box-shadow: none; transform: none; }
         
         .hidden { display: none !important; }
-        .output-card { border-left: 5px solid var(--accent); margin-bottom: 2rem; }
-        .output-card h2 { color: var(--primary); margin-top: 0; }
+        .output-card { border-left: 5px solid #3b82f6; margin-bottom: 2rem; background: #111827; }
+        .output-card h2 { color: #f8fafc; margin-top: 0; font-size: 1.3rem; }
         
-        .result-content { line-height: 1.7; font-size: 0.95rem; }
-        .result-content h3 { color: var(--secondary); margin-top: 1.5rem; font-size: 1.1rem; }
+        .result-content { line-height: 1.7; font-size: 0.95rem; color: #cbd5e1; word-break: break-word; overflow-wrap: break-word; }
+        .result-content h3 { color: #60a5fa; margin-top: 1.5rem; font-size: 1.1rem; }
         .result-content ul { padding-left: 1.5rem; }
         .result-content li { margin-bottom: 0.4rem; }
         
-        .action-bar { display: flex; gap: 0.5rem; margin-top: 2rem; flex-wrap: wrap; border-top: 1px solid #e2e8f0; padding-top: 1.5rem; }
-        .btn-secondary { background: #64748b; }
+        .action-bar { display: flex; gap: 0.75rem; margin-top: 2rem; flex-wrap: wrap; border-top: 1px solid var(--border); padding-top: 1.5rem; }
+        .btn-secondary { background: #334155; box-shadow: none; }
         .btn-secondary:hover { background: #475569; }
-        .btn-success { background: #059669; }
-        .btn-success:hover { background: #047857; }
-        .btn-danger { background: #dc2626; }
-        .btn-danger:hover { background: #b91c1c; }
+        .btn-success { background: linear-gradient(135deg, #059669 0%, #047857 100%); box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3); }
+        .btn-danger { background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3); }
         
-        .progress-container { width: 100%; background: #e2e8f0; border-radius: 9999px; height: 12px; margin: 1rem 0; overflow: hidden; }
-        .progress-bar { width: 0%; height: 100%; background: var(--accent); transition: width 0.3s ease; }
+        .progress-container { width: 100%; background: #1e293b; border-radius: 9999px; height: 12px; margin: 1rem 0; overflow: hidden; border: 1px solid #334155; }
+        .progress-bar { width: 0%; height: 100%; background: var(--accent-gradient); transition: width 0.3s ease; }
 
         .badges-row { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem; }
-        .model-badge { display: inline-block; background: #e0f2fe; color: #0369a1; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.8rem; font-weight: 700; }
-        .verified-badge { display: inline-block; background: #dcfce7; color: #166534; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.8rem; font-weight: 700; }
+        .model-badge { display: inline-block; background: #1e3a8a; color: #93c5fd; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.8rem; font-weight: 700; border: 1px solid #2563eb; }
+        .verified-badge { display: inline-block; background: #064e3b; color: #a7f3d0; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.8rem; font-weight: 700; border: 1px solid #059669; }
         
-        .loader { border: 4px solid #f3f3f3; border-top: 4px solid var(--accent); border-radius: 50%; width: 35px; height: 35px; animation: spin 1s linear infinite; margin: 0 auto 1rem auto; }
+        .loader { border: 4px solid #1e293b; border-top: 4px solid #3b82f6; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 1rem auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         
-        footer { background: var(--secondary); color: #94a3b8; text-align: center; padding: 1.25rem; font-size: 0.85rem; margin-top: auto; }
+        footer { background: #0b0f19; color: #64748b; text-align: center; padding: 1.5rem; font-size: 0.85rem; margin-top: auto; border-top: 1px solid var(--border); }
     </style>
 </head>
 <body>
     <header>
-        <h1>Clinical Data Review</h1>
-        <div class="subtitle">TPIHS - KMU - BSN | 8th Semester Decision Support</div>
+        <h1>Clinical Decision Support</h1>
+        <div class="subtitle">TPIHS (KMU, BSN)</div>
     </header>
+
+    <!-- Quick Shortcuts Dashboard Bar -->
+    <div class="dashboard-bar">
+        <div class="shortcut-card" onclick="insertSample()">
+            <h4>⚡ Emergency Case</h4>
+            <p>Load acute chest pain sample</p>
+        </div>
+        <div class="shortcut-card" onclick="document.getElementById('imageInput').click()">
+            <h4>📷 Ward Sheet OCR</h4>
+            <p>Upload up to 10 photos</p>
+        </div>
+        <div class="shortcut-card" onclick="startVoiceInput()">
+            <h4>🎤 Voice Dictation</h4>
+            <p>Speak patient notes</p>
+        </div>
+        <div class="shortcut-card" onclick="resetForm()">
+            <h4>🔄 Clear & Reset</h4>
+            <p>Start a new evaluation</p>
+        </div>
+    </div>
 
     <div class="mobile-menu-toggle" onclick="toggleMobileMenu()">
         ☰ Vitals Reference & Emergency Protocols (Tap to Toggle)
@@ -138,7 +174,7 @@
             <!-- Live Progress Bar & Cancel Control -->
             <div id="loading" class="card hidden" style="text-align: center; padding: 2.5rem;">
                 <div class="loader"></div>
-                <p id="loadingText" style="font-weight: 600; color: var(--secondary); margin-bottom: 0.5rem;">Processing clinical reports...</p>
+                <p id="loadingText" style="font-weight: 600; color: #93c5fd; margin-bottom: 0.5rem;">Processing clinical reports...</p>
                 <div class="progress-container">
                     <div id="progressBar" class="progress-bar"></div>
                 </div>
@@ -151,7 +187,7 @@
     </main>
 
     <footer>
-        Clinical Data Review - Educational use only. Developed by **Maaz Ahmad**.
+        Clinical Decision Support - Educational use only. Developed by **Maaz Ahmad**.
     </footer>
 
     <script>
@@ -238,7 +274,7 @@
 
             recognition.onend = () => {
                 voiceBtn.innerText = "🎤 Voice Dictation";
-                voiceBtn.style.background = "#475569";
+                voiceBtn.style.background = "#1e293b";
             };
 
             recognition.start();
@@ -294,7 +330,6 @@
             loading.classList.remove('hidden');
             progressBar.style.width = '0%';
 
-            // Prepend the Back button at the top of the results container immediately
             let navBar = document.getElementById('topNavBar');
             if (!navBar) {
                 navBar = document.createElement('div');
@@ -342,7 +377,6 @@
                     completedCount++;
                     progressBar.style.width = `${Math.round((completedCount / total) * 100)}%`;
 
-                    // Append card instantly as each one finishes
                     const card = document.createElement('div');
                     card.className = 'card output-card';
                     card.innerHTML = `
