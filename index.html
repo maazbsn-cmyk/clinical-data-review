@@ -13,8 +13,17 @@
         h1 { margin: 0; font-size: 1.8rem; letter-spacing: -0.5px; }
         .subtitle { color: #94a3b8; font-size: 1rem; margin-top: 0.3rem; font-weight: 500; }
         
+        /* Mobile Hamburger Bar */
+        .mobile-menu-toggle { display: none; background: var(--secondary); color: white; padding: 0.75rem 1rem; text-align: left; font-weight: bold; cursor: pointer; border-bottom: 1px solid #334155; }
+        
         main { flex-grow: 1; max-width: 1280px; width: 100%; margin: 2rem auto; padding: 0 1.5rem; box-sizing: border-box; display: grid; grid-template-columns: 320px 1fr; gap: 2rem; align-items: start; }
-        @media (max-width: 960px) { main { grid-template-columns: 1fr; } }
+        
+        @media (max-width: 960px) {
+            .mobile-menu-toggle { display: block; }
+            main { grid-template-columns: 1fr; margin: 1rem auto; padding: 0 1rem; }
+            aside { display: none; }
+            aside.mobile-open { display: block; margin-bottom: 1.5rem; }
+        }
 
         .card { background: var(--card-bg); padding: 1.75rem; border-radius: 10px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03); margin-bottom: 1.5rem; border: 1px solid #e2e8f0; }
         
@@ -69,8 +78,13 @@
         <div class="subtitle">TPIHS - KMU - BSN | 8th Semester Decision Support</div>
     </header>
 
+    <!-- Mobile Hamburger Toggle -->
+    <div class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+        ☰ Vitals Reference & Emergency Protocols (Tap to Toggle)
+    </div>
+
     <main>
-        <aside>
+        <aside id="sidebarNav">
             <div class="card sidebar-card">
                 <h3>Vitals Reference Guide</h3>
                 <ul class="cheat-sheet-list">
@@ -134,6 +148,11 @@
 
     <script>
         let extractedSheets = [];
+
+        function toggleMobileMenu() {
+            const sidebar = document.getElementById('sidebarNav');
+            sidebar.classList.toggle('mobile-open');
+        }
 
         function insertSample() {
             extractedSheets = [];
@@ -260,7 +279,6 @@
             loading.classList.remove('hidden');
 
             try {
-                // Prepend the Back button at the very top of the results container
                 const navBar = document.createElement('div');
                 navBar.className = 'card';
                 navBar.style.textAlign = 'center';
