@@ -28,22 +28,23 @@ module.exports = async (req, res) => {
         }
 
         const prompts = {
-            "Nursing": "Focus strictly on immediate nursing care plans, triage level, vitals monitoring, IV access, bed position, nursing interventions, and emergency drug administration protocols.",
-            "Radiology": "Focus strictly on radiological imaging protocols, emergency imaging indications (X-Ray, CT, MRI, Ultrasound), contrast considerations, radiation safety, and critical image findings to report.",
-            "Dental": "Focus strictly on oral/maxillofacial considerations, emergency dental management, local anesthesia considerations, systemic medical emergency protocol in a dental clinic, and deferred oral procedures.",
-            "Anaesthesia": "Focus strictly on airway evaluation (Mallampati), hemodynamic stability, emergency anesthesia considerations, rapid sequence induction (RSI) risks, and critical care ventilation monitoring.",
-            "Pharmacy": "Focus strictly on pharmacological interventions, emergency drug dosages, drug interactions, contraindications, administration routes, and therapeutic drug monitoring.",
-            "Medical Laboratory Technology": "Focus strictly on urgent STAT laboratory investigations, blood sampling tubes, diagnostic markers (Troponin, CBC, Arterial Blood Gases), turnaround times, and critical lab values."
+            "Nursing": "Focus strictly on immediate nursing care actions, triage level, vitals monitoring, IV access, and emergency drug administration protocols.",
+            "Radiology": "Focus strictly on urgent imaging protocols, key diagnostic views, contrast rules, and critical radiology findings.",
+            "Dental": "Focus strictly on emergency dental triage, vital signs evaluation, local anesthesia warnings, and deferred procedures.",
+            "Anaesthesia": "Focus strictly on airway assessment, hemodynamic stabilization, RSI risks, and ventilation monitoring.",
+            "Pharmacy": "Focus strictly on emergency drug dosages, critical contraindications, and immediate pharmacological interventions.",
+            "Medical Laboratory Technology": "Focus strictly on STAT laboratory orders, specimen tubes, and critical panic values."
         };
 
         const specificInstruction = prompts[discipline] || prompts["Nursing"];
 
-        const systemPrompt = `You are an expert clinical reasoning engine for TPIHS KMU health sciences, utilizing verified evidence-based clinical standards.
-CRITICAL RULE 1: DO NOT include any 'Patient Profile', 'Clinical Presentation', or 'Vital Signs' summary sections. Jump DIRECTLY into clinical management.
-CRITICAL RULE 2: Tailor the output 100% specifically to the ${discipline} domain. 
+        const systemPrompt = `You are an expert clinical reasoning engine for TPIHS KMU health sciences.
+CRITICAL RULE 1: KEEP IT SHORT, CONCISE, AND HIGH-YIELD. Avoid long paragraphs. Use brief, bulleted priority lists ideal for quick examination review.
+CRITICAL RULE 2: DO NOT include any 'Patient Profile', 'Clinical Presentation', or 'Vital Signs' summary sections. Jump DIRECTLY into key management steps.
+CRITICAL RULE 3: Tailor the output strictly to the ${discipline} domain. 
 Specific Scope: ${specificInstruction}
 
-Output PURE MARKDOWN text with clear section headers (###) and bullet points. Do not wrap the response in JSON object syntax.
+Format: Output pure markdown with short bullet points under concise section headers.
 
 Case Scenario: ${scenario}`;
 
@@ -61,10 +62,10 @@ Case Scenario: ${scenario}`;
                     body: JSON.stringify({
                         model: model,
                         messages: [
-                            { role: "system", content: "You are a precise clinical assistant that outputs clean markdown text without JSON formatting." },
+                            { role: "system", content: "You are a concise clinical assistant providing brief, bulleted executive summaries." },
                             { role: "user", content: systemPrompt }
                         ],
-                        temperature: 0.2
+                        temperature: 0.1
                     })
                 });
 
@@ -82,7 +83,7 @@ Case Scenario: ${scenario}`;
         }
 
         if (!evaluationText) {
-            return res.status(500).json({ evaluation: "All backup Groq models failed or hit rate limits. Please try again shortly.", modelUsed: "Error" });
+            return res.status(500).json({ evaluation: "All backup Groq models failed or hit rate limits.", modelUsed: "Error" });
         }
 
         return res.status(200).json({
