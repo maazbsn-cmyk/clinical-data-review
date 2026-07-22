@@ -129,12 +129,14 @@
                 document.getElementById('modelBadge').innerText = `Active Model: ${data.modelUsed || 'llama-3.3-70b-versatile'}`;
                 document.getElementById('resultTitle').innerText = `${discipline} Priorities`;
                 
-                if (data.evaluation) {
-                    document.getElementById('resultText').innerHTML = marked.parse(data.evaluation);
-                } else {
-                    document.getElementById('resultText').innerText = JSON.stringify(data);
+                let evalText = data.evaluation;
+                if (typeof evalText === 'object') {
+                    evalText = JSON.stringify(evalText, null, 2);
+                } else if (!evalText) {
+                    evalText = JSON.stringify(data, null, 2);
                 }
-                
+
+                document.getElementById('resultText').innerHTML = marked.parse(evalText);
                 result.classList.remove('hidden');
             } catch (error) {
                 inputCard.classList.remove('hidden');
