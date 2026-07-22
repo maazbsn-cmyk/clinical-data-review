@@ -39,13 +39,13 @@
         button:disabled { background: #94a3b8; cursor: not-allowed; }
         
         .hidden { display: none !important; }
-        .output-card { border-left: 5px solid var(--accent); }
+        .output-card { border-left: 5px solid var(--accent); margin-bottom: 2rem; }
         .output-card h2 { color: var(--primary); margin-top: 0; }
         
-        #resultText { line-height: 1.7; font-size: 0.95rem; }
-        #resultText h3 { color: var(--secondary); margin-top: 1.5rem; font-size: 1.1rem; }
-        #resultText ul { padding-left: 1.5rem; }
-        #resultText li { margin-bottom: 0.4rem; }
+        .result-content { line-height: 1.7; font-size: 0.95rem; }
+        .result-content h3 { color: var(--secondary); margin-top: 1.5rem; font-size: 1.1rem; }
+        .result-content ul { padding-left: 1.5rem; }
+        .result-content li { margin-bottom: 0.4rem; }
         
         .action-bar { display: flex; gap: 0.5rem; margin-top: 2rem; flex-wrap: wrap; border-top: 1px solid #e2e8f0; padding-top: 1.5rem; }
         .btn-secondary { background: #64748b; }
@@ -123,20 +123,8 @@
                 <p id="loadingText" style="font-weight: 600; color: var(--secondary);">Processing clinical data...</p>
             </div>
 
-            <div id="result" class="card output-card hidden">
-                <div class="badges-row">
-                    <div id="modelBadge" class="model-badge">Active Model: None</div>
-                    <div class="verified-badge">✓ Auto-Verified (PMC / AHA / ACC Guidelines)</div>
-                </div>
-                <h2 id="resultTitle">Evaluation</h2>
-                <div id="resultText"></div>
-                
-                <div class="action-bar">
-                    <button class="btn-secondary" onclick="resetForm()">← New Case</button>
-                    <button class="btn-success" onclick="copyResults()">Copy Results</button>
-                    <button onclick="downloadResults()">Download Report</button>
-                </div>
-            </div>
+            <!-- Multi-Results Container -->
+            <div id="resultsContainer" class="hidden"></div>
         </section>
     </main>
 
@@ -145,7 +133,10 @@
     </footer>
 
     <script>
+        let extractedSheets = [];
+
         function insertSample() {
+            extractedSheets = [];
             document.getElementById('scenario').value = "History: 58-year-old male, smoker (30 pack-years), hypertension (10 yrs), on amlodipine 10mg.\nPresentation: Sudden onset crushing substernal chest pain 1 hour ago, radiating to left arm, diaphoresis, nausea. No shortness of breath currently.\nVitals: BP 160/95, HR 104, RR 20, SpO2 96% on room air, Temp 36.8C, Pain 8/10.";
         }
 
@@ -168,21 +159,24 @@
 
             try {
                 const worker = await Tesseract.createWorker('eng');
-                let combinedText = "";
+                extractedSheets = [];
 
                 for (let i = 0; i < files.length; i++) {
                     loadingText.innerText = `Extracting text from image ${i + 1} of ${files.length}...`;
                     const ret = await worker.recognize(files[i]);
-                    combinedText += `\n--- Ward Sheet ${i + 1} ---\n` + ret.data.text.trim() + "\n";
+                    extractedSheets.push({
+                        name: files[i].name,
+                        text: ret.data.text.trim()
+                    });
                 }
 
                 await worker.terminate();
 
-                const scenarioBox = document.getElementById('scenario');
-                scenarioBox.value += (scenarioBox.value ? "\n" : "") + combinedText.trim();
-                alert(`Successfully extracted text from ${files.length} ward sheet(s)!`);
+                document.getElementById('scenario').value = extractedSheets.map((s, idx) => `[Sheet ${idx + 1}: ${s.name}]\n${s.text}`).join("\n\n");
+                alert(`Successfully extracted text from ${files.length} ward sheet(s)! Each sheet will be evaluated separately.`);
             } catch (err) {
                 alert("OCR Extraction failed: " + err.message);
+                extractedSheets = [];
             } finally {
                 loading.classList.add('hidden');
                 inputCard.classList.remove('hidden');
@@ -223,49 +217,87 @@
         }
 
         async function evaluateCase() {
-            const scenario = document.getElementById('scenario').value;
             const discipline = document.getElementById('discipline').value;
+            const scenarioText = document.getElementById('scenario').value.trim();
             const btn = document.getElementById('submitBtn');
             const loading = document.getElementById('loading');
             const inputCard = document.getElementById('inputCard');
-            const result = document.getElementById('result');
+            const resultsContainer = document.getElementById('resultsContainer');
             const loadingText = document.getElementById('loadingText');
 
-            if (!scenario.trim()) { alert("Please enter or upload a patient scenario."); return; }
+            if (!scenarioText) { alert("Please enter or upload a patient scenario."); return; }
+
+            // Determine scenarios to evaluate: if uploaded via images, evaluate each sheet separately
+            let scenariosToProcess = [];
+            if (extractedSheets.length > 0) {
+                scenariosToProcess = extractedSheets.map((sheet, index) => ({
+                    title: `Ward Sheet ${index + 1}: ${sheet.name}`,
+                    scenario: sheet.text
+                }));
+            } else {
+                scenariosToProcess = [{
+                    title: `Clinical Evaluation Report`,
+                    scenario: scenarioText
+                }];
+            }
 
             btn.disabled = true;
             inputCard.classList.add('hidden');
-            result.classList.add('hidden');
+            resultsContainer.classList.add('hidden');
+            resultsContainer.innerHTML = '';
             loading.classList.remove('hidden');
-            loadingText.innerText = "Automatically verifying against medical databases...";
 
             try {
-                const response = await fetch('/api/evaluate', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ scenario, discipline })
-                });
-                
-                const text = await response.text();
-                let data;
-                try {
-                    data = JSON.parse(text);
-                } catch (err) {
-                    data = { evaluation: "Server Error / Raw Output:\n" + text, modelUsed: "Error" };
-                }
-                
-                document.getElementById('modelBadge').innerText = `Active Model: ${data.modelUsed || 'llama-3.3-70b-versatile'}`;
-                document.getElementById('resultTitle').innerText = `${discipline} Priorities`;
-                
-                let evalText = data.evaluation;
-                if (typeof evalText === 'object') {
-                    evalText = JSON.stringify(evalText, null, 2);
-                } else if (!evalText) {
-                    evalText = JSON.stringify(data, null, 2);
+                for (let i = 0; i < scenariosToProcess.length; i++) {
+                    loadingText.innerText = `Evaluating report ${i + 1} of ${scenariosToProcess.length}...`;
+                    
+                    const response = await fetch('/api/evaluate', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ scenario: scenariosToProcess[i].scenario, discipline })
+                    });
+                    
+                    const text = await response.text();
+                    let data;
+                    try {
+                        data = JSON.parse(text);
+                    } catch (err) {
+                        data = { evaluation: "Server Error / Raw Output:\n" + text, modelUsed: "Error" };
+                    }
+
+                    let evalText = data.evaluation;
+                    if (typeof evalText === 'object') {
+                        evalText = JSON.stringify(evalText, null, 2);
+                    } else if (!evalText) {
+                        evalText = JSON.stringify(data, null, 2);
+                    }
+
+                    // Create separate result card for each sheet
+                    const card = document.createElement('div');
+                    card.className = 'card output-card';
+                    card.innerHTML = `
+                        <div class="badges-row">
+                            <div class="model-badge">Active Model: ${data.modelUsed || 'llama-3.3-70b-versatile'}</div>
+                            <div class="verified-badge">✓ Auto-Verified (PMC / AHA / ACC Guidelines)</div>
+                        </div>
+                        <h2>${discipline} Priorities — ${scenariosToProcess[i].title}</h2>
+                        <div class="result-content">${marked.parse(evalText)}</div>
+                        <div class="action-bar">
+                            <button class="btn-success" onclick="copyCardText(this)">Copy Result</button>
+                            <button onclick="downloadCardText(this, '${scenariosToProcess[i].title.replace(/[^a-zA-Z0-9]/g, '_')}')">Download TXT</button>
+                        </div>
+                    `;
+                    resultsContainer.appendChild(card);
                 }
 
-                document.getElementById('resultText').innerHTML = marked.parse(evalText);
-                result.classList.remove('hidden');
+                // Add Back / New Case button at the bottom of container
+                const navBar = document.createElement('div');
+                navBar.className = 'card';
+                navBar.style.textAlign = 'center';
+                navBar.innerHTML = `<button class="btn-secondary" onclick="resetForm()" style="width: 100%;">← Back / Evaluate New Case(s)</button>`;
+                resultsContainer.appendChild(navBar);
+
+                resultsContainer.classList.remove('hidden');
             } catch (error) {
                 inputCard.classList.remove('hidden');
                 alert("Connection Error: " + error.message);
@@ -276,26 +308,28 @@
         }
 
         function resetForm() {
-            document.getElementById('result').classList.add('hidden');
+            document.getElementById('resultsContainer').classList.add('hidden');
+            document.getElementById('resultsContainer').innerHTML = '';
             document.getElementById('inputCard').classList.remove('hidden');
             document.getElementById('scenario').value = '';
             document.getElementById('imageInput').value = '';
+            extractedSheets = [];
         }
 
-        function copyResults() {
-            const text = document.getElementById('resultText').innerText;
-            navigator.clipboard.writeText(text).then(() => {
-                alert("Results copied to clipboard successfully.");
+        function copyCardText(button) {
+            const content = button.closest('.output-card').querySelector('.result-content').innerText;
+            navigator.clipboard.writeText(content).then(() => {
+                alert("Report copied to clipboard successfully.");
             });
         }
 
-        function downloadResults() {
-            const text = document.getElementById('resultText').innerText;
-            const blob = new Blob([text], { type: 'text/plain' });
+        function downloadCardText(button, filename) {
+            const content = button.closest('.output-card').querySelector('.result-content').innerText;
+            const blob = new Blob([content], { type: 'text/plain' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'clinical-evaluation-report.txt';
+            a.download = `${filename}_report.txt`;
             a.click();
             URL.revokeObjectURL(url);
         }
