@@ -26,7 +26,6 @@
         
         .mobile-menu-toggle { display: none; background: #1e293b; color: #38bdf8; padding: 0.85rem 1rem; text-align: left; font-weight: bold; cursor: pointer; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
         
-        /* 3-Column PC Layout Grid */
         main { flex-grow: 1; max-width: 1440px; width: 100%; margin: 1.5rem auto; padding: 0 1rem; box-sizing: border-box; display: grid; grid-template-columns: 260px 1fr 300px; gap: 1.25rem; align-items: start; }
         
         aside { display: block; width: 100%; }
@@ -61,7 +60,8 @@
         
         .calc-group { margin-bottom: 0.75rem; font-size: 0.85rem; color: #94a3b8; }
         .calc-group label { font-size: 0.8rem; color: #cbd5e1; display: block; margin-bottom: 0.2rem; }
-        .calc-result { background: #070a12; padding: 0.5rem; border-radius: 6px; color: #38bdf8; font-weight: bold; text-align: center; margin-top: 0.4rem; border: 1px solid #1e293b; }
+        .calc-row { display: flex; gap: 0.4rem; }
+        .calc-result { background: #070a12; padding: 0.5rem; border-radius: 6px; color: #38bdf8; font-weight: bold; text-align: center; margin-top: 0.4rem; border: 1px solid #1e293b; font-size: 0.85rem; }
 
         .input-tools { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 0.75rem; width: 100%; }
         .input-tools button { width: 100%; padding: 0.65rem 0.5rem; font-size: 0.8rem; background: #1e293b; border: 1px solid #334155; color: #e2e8f0; border-radius: 6px; font-weight: 600; cursor: pointer; }
@@ -114,7 +114,7 @@
     </div>
 
     <main>
-        <!-- Left Sidebar: Vitals & Protocols (Visible on PC, Hamburger toggle on Mobile) -->
+        <!-- Left Sidebar: Vitals & Protocols -->
         <aside id="sidebarNav">
             <div class="card sidebar-card">
                 <h3>Vitals Reference Guide</h3>
@@ -184,17 +184,35 @@
         <aside class="right-sidebar">
             <div class="card right-card">
                 <h3>Quick Calculators</h3>
+                
+                <!-- BMI Calculator -->
                 <div class="calc-group">
-                    <label>BMI Calculator (Wt kg / Ht m²)</label>
+                    <label>BMI Calculator</label>
                     <input type="number" id="bmiWt" placeholder="Weight (kg)" oninput="calcBMI()">
-                    <input type="number" id="bmiHt" placeholder="Height (m)" oninput="calcBMI()">
+                    <select id="bmiUnit" onchange="toggleHeightInputs(); calcBMI();">
+                        <option value="m">Height in Meters (m)</option>
+                        <option value="cm">Height in Centimeters (cm)</option>
+                        <option value="ft">Height in Feet & Inches</option>
+                    </select>
+                    <div id="heightInputContainer">
+                        <input type="number" id="bmiHt" placeholder="Height (e.g. 1.75)" oninput="calcBMI()">
+                    </div>
                     <div id="bmiRes" class="calc-result">BMI: --</div>
                 </div>
-                <div class="calc-group" style="margin-top: 1rem;">
-                    <label>MAP Calculator ((2*DBP + SBP) / 3)</label>
-                    <input type="number" id="mapSbp" placeholder="SBP (mmHg)" oninput="calcMAP()">
-                    <input type="number" id="mapDbp" placeholder="DBP (mmHg)" oninput="calcMAP()">
+
+                <!-- MAP Calculator -->
+                <div class="calc-group" style="margin-top: 0.75rem;">
+                    <label>Mean Arterial Pressure (MAP)</label>
+                    <input type="number" id="mapSbp" placeholder="Systolic Blood Pressure (mmHg)" oninput="calcMAP()">
+                    <input type="number" id="mapDbp" placeholder="Diastolic Blood Pressure (mmHg)" oninput="calcMAP()">
                     <div id="mapRes" class="calc-result">MAP: -- mmHg</div>
+                </div>
+
+                <!-- Maintenance Fluid Calculator (4-2-1 Rule) -->
+                <div class="calc-group" style="margin-top: 0.75rem;">
+                    <label>Maintenance Fluids (4-2-1 Rule)</label>
+                    <input type="number" id="fluidWt" placeholder="Weight (kg)" oninput="calcFluids()">
+                    <div id="fluidRes" class="calc-result">Rate: -- mL/hr</div>
                 </div>
             </div>
 
@@ -229,13 +247,51 @@
             document.getElementById('scenario').value = "History: 58-year-old male, smoker (30 pack-years), hypertension (10 yrs), on amlodipine 10mg.\nPresentation: Sudden onset crushing substernal chest pain 1 hour ago, radiating to left arm, diaphoresis, nausea. No shortness of breath currently.\nVitals: BP 160/95, HR 104, RR 20, SpO2 96% on room air, Temp 36.8C, Pain 8/10.";
         }
 
+        function toggleHeightInputs() {
+            const unit = document.getElementById('bmiUnit').value;
+            const container = document.getElementById('heightInputContainer');
+            if (unit === 'ft') {
+                container.innerHTML = `
+                    <div class="calc-row">
+                        <input type="number" id="bmiFt" placeholder="Feet" oninput="calcBMI()">
+                        <input type="number" id="bmiIn" placeholder="Inches" oninput="calcBMI()">
+                    </div>
+                `;
+            } else if (unit === 'cm') {
+                container.innerHTML = `<input type="number" id="bmiHt" placeholder="Height in cm (e.g. 175)" oninput="calcBMI()">`;
+            } else {
+                container.innerHTML = `<input type="number" id="bmiHt" placeholder="Height in meters (e.g. 1.75)" oninput="calcBMI()">`;
+            }
+        }
+
         function calcBMI() {
             const wt = parseFloat(document.getElementById('bmiWt').value);
-            const ht = parseFloat(document.getElementById('bmiHt').value);
+            const unit = document.getElementById('bmiUnit').value;
             const res = document.getElementById('bmiRes');
-            if (wt > 0 && ht > 0) {
-                const bmi = (wt / (ht * ht)).toFixed(1);
-                res.innerText = `BMI: ${bmi} kg/m²`;
+            let heightInMeters = 0;
+
+            if (unit === 'm') {
+                const ht = parseFloat(document.getElementById('bmiHt').value);
+                if (ht > 0) heightInMeters = ht;
+            } else if (unit === 'cm') {
+                const ht = parseFloat(document.getElementById('bmiHt').value);
+                if (ht > 0) heightInMeters = ht / 100;
+            } else if (unit === 'ft') {
+                const ft = parseFloat(document.getElementById('bmiFt').value) || 0;
+                const inches = parseFloat(document.getElementById('bmiIn').value) || 0;
+                const totalInches = (ft * 12) + inches;
+                if (totalInches > 0) heightInMeters = totalInches * 0.0254;
+            }
+
+            if (wt > 0 && heightInMeters > 0) {
+                const bmi = (wt / (heightInMeters * heightInMeters)).toFixed(1);
+                let category = "";
+                if (bmi < 18.5) category = " (Underweight)";
+                else if (bmi >= 18.5 && bmi <= 24.9) category = " (Normal weight)";
+                else if (bmi >= 25.0 && bmi <= 29.9) category = " (Overweight)";
+                else category = " (Obese)";
+
+                res.innerText = `BMI: ${bmi}${category}`;
             } else {
                 res.innerText = `BMI: --`;
             }
@@ -250,6 +306,24 @@
                 res.innerText = `MAP: ${map} mmHg`;
             } else {
                 res.innerText = `MAP: -- mmHg`;
+            }
+        }
+
+        function calcFluids() {
+            const wt = parseFloat(document.getElementById('fluidWt').value);
+            const res = document.getElementById('fluidRes');
+            if (wt > 0) {
+                let rate = 0;
+                if (wt <= 10) {
+                    rate = wt * 4;
+                } else if (wt <= 20) {
+                    rate = 40 + ((wt - 10) * 2);
+                } else {
+                    rate = 60 + ((wt - 20) * 1);
+                }
+                res.innerText = `Rate: ${rate} mL/hr`;
+            } else {
+                res.innerText = `Rate: -- mL/hr`;
             }
         }
 
@@ -333,9 +407,7 @@
             isCancelled = true;
         }
 
-        // Smart Multi-Patient Parser for messy, unformatted raw input data
         function smartSplitScenarios(rawText) {
-            // Split by explicit numbering or distinct patient keywords/paragraphs if multiple exist
             const lines = rawText.split('\n');
             let scenarios = [];
             let currentTitle = "Patient Case 1";
@@ -362,7 +434,6 @@
                 });
             }
 
-            // Fallback if splitter didn't isolate multiple
             if (scenarios.length === 0 || scenarios.every(s => s.scenario.length < 5)) {
                 return [{ title: "Clinical Evaluation Report", scenario: rawText }];
             }
@@ -511,7 +582,40 @@
             evaluatedReportsStore.forEach((rep, idx) => {
                 const li = document.createElement('li');
                 li.innerText = `[${rep.date}] ${rep.title}`;
-                li.onclick = () => alert(rep.content);
+                // Render full report on screen when clicked instead of browser popup
+                li.onclick = () => {
+                    const resultsContainer = document.getElementById('resultsContainer');
+                    const inputCard = document.getElementById('inputCard');
+                    inputCard.classList.add('hidden');
+                    resultsContainer.classList.remove('hidden');
+
+                    let navBar = document.getElementById('topNavBar');
+                    if (!navBar) {
+                        navBar = document.createElement('div');
+                        navBar.id = 'topNavBar';
+                        navBar.className = 'card';
+                        navBar.style.textAlign = 'center';
+                        navBar.innerHTML = `<button class="btn-secondary" onclick="resetForm()">← Back / Evaluate New Case(s)</button>`;
+                        resultsContainer.prepend(navBar);
+                    }
+
+                    const card = document.createElement('div');
+                    card.className = 'card output-card';
+                    card.innerHTML = `
+                        <div class="badges-row">
+                            <div class="model-badge">Archived Report</div>
+                            <div class="verified-badge">✓ Verified Guidelines</div>
+                        </div>
+                        <h2>${rep.title} (${rep.date})</h2>
+                        <div class="result-content">${marked.parse(rep.content)}</div>
+                        <div class="action-bar">
+                            <button class="btn-success" onclick="copyCardText(this)">Copy</button>
+                            <button class="btn-secondary" onclick="downloadCardText(this, 'Archived_Report')">Download TXT</button>
+                        </div>
+                    `;
+                    resultsContainer.appendChild(card);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                };
                 list.appendChild(li);
             });
         }
