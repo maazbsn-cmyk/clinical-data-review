@@ -97,12 +97,11 @@
                     <label for="scenario">Enter raw patient scenario (History, Presentation, Vitals)</label>
                     <a class="insert-sample" onclick="insertSample()">Insert sample case</a>
                 </div>
-                <textarea id="scenario" rows="6" placeholder="Type scenario, upload ward sheet image, or use voice dictation..."></textarea>
+                <textarea id="scenario" rows="6" placeholder="Type scenario, upload up to 10 ward sheet photos, or use voice dictation..."></textarea>
 
-                <!-- Ward Tools: Image OCR & Voice Dictation -->
                 <div class="input-tools">
-                    <input type="file" id="imageInput" accept="image/*" class="hidden" onchange="handleImageUpload(event)">
-                    <button type="button" onclick="document.getElementById('imageInput').click()">📷 Upload Ward Sheet / Photo</button>
+                    <input type="file" id="imageInput" accept="image/*" multiple class="hidden" onchange="handleImageUpload(event)">
+                    <button type="button" onclick="document.getElementById('imageInput').click()">📷 Upload Ward Sheets (Up to 10)</button>
                     <button type="button" id="voiceBtn" onclick="startVoiceInput()">🎤 Voice Dictation</button>
                 </div>
 
@@ -142,7 +141,7 @@
     </main>
 
     <footer>
-        Clinical Data Review - Educational use only. Developed for TPIHS KMU BSN Program.
+        Clinical Data Review - Educational use only. Developed by **Maaz Ahmad**.
     </footer>
 
     <script>
@@ -151,8 +150,13 @@
         }
 
         async function handleImageUpload(event) {
-            const file = event.target.files[0];
-            if (!file) return;
+            const files = Array.from(event.target.files);
+            if (!files.length) return;
+
+            if (files.length > 10) {
+                alert("Maximum 10 images allowed at once.");
+                return;
+            }
 
             const loading = document.getElementById('loading');
             const inputCard = document.getElementById('inputCard');
@@ -160,15 +164,23 @@
 
             inputCard.classList.add('hidden');
             loading.classList.remove('hidden');
-            loadingText.innerText = "Extracting text from ward sheet image (OCR)...";
+            loadingText.innerText = `Extracting text from ${files.length} ward sheet image(s)...`;
 
             try {
                 const worker = await Tesseract.createWorker('eng');
-                const ret = await worker.recognize(file);
+                let combinedText = "";
+
+                for (let i = 0; i < files.length; i++) {
+                    loadingText.innerText = `Extracting text from image ${i + 1} of ${files.length}...`;
+                    const ret = await worker.recognize(files[i]);
+                    combinedText += `\n--- Ward Sheet ${i + 1} ---\n` + ret.data.text.trim() + "\n";
+                }
+
                 await worker.terminate();
 
-                document.getElementById('scenario').value = ret.data.text.trim();
-                alert("Ward sheet text successfully extracted!");
+                const scenarioBox = document.getElementById('scenario');
+                scenarioBox.value += (scenarioBox.value ? "\n" : "") + combinedText.trim();
+                alert(`Successfully extracted text from ${files.length} ward sheet(s)!`);
             } catch (err) {
                 alert("OCR Extraction failed: " + err.message);
             } finally {
