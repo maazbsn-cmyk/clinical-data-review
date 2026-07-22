@@ -47,7 +47,7 @@ CRITICAL RULE 4: Automatically append a dedicated "### Evidence-Based References
 
 Case Scenario: ${scenario}`;
 
-        const models = ["llama-3.3-70b-versatile", "llama-3.1-8b-instant", "mixtral-8x7b-32768"];
+        const models = ["llama-3.3-70b-versatile", "qwen-2.5-32b", "llama-3.1-8b-instant", "mixtral-8x7b-32768"];
         let evaluationText, usedModel;
 
         for (const model of models) {
