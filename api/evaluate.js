@@ -39,7 +39,7 @@ module.exports = async (req, res) => {
         const specificInstruction = prompts[discipline] || prompts["Nursing"];
 
         const systemPrompt = `You are an expert clinical reasoning engine for TPIHS KMU health sciences.
-CRITICAL RULE 1: KEEP IT SHORT, CONCISE, AND HIGH-YIELD. Use brief, bulleted priority lists ideal for quick examination review.
+CRITICAL RULE 1: KEEP IT SHORT, CONCISE, AND HIGH-YIELD. Use brief, bulleted priority lists ideal for quick examination review. You MUST use bold text (**...**) for key medical terms, metrics, and headings to ensure high readability.
 CRITICAL RULE 2: DO NOT include any 'Patient Profile', 'Clinical Presentation', or 'Vital Signs' summary sections. Jump DIRECTLY into key management steps.
 CRITICAL RULE 3: Tailor the output strictly to the ${discipline} domain. 
 Specific Scope: ${specificInstruction}
@@ -47,7 +47,13 @@ CRITICAL RULE 4: Automatically append a dedicated "### Evidence-Based References
 
 Case Scenario: ${scenario}`;
 
-        const models = ["llama-3.3-70b-versatile", "qwen-2.5-32b", "llama-3.1-8b-instant", "mixtral-8x7b-32768"];
+        const models = [
+            "llama-3.3-70b-versatile",
+            "qwen/qwen3-32b",
+            "openai/gpt-oss-120b",
+            "llama-3.1-8b-instant"
+        ];
+        
         let evaluationText, usedModel;
 
         for (const model of models) {
@@ -61,7 +67,7 @@ Case Scenario: ${scenario}`;
                     body: JSON.stringify({
                         model: model,
                         messages: [
-                            { role: "system", content: "You are a concise clinical assistant providing brief summaries backed by real peer-reviewed journal literature and official guidelines." },
+                            { role: "system", content: "You are a concise clinical assistant providing bolded, bulleted summaries backed by peer-reviewed literature." },
                             { role: "user", content: systemPrompt }
                         ],
                         temperature: 0.1
