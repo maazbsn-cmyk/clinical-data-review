@@ -27,7 +27,6 @@ module.exports = async (req, res) => {
             return res.status(500).json({ evaluation: 'ERROR: GROQ_API_KEY is missing from Vercel Environment Variables.' });
         }
 
-        // Strict discipline prompts to force distinct outcomes and ban patient profiles
         const prompts = {
             "Nursing": "Focus strictly on immediate nursing care plans, triage level, vitals monitoring, IV access, bed position, nursing interventions, and emergency drug administration protocols.",
             "Radiology": "Focus strictly on radiological imaging protocols, emergency imaging indications (X-Ray, CT, MRI, Ultrasound), contrast considerations, radiation safety, and critical image findings to report.",
