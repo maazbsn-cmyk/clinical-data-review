@@ -4,12 +4,21 @@ module.exports = async (req, res) => {
     }
 
     try {
-        const { scenario, discipline } = req.body;
+        let body = req.body;
+        if (!body) {
+            const buffers = [];
+            for await (const chunk of req) {
+                buffers.push(chunk);
+            }
+            body = JSON.parse(Buffer.concat(buffers).toString());
+        }
+
+        const { scenario, discipline } = body;
         const apiKey = process.env.GROQ_API_KEY;
 
         const prompt = `You are an expert clinical reasoning engine. The user is an 8th-semester KMU student in the ${discipline} department. Evaluate this patient case and provide a highly detailed, step-by-step clinical priority breakdown ONLY for their specific discipline. Output a strict JSON object with a single key named "evaluation" containing this detailed explanation. Case: ${scenario}`;
 
-        const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+        const apiResponse = await fetch("https://api.groq.com/openai/v1/chat/completions", {
             method: "POST",
             headers: {
                 "Authorization": `Bearer ${apiKey}`,
@@ -23,7 +32,7 @@ module.exports = async (req, res) => {
             })
         });
 
-        const data = await response.json();
+        const data = await apiResponse.json();
         
         if (!data.choices || !data.choices[0] || !data.choices[0].message) {
             return res.status(500).json({ evaluation: "Groq API error. Please check your API key." });
@@ -32,6 +41,6 @@ module.exports = async (req, res) => {
         const resultContent = JSON.parse(data.choices[0].message.content);
         return res.status(200).json(resultContent);
     } catch (error) {
-        return res.status(500).json({ evaluation: "Error processing the request. Check backend logs." });
+        return res.status(500).json({ evaluation: "Error processing request: " + error.message });
     }
 };
