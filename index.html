@@ -27,11 +27,11 @@
         .mobile-menu-toggle { display: none; background: #1e293b; color: #38bdf8; padding: 0.85rem 1rem; text-align: left; font-weight: bold; cursor: pointer; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
         
         /* 3-Column PC Layout Grid */
-        main { flex-grow: 1; max-width: 1440px; width: 100%; margin: 1.5rem auto; padding: 0 1rem; box-sizing: border-box; display: grid; grid-template-columns: 260px 1fr 300px; gap: 1.25rem; align-items: start; }
+        main { flex-grow: 1; max-width: 1440px; width: 100%; margin: 1.5rem auto; padding: 0 1rem; box-sizing: border-box; display: grid; grid-template-columns: 280px 1fr 310px; gap: 1.25rem; align-items: start; }
         
         aside { display: block; width: 100%; }
 
-        @media (max-width: 1100px) {
+        @media (max-width: 1150px) {
             main { grid-template-columns: 260px 1fr; }
             .right-sidebar { grid-column: 1 / -1; }
         }
@@ -56,13 +56,13 @@
         .insert-sample { color: #38bdf8; text-decoration: none; font-size: 0.8rem; cursor: pointer; font-weight: 600; }
         .insert-sample:hover { text-decoration: underline; }
         
-        textarea, select, input[type="number"] { width: 100%; max-width: 100%; box-sizing: border-box; padding: 0.7rem; border: 1px solid #334155; border-radius: 8px; margin-bottom: 0.6rem; font-family: inherit; font-size: 0.9rem; background: #070a12; color: #f8fafc; resize: vertical; }
+        textarea, select, input[type="number"] { width: 100%; max-width: 100%; box-sizing: border-box; padding: 0.65rem; border: 1px solid #334155; border-radius: 8px; margin-bottom: 0.5rem; font-family: inherit; font-size: 0.85rem; background: #070a12; color: #f8fafc; resize: vertical; }
         textarea:focus, select:focus, input:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2); }
         
         .calc-group { margin-bottom: 0.75rem; font-size: 0.85rem; color: #94a3b8; }
-        .calc-group label { font-size: 0.8rem; color: #cbd5e1; display: block; margin-bottom: 0.2rem; }
+        .calc-group label { font-size: 0.8rem; color: #cbd5e1; display: block; margin-bottom: 0.2rem; font-weight: 600; }
         .calc-row { display: flex; gap: 0.4rem; }
-        .calc-result { background: #070a12; padding: 0.5rem; border-radius: 6px; color: #38bdf8; font-weight: bold; text-align: center; margin-top: 0.4rem; border: 1px solid #1e293b; font-size: 0.85rem; }
+        .calc-result { background: #070a12; padding: 0.5rem; border-radius: 6px; color: #38bdf8; font-weight: bold; text-align: center; margin-top: 0.3rem; border: 1px solid #1e293b; font-size: 0.85rem; }
 
         .input-tools { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 0.75rem; width: 100%; }
         .input-tools button { width: 100%; padding: 0.65rem 0.5rem; font-size: 0.8rem; background: #1e293b; border: 1px solid #334155; color: #e2e8f0; border-radius: 6px; font-weight: 600; cursor: pointer; }
@@ -97,11 +97,10 @@
         .loader { border: 4px solid #1e293b; border-top: 4px solid #3b82f6; border-radius: 50%; width: 35px; height: 35px; animation: spin 1s linear infinite; margin: 0 auto 0.75rem auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        .history-list { list-style: none; padding: 0; margin: 0; max-height: 200px; overflow-y: auto; font-size: 0.8rem; }
+        .history-list { list-style: none; padding: 0; margin: 0; max-height: 180px; overflow-y: auto; font-size: 0.8rem; }
         .history-list li { padding: 0.4rem 0.5rem; border-bottom: 1px solid #1e293b; cursor: pointer; color: #94a3b8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .history-list li:hover { background: #1e293b; color: #38bdf8; }
 
-        /* On-Screen Notification Banner */
         .notification-banner { background: #1e293b; border-left: 4px solid #38bdf8; padding: 0.75rem 1rem; border-radius: 6px; margin-bottom: 1rem; font-size: 0.9rem; color: #e2e8f0; display: flex; justify-content: space-between; align-items: center; }
         .notification-banner span { cursor: pointer; color: #94a3b8; font-weight: bold; }
         .notification-banner span:hover { color: #fff; }
@@ -116,28 +115,36 @@
     </header>
 
     <div class="mobile-menu-toggle" onclick="toggleMobileMenu()">
-        ☰ Vitals Reference & Emergency Protocols (Tap to Toggle)
+        ☰ ABGs, Vitals & Protocols (Tap to Toggle)
     </div>
 
     <main>
-        <!-- Left Sidebar: Vitals & Protocols (Mobile Hamburger & PC Sidebar) -->
+        <!-- Left Sidebar: ABG Normal Values & Interpretation Cheat Sheet -->
         <aside id="sidebarNav">
             <div class="card sidebar-card">
-                <h3>Vitals Reference Guide</h3>
+                <h3>ABG Normal Values</h3>
                 <ul class="cheat-sheet-list">
-                    <li><strong>Blood Pressure:</strong> Normal &lt;120/80 mmHg</li>
-                    <li><strong>Heart Rate:</strong> 60 - 100 bpm</li>
-                    <li><strong>Respiratory Rate:</strong> 12 - 20 breaths/min</li>
-                    <li><strong>SpO2:</strong> 95% - 100% on room air</li>
-                    <li><strong>Temperature:</strong> 36.5°C - 37.5°C</li>
+                    <li><strong>pH:</strong> 7.35 – 7.45</li>
+                    <li><strong>PaCO2:</strong> 35 – 45 mmHg</li>
+                    <li><strong>HCO3:</strong> 22 – 26 mEq/L</li>
+                    <li><strong>PaO2:</strong> 80 – 100 mmHg</li>
+                    <li><strong>SaO2:</strong> 95% – 100%</li>
                 </ul>
             </div>
             <div class="card sidebar-card">
-                <h3>Emergency Protocols</h3>
+                <h3>ABG Interpretation</h3>
                 <ul class="cheat-sheet-list">
-                    <li><strong>Chest Pain:</strong> ECG within 10 min, check O2, aspirin if indicated.</li>
-                    <li><strong>Triage Priority:</strong> ABCDE primary survey framework.</li>
-                    <li><strong>Guidelines:</strong> AHA / ACC Evidence-Based Standards.</li>
+                    <li><strong>ROME Rule:</strong><br><strong>R</strong>espiratory <strong>O</strong>pposite (pH & PaCO2 opposite directions)<br><strong>M</strong>etabolic <strong>E</strong>qual (pH & HCO3 same direction)</li>
+                    <li><strong>Acidosis:</strong> pH &lt; 7.35</li>
+                    <li><strong>Alkalosis:</strong> pH &gt; 7.45</li>
+                </ul>
+            </div>
+            <div class="card sidebar-card">
+                <h3>Vitals & Emergency</h3>
+                <ul class="cheat-sheet-list">
+                    <li><strong>HR:</strong> 60–100 bpm | <strong>RR:</strong> 12–20</li>
+                    <li><strong>BP:</strong> &lt;120/80 mmHg</li>
+                    <li><strong>Triage:</strong> ABCDE primary survey framework</li>
                 </ul>
             </div>
         </aside>
@@ -188,13 +195,40 @@
             <div id="resultsContainer" class="hidden"></div>
         </section>
 
-        <!-- Right Sidebar: Clinical Calculators & Local Storage Vault -->
+        <!-- Right Sidebar: Clinical Calculators (GCS Added) & Local Storage Vault -->
         <aside class="right-sidebar">
             <div class="card right-card">
                 <h3>Quick Calculators</h3>
                 
-                <!-- BMI Calculator -->
+                <!-- GCS Calculator -->
                 <div class="calc-group">
+                    <label>Glasgow Coma Scale (GCS)</label>
+                    <select id="gcsEye" onchange="calcGCS()">
+                        <option value="4">Eye: Spontaneous (4)</option>
+                        <option value="3">Eye: To Speech (3)</option>
+                        <option value="2">Eye: To Pain (2)</option>
+                        <option value="1">Eye: None (1)</option>
+                    </select>
+                    <select id="gcsVerbal" onchange="calcGCS()">
+                        <option value="5">Verbal: Oriented (5)</option>
+                        <option value="4">Verbal: Confused (4)</option>
+                        <option value="3">Verbal: Inappropriate Words (3)</option>
+                        <option value="2">Verbal: Incomprehensible Sounds (2)</option>
+                        <option value="1">Verbal: None (1)</option>
+                    </select>
+                    <select id="gcsMotor" onchange="calcGCS()">
+                        <option value="6">Motor: Obeys Commands (6)</option>
+                        <option value="5">Motor: Localizes Pain (5)</option>
+                        <option value="4">Motor: Withdraws from Pain (4)</option>
+                        <option value="3">Motor: Abnormal Flexion - Decorticate (3)</option>
+                        <option value="2">Motor: Abnormal Extension - Decerebrate (2)</option>
+                        <option value="1">Motor: None (1)</option>
+                    </select>
+                    <div id="gcsRes" class="calc-result">GCS: 15 (Mild / Normal)</div>
+                </div>
+
+                <!-- BMI Calculator -->
+                <div class="calc-group" style="margin-top: 0.75rem;">
                     <label>BMI Calculator</label>
                     <input type="number" id="bmiWt" placeholder="Weight (kg)" oninput="calcBMI()">
                     <select id="bmiUnit" onchange="toggleHeightInputs(); calcBMI();">
@@ -264,6 +298,20 @@
         function insertSample() {
             extractedSheets = [];
             document.getElementById('scenario').value = "History: 58-year-old male, smoker (30 pack-years), hypertension (10 yrs), on amlodipine 10mg.\nPresentation: Sudden onset crushing substernal chest pain 1 hour ago, radiating to left arm, diaphoresis, nausea. No shortness of breath currently.\nVitals: BP 160/95, HR 104, RR 20, SpO2 96% on room air, Temp 36.8C, Pain 8/10.";
+        }
+
+        function calcGCS() {
+            const eye = parseInt(document.getElementById('gcsEye').value) || 0;
+            const verbal = parseInt(document.getElementById('gcsVerbal').value) || 0;
+            const motor = parseInt(document.getElementById('gcsMotor').value) || 0;
+            const total = eye + verbal + motor;
+            
+            let severity = "";
+            if (total >= 13) severity = "Mild / Normal";
+            else if (total >= 9) severity = "Moderate Injury";
+            else severity = "Severe Injury (Coma)";
+
+            document.getElementById('gcsRes').innerText = `GCS: ${total} (${severity})`;
         }
 
         function toggleHeightInputs() {
