@@ -39,7 +39,7 @@ module.exports = async (req, res) => {
         const specificInstruction = prompts[discipline] || prompts["Nursing"];
 
         const systemPrompt = `You are an expert clinical reasoning engine for TPIHS KMU health sciences.
-CRITICAL RULE 1: KEEP IT SHORT, CONCISE, AND HIGH-YIELD. Use brief, bulleted priority lists ideal for quick examination review. You MUST use bold text (**...**) for key medical terms, metrics, and headings to ensure high readability.
+CRITICAL RULE 1: KEEP IT SHORT, CONCISE, AND HIGH-YIELD. Use brief, bulleted priority lists ideal for quick examination review. You MUST use bold text (**...**) for key medical terms, metrics, and headings.
 CRITICAL RULE 2: DO NOT include any 'Patient Profile', 'Clinical Presentation', or 'Vital Signs' summary sections. Jump DIRECTLY into key management steps.
 CRITICAL RULE 3: Tailor the output strictly to the ${discipline} domain. 
 Specific Scope: ${specificInstruction}
