@@ -36,7 +36,7 @@
 <body>
     <header>
         <h1>Clinical Data Review</h1>
-        <div class="subtitle">KMU - 8th Semester Revision</div>
+        <div class="subtitle">TPIHS - KMU - BSN</div>
     </header>
 
     <main>
@@ -120,7 +120,7 @@
             } catch (error) {
                 document.getElementById('resultTitle').innerText = "Connection Error";
                 document.getElementById('resultText').innerText = error.message;
-                result.classList.remove('hidden');
+                result.classList.add('hidden');
             } finally {
                 btn.disabled = false;
                 loading.classList.add('hidden');
