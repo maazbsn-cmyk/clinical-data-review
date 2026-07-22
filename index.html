@@ -230,13 +230,11 @@
             let scenariosToProcess = [];
 
             if (extractedSheets.length > 0) {
-                // Multiple uploaded screenshots/photos
                 scenariosToProcess = extractedSheets.map((sheet, index) => ({
                     title: `Ward Sheet ${index + 1}: ${sheet.name}`,
                     scenario: sheet.text
                 }));
             } else {
-                // Smart Splitter for pasted text containing numbered items (e.g. "1. ", "2. ")
                 const parts = rawText.split(/(?=\n\s*\d+\.\s+)|(?=^\d+\.\s+)/gm);
                 if (parts.length > 1) {
                     scenariosToProcess = parts.map((part, index) => {
@@ -262,6 +260,13 @@
             loading.classList.remove('hidden');
 
             try {
+                // Prepend the Back button at the very top of the results container
+                const navBar = document.createElement('div');
+                navBar.className = 'card';
+                navBar.style.textAlign = 'center';
+                navBar.innerHTML = `<button class="btn-secondary" onclick="resetForm()" style="width: 100%;">← Back / Evaluate New Case(s)</button>`;
+                resultsContainer.appendChild(navBar);
+
                 for (let i = 0; i < scenariosToProcess.length; i++) {
                     loadingText.innerText = `Evaluating report ${i + 1} of ${scenariosToProcess.length}...`;
                     
@@ -302,12 +307,6 @@
                     `;
                     resultsContainer.appendChild(card);
                 }
-
-                const navBar = document.createElement('div');
-                navBar.className = 'card';
-                navBar.style.textAlign = 'center';
-                navBar.innerHTML = `<button class="btn-secondary" onclick="resetForm()" style="width: 100%;">← Back / Evaluate New Case(s)</button>`;
-                resultsContainer.appendChild(navBar);
 
                 resultsContainer.classList.remove('hidden');
             } catch (error) {
