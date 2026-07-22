@@ -64,7 +64,6 @@
         .calc-row { display: flex; gap: 0.4rem; }
         .calc-result { background: #070a12; padding: 0.5rem; border-radius: 6px; color: #38bdf8; font-weight: bold; text-align: center; margin-top: 0.4rem; border: 1px solid #1e293b; font-size: 0.85rem; }
         
-        /* Calc Action Button */
         .calc-btn { background: #1e3a8a; color: #93c5fd; border: 1px solid #2563eb; padding: 0.4rem 0.5rem; border-radius: 6px; font-size: 0.75rem; font-weight: bold; cursor: pointer; margin-top: 0.4rem; width: 100%; text-align: center; }
         .calc-btn:hover { background: #1d4ed8; color: #fff; }
 
@@ -201,7 +200,7 @@
             <div id="resultsContainer" class="hidden"></div>
         </section>
 
-        <!-- Right Sidebar: Separated Calculator Cards with Verified Action Buttons -->
+        <!-- Right Sidebar: Separated Calculator Cards with Concise Verified Guidance -->
         <aside class="right-sidebar">
             <!-- GCS Card -->
             <div class="card right-card">
@@ -228,7 +227,7 @@
                         <option value="2">Motor: Abnormal Extension - Decerebrate (2)</option>
                         <option value="1">Motor: None (1)</option>
                     </select>
-                    <div id="gcsRes" class="calc-result">GCS: 15 (Mild / Normal)</div>
+                    <div id="gcsRes" class="calc-result">GCS: 15 (Patient is normal, alert, and oriented.)</div>
                     <button class="calc-btn" onclick="evaluateCalcResult('Glasgow Coma Scale score of ' + document.getElementById('gcsRes').innerText)">Evaluate GCS Interventions</button>
                 </div>
             </div>
@@ -262,7 +261,7 @@
                 </div>
             </div>
 
-            <!-- Maintenance Fluids Card -->
+            <!-- Maintenance Fluids Card (Removed evaluation button as requested) -->
             <div class="card right-card">
                 <h3>Maintenance Fluids (4-2-1 Rule)</h3>
                 <div class="calc-group">
@@ -272,7 +271,6 @@
                     </select>
                     <input type="number" id="fluidWt" placeholder="Weight (kg)" oninput="calcFluids()">
                     <div id="fluidRes" class="calc-result">Rate: -- mL/hr</div>
-                    <button class="calc-btn" onclick="evaluateCalcResult('Maintenance fluid rate calculated at ' + document.getElementById('fluidRes').innerText)">Evaluate Fluid Interventions</button>
                 </div>
             </div>
 
@@ -325,12 +323,18 @@
             const motor = parseInt(document.getElementById('gcsMotor').value) || 0;
             const total = eye + verbal + motor;
             
-            let severity = "";
-            if (total >= 13) severity = "Mild / Normal";
-            else if (total >= 9) severity = "Moderate Injury";
-            else severity = "Severe Injury (Coma)";
+            let status = "";
+            if (total === 15) {
+                status = "Patient is normal, alert, and oriented.";
+            } else if (total >= 13) {
+                status = "Mild impairment. Monitor closely.";
+            } else if (total >= 9) {
+                status = "Moderate brain injury. Prepare airway support.";
+            } else {
+                status = "Severe coma. Immediate intubation required.";
+            }
 
-            document.getElementById('gcsRes').innerText = `GCS: ${total} (${severity})`;
+            document.getElementById('gcsRes').innerText = `GCS: ${total} (${status})`;
         }
 
         function toggleHeightInputs() {
@@ -371,13 +375,13 @@
 
             if (wt > 0 && heightInMeters > 0) {
                 const bmi = (wt / (heightInMeters * heightInMeters)).toFixed(1);
-                let category = "";
-                if (bmi < 18.5) category = " (Underweight)";
-                else if (bmi >= 18.5 && bmi <= 24.9) category = " (Normal weight)";
-                else if (bmi >= 25.0 && bmi <= 29.9) category = " (Overweight)";
-                else category = " (Obese)";
+                let advice = "";
+                if (bmi < 18.5) advice = `Underweight. Recommend nutrient-dense, high-calorie diet.`;
+                else if (bmi >= 18.5 && bmi <= 24.9) advice = `Normal weight. Maintain balanced diet and regular exercise.`;
+                else if (bmi >= 25.0 && bmi <= 29.9) advice = `Overweight. Recommend low-fat diet, avoid oily foods and cholesterol.`;
+                else advice = `Obese. Strictly avoid oily/fried foods, high cholesterol, and sugars. Initiate structured weight management.`;
 
-                res.innerText = `${bmi}${category}`;
+                res.innerHTML = `BMI: ${bmi}<br><span style="font-weight:normal; font-size:0.75rem; color:#94a3b8;">${advice}</span>`;
             } else {
                 res.innerText = `BMI: --`;
             }
@@ -389,7 +393,8 @@
             const res = document.getElementById('mapRes');
             if (sbp > 0 && dbp > 0) {
                 const map = Math.round(((2 * dbp) + sbp) / 3);
-                res.innerText = `MAP: ${map} mmHg`;
+                let status = (map >= 70 && map <= 100) ? "Normal perfusion pressure." : (map < 70 ? "Low perfusion (Risk of hypoperfusion/shock)." : "High perfusion (Hypertensive urgency risk).");
+                res.innerHTML = `MAP: ${map} mmHg<br><span style="font-weight:normal; font-size:0.75rem; color:#94a3b8;">${status}</span>`;
             } else {
                 res.innerText = `MAP: -- mmHg`;
             }
@@ -419,7 +424,7 @@
             }
         }
 
-        // Direct Calculator Evaluation Trigger using Verified AI Backend
+        // Direct Calculator Evaluation Trigger using Verified AI Backend (Concise Instructions)
         async function evaluateCalcResult(calcDataSummary) {
             const discipline = document.getElementById('discipline').value;
             const btn = document.getElementById('submitBtn');
@@ -434,7 +439,7 @@
             resultsContainer.innerHTML = '';
             resultsContainer.classList.remove('hidden');
             loading.classList.remove('hidden');
-            loadingText.innerText = "Evaluating verified clinical interventions for calculation result...";
+            loadingText.innerText = "Evaluating verified clinical interventions (Max 2-3 lines)...";
 
             let navBar = document.getElementById('topNavBar');
             if (!navBar) {
@@ -450,7 +455,7 @@
                 const response = await fetch('/api/evaluate', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ scenario: `Clinical Calculator Assessment: ${calcDataSummary}`, discipline })
+                    body: JSON.stringify({ scenario: `Provide extremely concise, high-yield interventions (maximum 2 to 3 bullet points) for this calculation assessment using peer-reviewed guidelines: ${calcDataSummary}`, discipline })
                 });
                 
                 const text = await response.text();
@@ -754,7 +759,7 @@
                 list.innerHTML = `<li style="color: #475569; text-align: center;">No stored reports yet.</li>`;
                 return;
             }
-            list.innerHTML = '';
+            list.innerHTML = ``;
             evaluatedReportsStore.forEach((rep, idx) => {
                 const li = document.createElement('li');
                 li.innerText = `[${rep.date}] ${rep.title}`;
