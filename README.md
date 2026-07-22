@@ -73,9 +73,20 @@ Mobile Screenshots
 <img width="1080" height="3045" alt="Screenshot_20260722-213512 jpg" src="https://github.com/user-attachments/assets/dc012e9d-ba4a-4dba-9f00-28beb5e20605" />
 
 
-#### G. How to Run the Project Locally
+## G. How to Run the Project Locally
 
-1. **Clone the repository:**
-   ```bash
-   git clone [https://github.com/maazbsn-cmyk/clinical-data-review.git](https://github.com/maazbsn-cmyk/clinical-data-review.git)
+1. Clone the repository: 
+   git clone https://github.com/maazbsn-cmyk/clinical-data-review.git
    cd clinical-data-review
+
+2. Install Vercel CLI: 
+   npm install -g vercel
+
+3. Configure Environment Variables: 
+   Create a file named .env in the root directory and add: 
+   GROQ_API_KEY=your_api_key_here
+
+4. Run the local development server: 
+   vercel dev
+
+5. Open your browser and navigate to http://localhost:3000
