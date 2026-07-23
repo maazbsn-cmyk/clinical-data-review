@@ -10,7 +10,7 @@
 **The Solution:** The CDSS is a comprehensive, end-to-end web application that acts as a real-time clinical triage and evaluation tool. Designed specifically for health sciences students, it ingests raw clinical data, processes physical ward sheet images via OCR, and utilizes an AI reasoning engine to instantly generate concise, bulleted clinical priorities backed by peer-reviewed literature (e.g., AHA/ACC, WHO).
 
 ## B. Live Application
-**Live URL:**[ [https://clinical-data-review-injk-gsszwjni7-maaaz.vercel.app/](https://clinical-data-review-injk-cmsjgf6mv-maaaz.vercel.app/)](https://clinical-data-review-injk-cmsjgf6mv-maaaz.vercel.app/)
+**Live URL:**[ [https://clinical-data-review-injk-gsszwjni7-maaaz.vercel.app/]
 
 ## C. Core Features
 *   **AI Clinical Triage Engine:** Automatically parses unstructured, multi-patient scenarios into high-yield, discipline-specific management steps.
