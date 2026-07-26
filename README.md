@@ -49,6 +49,20 @@ The frontend dynamically injects strict prompts based on the tool being used to 
 ## F. Application Screenshots
 
 **PC Screenshots**
+Patient Sample Data Input
+<img width="1920" height="914" alt="image" src="https://github.com/user-attachments/assets/fce512d3-ef9f-4c83-9e7e-96afd90d755a" />
+Evaluating
+<img width="1920" height="915" alt="image" src="https://github.com/user-attachments/assets/2d991c56-d111-4fd9-a9dd-7aa1203c3020" />
+Results
+<img width="1920" height="916" alt="image" src="https://github.com/user-attachments/assets/ad1aa918-5a0e-4695-8fb2-872397520140" />
+GCS
+<img width="1920" height="918" alt="image" src="https://github.com/user-attachments/assets/5943b258-3e38-469a-8913-42646f077a0f" />
+BMI (Dark Mode)
+<img width="1920" height="915" alt="image" src="https://github.com/user-attachments/assets/c5cdf9eb-0128-401e-9b4e-45b4280f7329" />
+MAP (Calculated In Dark Mode)
+<img width="1920" height="918" alt="image" src="https://github.com/user-attachments/assets/02ab4a03-d793-4988-9907-36b747506ba4" />
+
+
 
 
 **Mobile Screenshots**
