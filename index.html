@@ -24,6 +24,9 @@
             --highlight: #38bdf8;
             --shadow: 0 6px 20px rgba(0,0,0,0.4);
             --reference-bg: #111827;
+            --header-bg: linear-gradient(135deg, #1e1b4b 0%, #0f172a 100%);
+            --header-text: #ffffff;
+            --header-sub: #94a3b8;
         }
         
         body.light-theme {
@@ -40,17 +43,20 @@
             --highlight: #0284c7;
             --shadow: 0 4px 12px rgba(0,0,0,0.05);
             --reference-bg: #f8fafc;
+            --header-bg: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
+            --header-text: #0f172a;
+            --header-sub: #475569;
         }
 
         * { box-sizing: border-box; word-break: break-word; overflow-wrap: break-word; }
         body { font-family: system-ui, -apple-system, sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 0; display: flex; flex-direction: column; min-height: 100vh; overflow-x: hidden; transition: background-color 0.3s ease, color 0.3s ease; }
         
-        header { position: relative; background: linear-gradient(135deg, #1e1b4b 0%, #0f172a 100%); color: white; padding: 1.5rem 1rem; text-align: center; border-bottom: 3px solid #3b82f6; box-shadow: 0 4px 20px rgba(59, 130, 246, 0.15); margin-top: 1rem; transition: background 0.3s; }
+        header { position: relative; background: var(--header-bg); color: var(--header-text); padding: 1.5rem 1rem; text-align: center; border-bottom: 3px solid #3b82f6; box-shadow: 0 4px 20px rgba(59, 130, 246, 0.15); margin-top: 1rem; transition: background 0.3s, color 0.3s; }
         h1 { margin: 0; font-size: 1.6rem; letter-spacing: -0.5px; background: linear-gradient(90deg, #60a5fa, #38bdf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .subtitle { color: #94a3b8; font-size: 0.9rem; margin-top: 0.3rem; font-weight: 500; }
+        .subtitle { color: var(--header-sub); font-size: 0.9rem; margin-top: 0.3rem; font-weight: 500; transition: color 0.3s; }
         
-        .theme-btn { position: absolute; top: 1.5rem; right: 1.5rem; width: auto; padding: 0.4rem 0.8rem; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; border-radius: 6px; font-size: 0.8rem; box-shadow: none; cursor: pointer; transition: all 0.2s; }
-        .theme-btn:hover { background: rgba(255,255,255,0.2); }
+        .theme-btn { position: absolute; top: 1.5rem; right: 1.5rem; width: auto; padding: 0.4rem 0.8rem; background: rgba(125,125,125,0.2); border: 1px solid var(--input-border); color: var(--header-text); border-radius: 6px; font-size: 0.8rem; box-shadow: none; cursor: pointer; transition: all 0.2s; }
+        .theme-btn:hover { opacity: 0.8; }
         
         @media (max-width: 600px) {
             .theme-btn { top: 0.5rem; right: 0.5rem; font-size: 0.75rem; padding: 0.35rem 0.6rem; }
@@ -68,14 +74,12 @@
         .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Grid Layouts for Internal Sections */
         .tab-layout { display: flex; flex-direction: column; gap: 1.25rem; }
         @media (min-width: 800px) {
             .tab-layout.two-col { display: grid; grid-template-columns: 3fr 2fr; align-items: start; }
             .tab-layout.half-half { display: grid; grid-template-columns: 1fr 1fr; align-items: start; }
         }
 
-        /* Main Area */
         main { flex-grow: 1; max-width: 1000px; width: 100%; margin: 1.5rem auto; padding: 0 1rem; box-sizing: border-box; display: block; }
 
         .card { background: var(--card-bg); padding: 1.5rem; border-radius: 12px; box-shadow: var(--shadow); margin-bottom: 1.25rem; border: 1px solid var(--border); width: 100%; transition: background 0.3s, border 0.3s, box-shadow 0.3s; }
@@ -174,7 +178,7 @@
     <main>
         <div id="notificationArea"></div>
 
-        <!-- TAB 1: CASE ANALYZER -->
+        <!-- TAB 1: CASE ANALYZER (Swapped reference cards order: ABG first, Emergency protocols second) -->
         <div id="scanner-section" class="tab-content active">
             <div class="section-heading">AI Triage & Clinical Dashboard</div>
             
@@ -206,21 +210,21 @@
 
             <div class="tab-layout half-half">
                 <div class="card reference-card">
-                    <h3>🚨 Emergency Protocols</h3>
-                    <ul class="cheat-sheet-list">
-                        <li><strong>Chest Pain:</strong> ECG within 10 min, check O2, Aspirin 325mg, Sublingual Nitroglycerin.</li>
-                        <li><strong>Stroke (CVA):</strong> Fast-track non-contrast CT head within 20 min of arrival.</li>
-                        <li><strong>Anaphylaxis:</strong> Immediate IM Epinephrine (1:1000) 0.5mg into mid-outer thigh.</li>
-                        <li><strong>Seizure/Status:</strong> Secure airway, IV Lorazepam, check blood glucose.</li>
-                    </ul>
-                </div>
-                <div class="card reference-card">
                     <h3>🩸 ABG & ROME Reference</h3>
                     <ul class="cheat-sheet-list">
                         <li><strong>pH:</strong> 7.35 – 7.45</li>
                         <li><strong>PaCO2:</strong> 35 – 45 mmHg</li>
                         <li><strong>HCO3:</strong> 22 – 26 mEq/L</li>
                         <li><strong>ROME:</strong> Respiratory Opposite (pH & PaCO2), Metabolic Equal (pH & HCO3).</li>
+                    </ul>
+                </div>
+                <div class="card reference-card">
+                    <h3>🚨 Emergency Protocols</h3>
+                    <ul class="cheat-sheet-list">
+                        <li><strong>Chest Pain:</strong> ECG within 10 min, check O2, Aspirin 325mg, Sublingual Nitroglycerin.</li>
+                        <li><strong>Stroke (CVA):</strong> Fast-track non-contrast CT head within 20 min of arrival.</li>
+                        <li><strong>Anaphylaxis:</strong> Immediate IM Epinephrine (1:1000) 0.5mg into mid-outer thigh.</li>
+                        <li><strong>Seizure/Status:</strong> Secure airway, IV Lorazepam, check blood glucose.</li>
                     </ul>
                 </div>
             </div>
@@ -406,7 +410,6 @@
         let isCancelled = false;
         let evaluatedReportsStore = [];
 
-        // Tab Switching Logic
         function switchTab(targetId, btnElement) {
             document.querySelectorAll('.tab-content').forEach(section => {
                 section.classList.remove('active');
@@ -418,7 +421,6 @@
             btnElement.classList.add('active');
         }
 
-        // Theme Switcher Logic
         function toggleTheme() {
             const body = document.body;
             body.classList.toggle('light-theme');
@@ -445,7 +447,6 @@
             setTimeout(() => { if(area.innerHTML) area.innerHTML = ''; }, 6000);
         }
 
-        // Sample Insertion Functions
         function insertSampleTriage() {
             extractedSheets = [];
             document.getElementById('scenario').value = "History: 58-year-old male, smoker (30 pack-years), hypertension (10 yrs), on amlodipine 10mg.\nPresentation: Sudden onset crushing substernal chest pain 1 hour ago, radiating to left arm, diaphoresis, nausea. No shortness of breath currently.\nVitals: BP 160/95, HR 104, RR 20, SpO2 96% on room air, Temp 36.8C, Pain 8/10.";
@@ -453,9 +454,9 @@
         }
 
         function insertSampleGCS() {
-            document.getElementById('gcsEye').value = "3"; // To Speech
-            document.getElementById('gcsVerbal').value = "4"; // Confused
-            document.getElementById('gcsMotor').value = "5"; // Localizes Pain
+            document.getElementById('gcsEye').value = "3";
+            document.getElementById('gcsVerbal').value = "4";
+            document.getElementById('gcsMotor').value = "5";
             calcGCS();
             showNotification("GCS sample loaded (Moderate impairment).");
         }
@@ -483,7 +484,6 @@
             showNotification("Fluids sample loaded (Child - 28kg).");
         }
 
-        // Calculation Logic
         function calcGCS() {
             const eye = parseInt(document.getElementById('gcsEye').value) || 0;
             const verbal = parseInt(document.getElementById('gcsVerbal').value) || 0;
@@ -561,7 +561,7 @@
             if (sbp > 0 && dbp > 0) {
                 const map = Math.round(((2 * dbp) + sbp) / 3);
                 let status = (map >= 70 && map <= 100) ? "Normal perfusion pressure." : (map < 70 ? "Low perfusion (Risk of hypoperfusion/shock)." : "High perfusion (Hypertensive urgency risk).");
-                res.innerHTML = `MAP: ${map} mmHg<br><span style="font-weight:normal; font-size:0.85rem; color:var(--muted);">${status}</span>`;
+                res.innerHTML = `MAP: ${map} mmHg<br><span style="font-weight:normal; font-size:0.75rem; color:var(--muted);">${status}</span>`;
             } else {
                 res.innerText = `MAP: -- mmHg`;
             }
@@ -591,7 +591,6 @@
             }
         }
 
-        // AI API Evaluation Logic
         async function evaluateCalcResult(calcDataSummary) {
             const discipline = document.getElementById('discipline').value;
             const btn = document.getElementById('submitBtn');
@@ -599,7 +598,6 @@
             const resultsContainer = document.getElementById('resultsContainer');
             const loadingText = document.getElementById('loadingText');
 
-            // Force switch to scanner tab to see result clearly
             switchTab('scanner-section', document.querySelector('.nav-tab-btn'));
 
             isCancelled = false;
@@ -932,7 +930,6 @@
                 const li = document.createElement('li');
                 li.innerText = `[${rep.date}] ${rep.title}`;
                 li.onclick = () => {
-                    // Switch back to scanner tab to see result clearly
                     switchTab('scanner-section', document.querySelector('.nav-tab-btn'));
                     
                     const resultsContainer = document.getElementById('resultsContainer');
@@ -996,9 +993,7 @@
         }
 
         function resetForm() {
-            // Force reset back to the Case Analyzer Tab
             switchTab('scanner-section', document.querySelector('.nav-tab-btn'));
-            
             document.getElementById('resultsContainer').classList.add('hidden');
             document.getElementById('resultsContainer').innerHTML = '';
             document.getElementById('inputCard').classList.remove('hidden');
