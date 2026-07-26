@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Clinical Decision Support - TPIHS</title>
+    <title>Clinical Decision Support</title>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
     <style>
@@ -375,7 +375,7 @@
         
         <div class="header-center">
             <h1>Clinical Decision Support</h1>
-            <div class="subtitle">TPIHS (KMU, BSN)</div>
+            <div class="subtitle">AI Triage & Evaluation Tool</div>
         </div>
         
         <div class="header-right">
@@ -723,7 +723,7 @@
             const body = document.body;
             body.classList.toggle('light-theme');
             const isLight = body.classList.contains('light-theme');
-            localStorage.setItem('tpihs_theme', isLight ? 'light' : 'dark');
+            localStorage.setItem('cdss_theme', isLight ? 'light' : 'dark');
             
             const themeBtn = document.getElementById('themeToggle');
             if(isLight) {
@@ -734,7 +734,7 @@
         }
 
         window.addEventListener('DOMContentLoaded', () => {
-            const isLight = localStorage.getItem('tpihs_theme') === 'light';
+            const isLight = localStorage.getItem('cdss_theme') === 'light';
             if (isLight) {
                 document.body.classList.add('light-theme');
                 document.getElementById('themeToggle').innerHTML = '<span class="theme-icon">🌙</span><span class="theme-text"> Dark Mode</span>';
@@ -1219,11 +1219,11 @@ CRITICAL SYSTEM INSTRUCTIONS:
         }
 
         function saveToLocalStorage() {
-            localStorage.setItem('tpihs_reports', JSON.stringify(evaluatedReportsStore));
+            localStorage.setItem('cdss_reports', JSON.stringify(evaluatedReportsStore));
         }
 
         function loadFromLocalStorage() {
-            const saved = localStorage.getItem('tpihs_reports');
+            const saved = localStorage.getItem('cdss_reports');
             if (saved) {
                 try {
                     evaluatedReportsStore = JSON.parse(saved);
@@ -1271,7 +1271,7 @@ CRITICAL SYSTEM INSTRUCTIONS:
 
         function clearHistory() {
             evaluatedReportsStore = [];
-            localStorage.removeItem('tpihs_reports');
+            localStorage.removeItem('cdss_reports');
             renderHistoryVault();
         }
 
@@ -1280,7 +1280,7 @@ CRITICAL SYSTEM INSTRUCTIONS:
                 showNotification("No evaluated reports in vault to export.");
                 return;
             }
-            let masterText = "=== TPIHS KMU CLINICAL DECISION SUPPORT - MASTER BATCH REPORT ===\n\n";
+            let masterText = "=== CLINICAL DECISION SUPPORT - MASTER BATCH REPORT ===\n\n";
             evaluatedReportsStore.forEach((r, idx) => {
                 masterText += `--- REPORT ${idx + 1}: ${r.title} (${r.date}) ---\n${r.content}\n\n==============================\n\n`;
             });
