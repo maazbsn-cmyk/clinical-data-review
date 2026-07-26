@@ -54,6 +54,20 @@
             .theme-btn { top: 0.5rem; right: 0.5rem; font-size: 0.75rem; padding: 0.35rem 0.6rem; }
         }
 
+        /* --- NEW TOP NAVIGATION PANEL STYLES --- */
+        .top-nav-wrapper { max-width: 1480px; width: 100%; margin: 1.5rem auto 0 auto; padding: 0 1rem; box-sizing: border-box; }
+        .top-nav-panel { display: flex; justify-content: space-between; align-items: center; background: var(--card-bg); border: 1px solid var(--border); padding: 0.8rem 1.25rem; border-radius: 12px; box-shadow: var(--shadow); flex-wrap: wrap; gap: 1rem; }
+        .nav-logo { font-size: 1.1rem; font-weight: 900; font-style: italic; color: var(--heading); display: flex; align-items: center; gap: 8px; }
+        .nav-logo span { color: #3b82f6; text-decoration: underline; }
+        .nav-tabs { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+        .nav-tab-btn { background: var(--tool-bg); color: var(--text); border: 1px solid var(--input-border); padding: 0.6rem 1.2rem; border-radius: 6px; font-weight: bold; cursor: pointer; transition: all 0.2s; font-size: 0.85rem; text-transform: uppercase; }
+        .nav-tab-btn:hover { border-color: var(--highlight); color: var(--highlight); }
+        .nav-tab-btn.active { background: var(--accent-gradient); color: white; border-color: transparent; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3); }
+        
+        .tab-content { display: none; width: 100%; }
+        .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
         .mobile-nav-bars { display: none; gap: 0.5rem; margin: 0.75rem 0.75rem 0 0.75rem; }
         .mobile-toggle-btn { flex: 1; background: var(--tool-bg); color: var(--highlight); padding: 0.75rem 0.5rem; text-align: center; font-weight: bold; cursor: pointer; border: 1px solid var(--input-border); border-radius: 8px; font-size: 0.85rem; transition: background 0.3s; }
         
@@ -62,16 +76,18 @@
 
         @media (max-width: 1150px) {
             main { grid-template-columns: 260px 1fr; }
-            .right-sidebar { grid-column: 1 / -1; }
+            .right-sidebar { grid-column: 1 / -1; display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
         }
 
         @media (max-width: 960px) {
             .mobile-nav-bars { display: flex; }
+            .top-nav-panel { justify-content: center; }
             main { grid-template-columns: 1fr; margin: 0.75rem auto; padding: 0 0.75rem; }
+            .right-sidebar { grid-template-columns: 1fr; }
             #sidebarNav { display: none; width: 100%; }
             #sidebarNav.mobile-open { display: block !important; margin-bottom: 1rem; }
             .right-sidebar { display: none; width: 100%; }
-            .right-sidebar.mobile-open { display: block !important; margin-bottom: 1rem; }
+            .right-sidebar.mobile-open { display: flex !important; margin-bottom: 1rem; flex-direction: column; }
         }
 
         .card { background: var(--card-bg); padding: 1.25rem; border-radius: 12px; box-shadow: var(--shadow); margin-bottom: 1.25rem; border: 1px solid var(--border); width: 100%; transition: background 0.3s, border 0.3s; }
@@ -150,9 +166,23 @@
         <button id="themeToggle" onclick="toggleTheme()" class="theme-btn">☀️ Light Mode</button>
     </header>
 
+    <!-- TOP NAVIGATION PANEL -->
+    <div class="top-nav-wrapper">
+        <div class="top-nav-panel">
+            <div class="nav-logo">
+                <span style="font-size: 1.3rem;">🛡️ CDSS</span> MULTIMODAL ENGINE
+            </div>
+            <div class="nav-tabs">
+                <button class="nav-tab-btn active" onclick="switchTab('info-section', this)">🔍 CLINICAL SCANNER</button>
+                <button class="nav-tab-btn" onclick="switchTab('gcs-section', this)">🧠 GCS CALCULATOR</button>
+                <button class="nav-tab-btn" onclick="switchTab('bmi-section', this)">⚖️ BMI CALCULATOR</button>
+            </div>
+        </div>
+    </div>
+
     <div class="mobile-nav-bars">
         <div class="mobile-toggle-btn" onclick="toggleLeftMenu()">☰ Guides & Protocols</div>
-        <div class="mobile-toggle-btn" onclick="toggleRightMenu()">🖩 Calculators & Vault</div>
+        <div class="mobile-toggle-btn" onclick="toggleRightMenu()">🖩 Extras & Vault</div>
     </div>
 
     <main>
@@ -188,38 +218,96 @@
             </div>
         </aside>
 
-        <!-- Middle Column: Main Evaluation Workspace -->
-        <section>
-            <div class="section-heading">Clinical Evaluation & Ward Dashboard</div>
+        <!-- Middle Column: Main Evaluation Workspace & Tabs -->
+        <section style="display: flex; flex-direction: column;">
             
             <div id="notificationArea"></div>
 
-            <div id="inputCard" class="card">
-                <div class="label-row">
-                    <label for="scenario">Patient Scenario / Ward Data</label>
-                    <a class="insert-sample" onclick="insertSample()">Insert sample case</a>
+            <!-- TAB 1: CLINICAL SCANNER -->
+            <div id="info-section" class="tab-content active">
+                <div class="section-heading">Clinical Evaluation & Ward Dashboard</div>
+                <div id="inputCard" class="card">
+                    <div class="label-row">
+                        <label for="scenario">Patient Scenario / Ward Data</label>
+                        <a class="insert-sample" onclick="insertSample()">Insert sample case</a>
+                    </div>
+                    <textarea id="scenario" rows="5" placeholder="Type scenario, upload up to 10 ward sheet photos, or paste multiple unformatted patient data..."></textarea>
+
+                    <div class="input-tools">
+                        <input type="file" id="imageInput" accept="image/*" multiple class="hidden" onchange="handleImageUpload(event)">
+                        <button type="button" onclick="document.getElementById('imageInput').click()">📷 Upload Sheets (Max 10)</button>
+                        <button type="button" id="voiceBtn" onclick="startVoiceInput()">🎤 Voice Dictation</button>
+                    </div>
+
+                    <label for="discipline" style="display:block; margin-bottom:0.4rem;">Select Professional Discipline</label>
+                    <select id="discipline">
+                        <option value="Nursing">Nursing</option>
+                        <option value="Radiology">Radiology</option>
+                        <option value="Dental">Dental</option>
+                        <option value="Anaesthesia">Anaesthesia</option>
+                        <option value="Pharmacy">Pharmacy</option>
+                        <option value="Medical Laboratory Technology">Medical Laboratory Technology</option>
+                    </select>
+
+                    <button id="submitBtn" onclick="evaluateCase()">Evaluate Clinical Priorities</button>
                 </div>
-                <textarea id="scenario" rows="5" placeholder="Type scenario, upload up to 10 ward sheet photos, or paste multiple unformatted patient data..."></textarea>
-
-                <div class="input-tools">
-                    <input type="file" id="imageInput" accept="image/*" multiple class="hidden" onchange="handleImageUpload(event)">
-                    <button type="button" onclick="document.getElementById('imageInput').click()">📷 Upload Sheets (Max 10)</button>
-                    <button type="button" id="voiceBtn" onclick="startVoiceInput()">🎤 Voice Dictation</button>
-                </div>
-
-                <label for="discipline" style="display:block; margin-bottom:0.4rem;">Select Professional Discipline</label>
-                <select id="discipline">
-                    <option value="Nursing">Nursing</option>
-                    <option value="Radiology">Radiology</option>
-                    <option value="Dental">Dental</option>
-                    <option value="Anaesthesia">Anaesthesia</option>
-                    <option value="Pharmacy">Pharmacy</option>
-                    <option value="Medical Laboratory Technology">Medical Laboratory Technology</option>
-                </select>
-
-                <button id="submitBtn" onclick="evaluateCase()">Evaluate Clinical Priorities</button>
             </div>
 
+            <!-- TAB 2: GCS CALCULATOR -->
+            <div id="gcs-section" class="tab-content">
+                <div class="section-heading">Neurological Assessment</div>
+                <div class="card right-card">
+                    <h3>Glasgow Coma Scale (GCS)</h3>
+                    <div class="calc-group">
+                        <select id="gcsEye" onchange="calcGCS()">
+                            <option value="4">Eye: Spontaneous (4)</option>
+                            <option value="3">Eye: To Speech (3)</option>
+                            <option value="2">Eye: To Pain (2)</option>
+                            <option value="1">Eye: None (1)</option>
+                        </select>
+                        <select id="gcsVerbal" onchange="calcGCS()">
+                            <option value="5">Verbal: Oriented (5)</option>
+                            <option value="4">Verbal: Confused (4)</option>
+                            <option value="3">Verbal: Inappropriate Words (3)</option>
+                            <option value="2">Verbal: Incomprehensible Sounds (2)</option>
+                            <option value="1">Verbal: None (1)</option>
+                        </select>
+                        <select id="gcsMotor" onchange="calcGCS()">
+                            <option value="6">Motor: Obeys Commands (6)</option>
+                            <option value="5">Motor: Localizes Pain (5)</option>
+                            <option value="4">Motor: Withdraws from Pain (4)</option>
+                            <option value="3">Motor: Abnormal Flexion - Decorticate (3)</option>
+                            <option value="2">Motor: Abnormal Extension - Decerebrate (2)</option>
+                            <option value="1">Motor: None (1)</option>
+                        </select>
+                        <div id="gcsRes" class="calc-result">GCS: 15 (Patient is normal, alert, and oriented.)</div>
+                        <button class="calc-btn" onclick="evaluateCalcResult('Glasgow Coma Scale score of ' + document.getElementById('gcsRes').innerText)">Evaluate GCS Interventions</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 3: BMI CALCULATOR -->
+            <div id="bmi-section" class="tab-content">
+                <div class="section-heading">Anthropometric Assessment</div>
+                <div class="card right-card">
+                    <h3>Body Mass Index (BMI)</h3>
+                    <div class="calc-group">
+                        <input type="number" id="bmiWt" placeholder="Weight (kg)" oninput="calcBMI()">
+                        <select id="bmiUnit" onchange="toggleHeightInputs(); calcBMI();">
+                            <option value="m">Height in Meters (m)</option>
+                            <option value="cm">Height in Centimeters (cm)</option>
+                            <option value="ft">Height in Feet & Inches</option>
+                        </select>
+                        <div id="heightInputContainer">
+                            <input type="number" id="bmiHt" placeholder="Height (e.g. 1.75)" oninput="calcBMI()">
+                        </div>
+                        <div id="bmiRes" class="calc-result">BMI: --</div>
+                        <button class="calc-btn" onclick="evaluateCalcResult('BMI calculation result: ' + document.getElementById('bmiRes').innerText)">Evaluate BMI Interventions</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- GLOBAL OUTPUT CONTAINERS (Visible across all tabs when triggered) -->
             <div id="loading" class="card hidden" style="text-align: center; padding: 2rem;">
                 <div class="loader"></div>
                 <p id="loadingText" style="font-weight: 600; color: var(--highlight); margin-bottom: 0.5rem; font-size: 0.9rem;">Processing clinical reports...</p>
@@ -228,65 +316,20 @@
                 </div>
                 <button class="btn-danger" onclick="cancelEvaluation()" style="margin-top: 0.75rem; width: 100%;">Cancel & Keep Completed</button>
             </div>
-
+            
             <div id="resultsContainer" class="hidden"></div>
+            
         </section>
 
-        <!-- Right Sidebar: Separated Calculator Cards -->
+        <!-- Right Sidebar: Remaining Calculators & Vault -->
         <aside class="right-sidebar">
-            <div class="card right-card">
-                <h3>Glasgow Coma Scale (GCS)</h3>
-                <div class="calc-group">
-                    <select id="gcsEye" onchange="calcGCS()">
-                        <option value="4">Eye: Spontaneous (4)</option>
-                        <option value="3">Eye: To Speech (3)</option>
-                        <option value="2">Eye: To Pain (2)</option>
-                        <option value="1">Eye: None (1)</option>
-                    </select>
-                    <select id="gcsVerbal" onchange="calcGCS()">
-                        <option value="5">Verbal: Oriented (5)</option>
-                        <option value="4">Verbal: Confused (4)</option>
-                        <option value="3">Verbal: Inappropriate Words (3)</option>
-                        <option value="2">Verbal: Incomprehensible Sounds (2)</option>
-                        <option value="1">Verbal: None (1)</option>
-                    </select>
-                    <select id="gcsMotor" onchange="calcGCS()">
-                        <option value="6">Motor: Obeys Commands (6)</option>
-                        <option value="5">Motor: Localizes Pain (5)</option>
-                        <option value="4">Motor: Withdraws from Pain (4)</option>
-                        <option value="3">Motor: Abnormal Flexion - Decorticate (3)</option>
-                        <option value="2">Motor: Abnormal Extension - Decerebrate (2)</option>
-                        <option value="1">Motor: None (1)</option>
-                    </select>
-                    <div id="gcsRes" class="calc-result">GCS: 15 (Patient is normal, alert, and oriented.)</div>
-                    <button class="calc-btn" onclick="evaluateCalcResult('Glasgow Coma Scale score of ' + document.getElementById('gcsRes').innerText)">Evaluate GCS Interventions</button>
-                </div>
-            </div>
-
-            <div class="card right-card">
-                <h3>BMI Calculator</h3>
-                <div class="calc-group">
-                    <input type="number" id="bmiWt" placeholder="Weight (kg)" oninput="calcBMI()">
-                    <select id="bmiUnit" onchange="toggleHeightInputs(); calcBMI();">
-                        <option value="m">Height in Meters (m)</option>
-                        <option value="cm">Height in Centimeters (cm)</option>
-                        <option value="ft">Height in Feet & Inches</option>
-                    </select>
-                    <div id="heightInputContainer">
-                        <input type="number" id="bmiHt" placeholder="Height (e.g. 1.75)" oninput="calcBMI()">
-                    </div>
-                    <div id="bmiRes" class="calc-result">BMI: --</div>
-                    <button class="calc-btn" onclick="evaluateCalcResult('BMI calculation result: ' + document.getElementById('bmiRes').innerText)">Evaluate BMI Interventions</button>
-                </div>
-            </div>
-
             <div class="card right-card">
                 <h3>Mean Arterial Pressure (MAP)</h3>
                 <div class="calc-group">
-                    <input type="number" id="mapSbp" placeholder="Systolic Blood Pressure (mmHg)" oninput="calcMAP()">
-                    <input type="number" id="mapDbp" placeholder="Diastolic Blood Pressure (mmHg)" oninput="calcMAP()">
+                    <input type="number" id="mapSbp" placeholder="Systolic BP (mmHg)" oninput="calcMAP()">
+                    <input type="number" id="mapDbp" placeholder="Diastolic BP (mmHg)" oninput="calcMAP()">
                     <div id="mapRes" class="calc-result">MAP: -- mmHg</div>
-                    <button class="calc-btn" onclick="evaluateCalcResult('Mean Arterial Pressure calculation: ' + document.getElementById('mapRes').innerText)">Evaluate MAP Interventions</button>
+                    <button class="calc-btn" onclick="evaluateCalcResult('Mean Arterial Pressure calculation: ' + document.getElementById('mapRes').innerText)">Evaluate MAP</button>
                 </div>
             </div>
 
@@ -309,7 +352,7 @@
                     <li style="text-align: center;">No stored reports yet.</li>
                 </ul>
                 <button class="btn-secondary" onclick="clearHistory()" style="margin-top: 0.75rem; font-size: 0.75rem; padding: 0.4rem; width: 100%;">Clear Vault</button>
-                <button class="btn-success" onclick="exportBatchPDF()" style="margin-top: 0.5rem; font-size: 0.75rem; padding: 0.4rem; width: 100%;">Export Master TXT/PDF</button>
+                <button class="btn-success" onclick="exportBatchPDF()" style="margin-top: 0.5rem; font-size: 0.75rem; padding: 0.4rem; width: 100%;">Export Master TXT</button>
             </div>
         </aside>
     </main>
@@ -322,6 +365,21 @@
         let extractedSheets = [];
         let isCancelled = false;
         let evaluatedReportsStore = [];
+
+        // --- NEW TAB SWITCHING LOGIC ---
+        function switchTab(targetId, btnElement) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(section => {
+                section.classList.remove('active');
+            });
+            // Remove active style from all buttons
+            document.querySelectorAll('.nav-tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            // Show selected tab and activate button
+            document.getElementById(targetId).classList.add('active');
+            btnElement.classList.add('active');
+        }
 
         // Theme Switcher Logic
         function toggleTheme() {
@@ -476,13 +534,15 @@
             const discipline = document.getElementById('discipline').value;
             const btn = document.getElementById('submitBtn');
             const loading = document.getElementById('loading');
-            const inputCard = document.getElementById('inputCard');
             const resultsContainer = document.getElementById('resultsContainer');
             const loadingText = document.getElementById('loadingText');
 
+            // Force switch to scanner tab to see result clearly
+            switchTab('info-section', document.querySelector('.nav-tab-btn'));
+
             isCancelled = false;
             btn.disabled = true;
-            inputCard.classList.add('hidden');
+            document.getElementById('inputCard').classList.add('hidden');
             resultsContainer.innerHTML = '';
             resultsContainer.classList.remove('hidden');
             loading.classList.remove('hidden');
@@ -812,6 +872,9 @@
                 const li = document.createElement('li');
                 li.innerText = `[${rep.date}] ${rep.title}`;
                 li.onclick = () => {
+                    // Switch back to scanner tab to see result clearly
+                    switchTab('info-section', document.querySelector('.nav-tab-btn'));
+                    
                     const resultsContainer = document.getElementById('resultsContainer');
                     const inputCard = document.getElementById('inputCard');
                     inputCard.classList.add('hidden');
@@ -873,6 +936,9 @@
         }
 
         function resetForm() {
+            // Force reset back to the Clinical Scanner Tab
+            switchTab('info-section', document.querySelector('.nav-tab-btn'));
+            
             document.getElementById('resultsContainer').classList.add('hidden');
             document.getElementById('resultsContainer').innerHTML = '';
             document.getElementById('inputCard').classList.remove('hidden');
