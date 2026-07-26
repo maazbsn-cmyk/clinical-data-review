@@ -239,6 +239,30 @@
         .btn-secondary:hover { background: var(--input-border); }
         .btn-success { background: linear-gradient(135deg, #059669 0%, #047857 100%); color: white; box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3); border: none; }
         .btn-danger { background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); color: white; box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3); border: none; }
+
+        /* FAST BUTTON FOR INSTANT GROQ ANSWERS */
+        .fast-btn {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.5rem;
+            border-radius: 9999px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            cursor: pointer;
+            margin-top: 1.25rem;
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+            transition: transform 0.2s, filter 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            width: max-content;
+        }
+        .fast-btn:hover {
+            filter: brightness(1.1);
+            transform: scale(1.05);
+        }
         
         .badges-row { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.75rem; }
         .verified-badge { padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 700; background: rgba(16, 185, 129, 0.1); color: #10b981; border: 1px solid #10b981; }
@@ -667,6 +691,7 @@
         let extractedSheets = [];
         let isCancelled = false;
         let evaluatedReportsStore = [];
+        let currentAbortController = null;
 
         function toggleMobileMenu() {
             const navWrapper = document.getElementById('navWrapper');
@@ -931,8 +956,8 @@
             }
         }
 
-        // NEW OPTIMIZED PROMPT FOR CASE ANALYZER
-        async function evaluateCase() {
+        // NEW OPTIMIZED PROMPT FOR CASE ANALYZER WITH FAST MODE INTEGRATION
+        async function evaluateCase(isFastMode = false) {
             const discipline = document.getElementById('discipline').value;
             const rawText = document.getElementById('scenario').value.trim();
             const inputCard = document.getElementById('scannerInputCard');
@@ -943,12 +968,17 @@
                 return; 
             }
 
+            if (currentAbortController) currentAbortController.abort();
+            currentAbortController = new AbortController();
+            const signal = currentAbortController.signal;
+
             inputCard.classList.add('hidden');
             resultCard.classList.remove('hidden');
             resultCard.innerHTML = `
-                <div class="card" style="text-align:center; padding: 2rem;">
+                <div class="card" style="text-align:center; padding: 2rem; display: flex; flex-direction: column; align-items: center;">
                     <div class="loader"></div>
-                    <p style="font-weight:600; color:var(--highlight);">Analyzing case for ${discipline}...</p>
+                    <p style="font-weight:600; color:var(--highlight); margin-bottom: 0;">Analyzing case for ${discipline}...</p>
+                    ${!isFastMode ? `<button class="fast-btn" onclick="evaluateCase(true)">⚡ Answer Now</button>` : `<p style="color: #f59e0b; font-size: 0.85rem; font-weight: bold; margin-top: 1rem;">⚡ Fast Mode Activated</p>`}
                 </div>
             `;
 
@@ -987,8 +1017,8 @@ ${rawText}
                 const response = await fetch('/api/evaluate', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    // Send strictPrompt to AI, but send rawText to save cleanly in Google Sheets
-                    body: JSON.stringify({ scenario: strictPrompt, rawInput: rawText, discipline: discipline, tool: "Case Analyzer" })
+                    body: JSON.stringify({ scenario: strictPrompt, rawInput: rawText, discipline: discipline, tool: "Case Analyzer", fastMode: isFastMode }),
+                    signal: signal
                 });
 
                 const text = await response.text();
@@ -1021,12 +1051,16 @@ ${rawText}
                     </div>
                 `;
             } catch (error) {
+                if (error.name === 'AbortError') {
+                    console.log("Standard request aborted for Fast Mode.");
+                    return; 
+                }
                 showNotification("Error: " + error.message);
                 resetTab('scanner');
             }
         }
 
-        async function evaluateCalcResult(calcDataSummary, tabPrefix, toolName) {
+        async function evaluateCalcResult(calcDataSummary, tabPrefix, toolName, isFastMode = false) {
             if (calcDataSummary.includes("--")) {
                 showNotification("⚠️ Please enter numbers to calculate the result before evaluating.");
                 return;
@@ -1035,12 +1069,17 @@ ${rawText}
             const inputCard = document.getElementById(`${tabPrefix}InputCard`);
             const resultCard = document.getElementById(`${tabPrefix}ResultCard`);
 
+            if (currentAbortController) currentAbortController.abort();
+            currentAbortController = new AbortController();
+            const signal = currentAbortController.signal;
+
             inputCard.classList.add('hidden');
             resultCard.classList.remove('hidden');
             resultCard.innerHTML = `
-                <div class="card" style="text-align:center; padding: 2rem;">
+                <div class="card" style="text-align:center; padding: 2rem; display: flex; flex-direction: column; align-items: center;">
                     <div class="loader"></div>
-                    <p style="font-weight:600; color:var(--highlight);">Evaluating concise interventions...</p>
+                    <p style="font-weight:600; color:var(--highlight); margin-bottom: 0;">Evaluating concise interventions...</p>
+                    ${!isFastMode ? `<button class="fast-btn" onclick="evaluateCalcResult('${calcDataSummary}', '${tabPrefix}', '${toolName}', true)">⚡ Answer Now</button>` : `<p style="color: #f59e0b; font-size: 0.85rem; font-weight: bold; margin-top: 1rem;">⚡ Fast Mode Activated</p>`}
                 </div>
             `;
 
@@ -1056,8 +1095,8 @@ CRITICAL SYSTEM INSTRUCTIONS:
                 const response = await fetch('/api/evaluate', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    // Send strictPrompt to AI, but send calcDataSummary to save cleanly in Google Sheets
-                    body: JSON.stringify({ scenario: strictPrompt, rawInput: calcDataSummary, discipline: 'General Clinical', tool: toolName })
+                    body: JSON.stringify({ scenario: strictPrompt, rawInput: calcDataSummary, discipline: 'General Clinical', tool: toolName, fastMode: isFastMode }),
+                    signal: signal
                 });
 
                 const text = await response.text();
@@ -1089,6 +1128,10 @@ CRITICAL SYSTEM INSTRUCTIONS:
                     </div>
                 `;
             } catch (error) {
+                if (error.name === 'AbortError') {
+                    console.log("Standard request aborted for Fast Mode.");
+                    return; 
+                }
                 showNotification("Error: " + error.message);
                 resetTab(tabPrefix);
             }
