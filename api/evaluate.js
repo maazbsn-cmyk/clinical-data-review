@@ -123,7 +123,7 @@ ${rawInput}
         .replace(/\*/g, '-')           
         .trim();
 
-    let uniqueCode = "1";
+    let uniqueCode = "UID-1";
 
     if (SHEET_WEBHOOK) {
         try {
