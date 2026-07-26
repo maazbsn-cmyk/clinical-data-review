@@ -49,7 +49,7 @@
         * { box-sizing: border-box; word-break: break-word; overflow-wrap: break-word; }
         body { font-family: system-ui, -apple-system, sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 0; display: flex; flex-direction: column; min-height: 100vh; overflow-x: hidden; transition: background-color 0.3s ease, color 0.3s ease; }
         
-        /* BULLETPROOF 3-COLUMN FLEXBOX HEADER */
+        /* 3-COLUMN FLEXBOX HEADER */
         header { 
             background: var(--header-bg); 
             color: var(--header-text); 
@@ -61,22 +61,15 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            position: relative;
         }
         .header-left { flex: 1; display: flex; justify-content: flex-start; align-items: center; }
-    .header-center {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center; }
+        .header-center { display: flex; flex-direction: column; align-items: center; text-align: center; }
         .header-right { flex: 1; display: flex; justify-content: flex-end; align-items: center; }
 
         h1 { margin: 0; font-size: 1.6rem; letter-spacing: -0.5px; background: linear-gradient(90deg, #60a5fa, #38bdf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .subtitle { color: var(--header-sub); font-size: 0.9rem; margin-top: 0.3rem; font-weight: 500; transition: color 0.3s; }
         
+        /* FIXED: Added width: max-content to prevent 100% button stretching */
         .theme-btn { 
             padding: 0.5rem 1rem; 
             background: rgba(125,125,125,0.15); 
@@ -90,6 +83,8 @@
             display: flex; 
             align-items: center; 
             gap: 8px; 
+            width: max-content; 
+            box-shadow: none;
         }
         .theme-btn:hover { background: rgba(125,125,125,0.3); }
         
@@ -104,6 +99,8 @@
             align-items: center; 
             justify-content: center;
             transition: all 0.2s;
+            box-shadow: none;
+            width: max-content;
         }
         .mobile-hamburger:hover { background: rgba(125,125,125,0.3); }
 
@@ -120,7 +117,7 @@
         .top-nav-wrapper { max-width: 1300px; width: 100%; margin: 1rem auto 0 auto; padding: 0 1rem; box-sizing: border-box; }
         .top-nav-panel { display: flex; justify-content: center; background: var(--card-bg); border: 1px solid var(--border); padding: 0.8rem 1.25rem; border-radius: 12px; box-shadow: var(--shadow); transition: background 0.3s, border 0.3s; }
         .nav-tabs { display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: center; width: 100%; }
-        .nav-tab-btn { flex: 1; min-width: 90px; background: var(--tool-bg); color: var(--text); border: 1px solid var(--input-border); padding: 0.6rem 0.5rem; border-radius: 6px; font-weight: bold; cursor: pointer; transition: all 0.2s; font-size: 0.75rem; text-transform: uppercase; text-align: center; }
+        .nav-tab-btn { flex: 1; min-width: 90px; background: var(--tool-bg); color: var(--text); border: 1px solid var(--input-border); padding: 0.6rem 0.5rem; border-radius: 6px; font-weight: bold; cursor: pointer; transition: all 0.2s; font-size: 0.75rem; text-transform: uppercase; text-align: center; box-shadow: none; }
         .nav-tab-btn:hover { border-color: var(--highlight); color: var(--highlight); }
         .nav-tab-btn.active { background: var(--accent-gradient); color: white; border-color: transparent; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3); }
 
@@ -132,7 +129,7 @@
             .top-nav-wrapper.open { left: 0; }
             .top-nav-panel { height: 100%; border-radius: 0; border: none; border-right: 1px solid var(--border); padding: 2rem 1rem; flex-direction: column; justify-content: flex-start; }
             .nav-tabs { flex-direction: column; gap: 0.75rem; }
-            .nav-tab-btn { padding: 1rem; font-size: 0.9rem; text-align: left; padding-left: 1.5rem; }
+            .nav-tab-btn { padding: 1rem; font-size: 0.9rem; text-align: left; padding-left: 1.5rem; width: 100%; }
         }
         
         .tab-content { display: none; width: 100%; }
@@ -220,16 +217,17 @@
         .calc-row { display: flex; gap: 0.5rem; }
         .calc-result { background: var(--input-bg); padding: 0.85rem; border-radius: 6px; color: var(--highlight); font-weight: bold; text-align: center; margin-top: 0.5rem; border: 1px solid var(--border); font-size: 1rem; transition: background 0.3s, border 0.3s; }
         
-        .calc-btn { background: var(--tool-bg); color: var(--highlight); border: 1px solid var(--input-border); padding: 0.75rem 0.5rem; border-radius: 6px; font-size: 0.9rem; font-weight: bold; cursor: pointer; margin-top: 0.75rem; width: 100%; text-align: center; transition: all 0.2s; }
-        .calc-btn:hover { background: #3b82f6; color: #fff; }
-
-        .input-tools { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1.25rem; width: 100%; }
-        .input-tools button { width: 100%; padding: 0.75rem 0.5rem; font-size: 0.85rem; background: var(--tool-bg); border: 1px solid var(--input-border); color: var(--text); border-radius: 6px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
-        .input-tools button:hover { border-color: var(--highlight); color: var(--highlight); }
-
+        /* Global Button Override */
         button { background: var(--accent-gradient); color: white; border: none; padding: 0.85rem 1rem; border-radius: 8px; font-size: 1rem; font-weight: bold; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3); width: 100%; }
         button:hover { filter: brightness(1.1); }
         button:disabled { background: var(--input-border); color: var(--muted); cursor: not-allowed; box-shadow: none; }
+
+        .calc-btn { background: var(--tool-bg); color: var(--highlight); border: 1px solid var(--input-border); padding: 0.75rem 0.5rem; border-radius: 6px; font-size: 0.9rem; font-weight: bold; cursor: pointer; margin-top: 0.75rem; width: 100%; text-align: center; transition: all 0.2s; box-shadow: none; }
+        .calc-btn:hover { background: #3b82f6; color: #fff; }
+
+        .input-tools { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1.25rem; width: 100%; }
+        .input-tools button { width: 100%; padding: 0.75rem 0.5rem; font-size: 0.85rem; background: var(--tool-bg); border: 1px solid var(--input-border); color: var(--text); border-radius: 6px; font-weight: 600; cursor: pointer; transition: all 0.2s; box-shadow: none; }
+        .input-tools button:hover { border-color: var(--highlight); color: var(--highlight); }
         
         .hidden { display: none !important; }
         .output-card { border-left: 5px solid #3b82f6; margin-bottom: 0; background: var(--card-bg); }
@@ -241,12 +239,12 @@
         .result-content li { margin-bottom: 0.3rem; }
         
         .top-action-bar { display: flex; gap: 0.5rem; margin-top: 0.5rem; margin-bottom: 1.25rem; flex-wrap: wrap; border-bottom: 1px solid var(--border); padding-bottom: 1rem; }
-        .top-action-bar button { flex: 1; font-size: 0.85rem; padding: 0.65rem 0.5rem; }
+        .top-action-bar button { flex: 1; font-size: 0.85rem; padding: 0.65rem 0.5rem; box-shadow: none; }
         
-        .btn-secondary { background: var(--tool-bg); color: var(--text); box-shadow: none; border: 1px solid var(--input-border); }
+        .btn-secondary { background: var(--tool-bg); color: var(--text); border: 1px solid var(--input-border); }
         .btn-secondary:hover { background: var(--input-border); }
-        .btn-success { background: linear-gradient(135deg, #059669 0%, #047857 100%); box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3); }
-        .btn-danger { background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3); }
+        .btn-success { background: linear-gradient(135deg, #059669 0%, #047857 100%); color: white; box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3); border: none; }
+        .btn-danger { background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); color: white; box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3); border: none; }
         
         .badges-row { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.75rem; }
         .verified-badge { padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 700; background: rgba(16, 185, 129, 0.1); color: #10b981; border: 1px solid #10b981; }
@@ -351,7 +349,7 @@
     <div id="notificationArea"></div>
     <div id="mobileMenuOverlay" onclick="toggleMobileMenu()"></div>
 
-    <!-- BULLETPROOF 3-COLUMN FLEXBOX HEADER -->
+    <!-- NEW 3-COLUMN FLEXBOX HEADER -->
     <header>
         <div class="header-left">
             <button class="mobile-hamburger" onclick="toggleMobileMenu()">
@@ -600,7 +598,7 @@
             </div>
         </div>
 
-        <!-- TAB 6: NEW IV DRIP RATE CALCULATOR -->
+        <!-- TAB 6: IV DRIP RATE CALCULATOR -->
         <div id="iv-section" class="tab-content">
             <div class="section-heading">IV Drip Rate Calculator</div>
             <div class="tab-layout two-col">
@@ -656,10 +654,8 @@
         
     </main>
 
-    <!-- Circular Mobile FAB -->
     <button class="mobile-ref-fab" onclick="openMobileRefModal()" title="View Protocols">ℹ️</button>
 
-    <!-- Mobile Reference Modal Window -->
     <div id="mobileRefModal" class="modal-overlay hidden" onclick="closeMobileRefModal()">
         <div class="modal-content" onclick="event.stopPropagation()">
             <div class="modal-header">
@@ -679,7 +675,6 @@
         let isCancelled = false;
         let evaluatedReportsStore = [];
 
-        // Mobile Nav Logic
         function toggleMobileMenu() {
             const navWrapper = document.getElementById('navWrapper');
             const overlay = document.getElementById('mobileMenuOverlay');
@@ -701,7 +696,6 @@
             document.getElementById(targetId).classList.add('active');
             btnElement.classList.add('active');
             
-            // Auto-close menu on mobile
             if (window.innerWidth <= 800) {
                 document.getElementById('navWrapper').classList.remove('open');
                 document.getElementById('mobileMenuOverlay').style.display = 'none';
