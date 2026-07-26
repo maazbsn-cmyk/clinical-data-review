@@ -35,7 +35,6 @@ export default async function handler(req, res) {
         }
 
         if (DOC_WEBHOOK) {
-            // Enhanced regex catches all variations from Gemini, Groq, and Hugging Face
             let docEvaluation = evaluation.split(/(?:\n|^)(?:#{1,6}|\*\*|\*)*\s*(?:Evidence-?Based\s+)?References:?/i)[0]
                 .replace(/\*\*(.*?)\*\*/g, '$1') 
                 .replace(/(^\s*\*|\n\s*\*)\s/g, '\n• ') 
@@ -89,15 +88,35 @@ export default async function handler(req, res) {
         return data.candidates[0].content.parts[0].text.trim();
     }
 
-    async function callGroq() {
+    async function callGroqModel(model) {
         if(!GROQ_KEY) throw new Error("No Groq Key");
         const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-            method: "POST", headers: { "Authorization": `Bearer ${GROQ_KEY}`, "Content-Type": "application/json" },
-            body: JSON.stringify({ model: "llama-3.3-70b-versatile", messages: [{ role: "user", content: systemPrompt }] })
+            method: "POST", 
+            headers: { "Authorization": `Bearer ${GROQ_KEY}`, "Content-Type": "application/json" },
+            body: JSON.stringify({ model: model, messages: [{ role: "user", content: systemPrompt }] })
         });
-        if (!response.ok) throw new Error("Groq failed");
+        if (!response.ok) throw new Error(`Groq (${model}) failed`);
         const data = await response.json();
         return data.choices[0].message.content.trim();
+    }
+
+    // Sequential Groq model fallback execution
+    async function callGroqWithFallbacks() {
+        const groqModels = [
+            { id: "llama-3.3-70b-versatile", label: "Groq (Llama 3.3 70B)" },
+            { id: "qwen/qwen3-32b", label: "Groq (Qwen 3 32B)" },
+            { id: "openai/gpt-oss-120b", label: "Groq (GPT-OSS 120B)" }
+        ];
+
+        for (const m of groqModels) {
+            try {
+                const text = await callGroqModel(m.id);
+                return { text, modelUsed: m.label };
+            } catch (err) {
+                console.warn(`${m.label} failed. Trying next Groq model...`);
+            }
+        }
+        throw new Error("All Groq models failed");
     }
 
     async function callHuggingFace() {
@@ -113,8 +132,9 @@ export default async function handler(req, res) {
 
     if (fastMode) {
         try {
-            evaluationResult = await callGroq();
-            currentModel = "Groq (Llama 3.3 70B)";
+            const groqRes = await callGroqWithFallbacks();
+            evaluationResult = groqRes.text;
+            currentModel = groqRes.modelUsed;
         } catch (e1) {
             try {
                 evaluationResult = await callGemini36();
@@ -133,8 +153,9 @@ export default async function handler(req, res) {
                 currentModel = "Gemini 3.5 Flash";
             } catch (e2) {
                 try {
-                    evaluationResult = await callGroq();
-                    currentModel = "Groq (Llama 3.3 70B)";
+                    const groqRes = await callGroqWithFallbacks();
+                    evaluationResult = groqRes.text;
+                    currentModel = groqRes.modelUsed;
                 } catch (e3) {
                     try {
                         evaluationResult = await callHuggingFace();
