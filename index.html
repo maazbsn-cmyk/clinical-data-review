@@ -595,7 +595,7 @@
                                 <option value="neonate">Neonate (&lt; 28 days)</option>
                             </select>
                             <input type="number" id="fluidWt" placeholder="Weight (kg)" oninput="calcFluids()">
-                            <div id="fluidRes" class="calc-result">Rate: -- mL/hr</div>
+                            <div id="fluidsRes" class="calc-result">Rate: -- mL/hr</div>
                             <button class="calc-btn" onclick="triggerCalcEval('fluids', 'Fluids Calculator')">Evaluate Interventions</button>
                         </div>
                     </div>
@@ -919,7 +919,7 @@
         function calcFluids() {
             const wt = parseFloat(document.getElementById('fluidWt').value);
             const ageCat = document.getElementById('fluidAgeCat').value;
-            const res = document.getElementById('fluidRes');
+            const res = document.getElementById('fluidsRes');
             
             if (wt > 0) {
                 let rate = 0;
@@ -1015,7 +1015,7 @@ Analyze the data strictly through the lens of the target discipline (${disciplin
 
 4. EVIDENCE-BASED REQUIREMENT:
 - Ground all recommendations in current, peer-reviewed clinical guidelines. Do not provide diagnostic certainty without sufficient data.
-- Include an "Evidence-Based References" section at the bottom citing 1 to 2 authoritative sources (e.g., WHO, CDC, NICE, or standard medical texts) that support your specific interventions.
+- You MUST conclude the response with a distinct section titled "### Evidence-Based References" citing 1 to 2 authoritative clinical sources (WHO, CDC, NICE, etc.).
 
 PATIENT DATA:
 ${rawText}
@@ -1098,6 +1098,7 @@ CRITICAL SYSTEM INSTRUCTIONS:
 2. HEALTHY/NORMAL RULE: If the value represents a healthy, normal clinical state, YOU MUST strictly respond with: "Values are within normal limits. No acute clinical interventions required. Continue routine care."
 3. ABNORMAL RULE: If abnormal, provide a maximum of 2 to 3 short, general clinical action steps.
 4. UNIVERSAL LANGUAGE RULE: DO NOT use discipline-specific terms like 'Nursing', 'Nurse', 'Doctor', or 'Medical'. Use universal clinical language.
+5. EVIDENCE-BASED REQUIREMENT: You MUST conclude the response with a distinct section titled "### Evidence-Based References" citing 1 to 2 authoritative clinical sources (WHO, CDC, NICE, etc.).
             `;
 
             try {
