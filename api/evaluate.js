@@ -3,87 +3,137 @@ export default async function handler(req, res) {
         return res.status(405).send('Method Not Allowed');
     }
 
-    // Notice we receive both the full AI 'scenario' prompt and the 'rawInput' for the Google Sheet
-    const { scenario, rawInput, discipline, tool = "General Tool" } = req.body;
+    const { rawInput, discipline, tool = "General Tool" } = req.body;
 
-    // 1. Extract User Location and IP automatically provided by Vercel
+    // 1. Extract Vercel Analytics Headers
     const ip = req.headers['x-forwarded-for'] || 'Unknown IP';
     const city = req.headers['x-vercel-ip-city'] || 'Unknown City';
     const country = req.headers['x-vercel-ip-country'] || 'Unknown Country';
     const location = `${city}, ${country}`.replace(/^,\s/, '');
 
-    // 2. Load Environment Variables
+    // 2. Load API Keys
     const SHEET_WEBHOOK = process.env.GOOGLE_WEBHOOK_URL;
-    const HF_KEY = process.env.HF_API_KEY;
     const GEMINI_KEY = process.env.GEMINI_API_KEY;
     const GROQ_KEY = process.env.GROQ_API_KEY;
+    const HF_KEY = process.env.HF_API_KEY;
 
     let evaluationResult = "";
     let modelUsed = "";
 
-    // -- FALLBACK AI FUNCTIONS --
+    // 3. Strict Multi-Disciplinary Prompt & Emergency Triage Engine
+    const systemPrompt = `
+CRITICAL SYSTEM INSTRUCTIONS: MULTI-DISCIPLINARY CLINICAL DATA ANALYSIS
+TARGET DISCIPLINE: ${discipline}
 
-    // Priority 1: Hugging Face (Mixtral 8x7B Medical-capable)
-    async function callHuggingFace() {
-        if(!HF_KEY) throw new Error("No HF Key");
-        const response = await fetch("https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1", {
-            method: "POST",
-            headers: { "Authorization": `Bearer ${HF_KEY}`, "Content-Type": "application/json" },
-            body: JSON.stringify({ 
-                inputs: scenario, 
-                parameters: { max_new_tokens: 800, return_full_text: false } 
-            })
-        });
-        if (!response.ok) throw new Error("Hugging Face API failed or is loading");
-        const data = await response.json();
-        return data[0].generated_text.trim();
-    }
+1. VALIDATION & GUARDRAILS:
+- GUARDRAIL 1 (Irrelevant Data): If the input contains profanity, jokes, video games, or non-clinical text, reply strictly with: "Irrelevant or invalid data provided. Please enter a valid clinical patient scenario."
+- GUARDRAIL 2 (Normal Findings): If findings are completely normal/stable, state: "Values are within normal limits. No acute interventions required. Continue routine monitoring."
 
-    // Priority 2: Google Gemini (High Capacity)
-    async function callGemini() {
-        if(!GEMINI_KEY) throw new Error("No Gemini Key");
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_KEY}`, {
+2. CROSS-DISCIPLINE TRIAGE & SAFETY RULE:
+- If the patient scenario describes a critical medical emergency (e.g., cardiac arrest, acute myocardial infarction, stroke, anaphylaxis, status epilepticus) and the target discipline is secondary (e.g., Dental, Pharmacy, Radiology), YOU MUST START WITH A WARNING: "CRITICAL ALERT: Prioritize emergency medical/nursing intervention and stabilization first. Secondary discipline actions delayed." Then provide safe, scope-limited insights.
+
+3. DISCIPLINE-SPECIFIC FOCUS:
+- Nursing: Immediate assessment, vitals monitoring, primary care actions.
+- Radiology: Urgent imaging protocols, abnormality identification.
+- Pharmacy: Medication review, contraindications, safety.
+- Anaesthesia: Preop risk, airway, sedation considerations.
+- Medical Laboratory Technology (MLT): Lab value interpretation, abnormal patterns.
+- Dental Sciences: Oral health assessment, dental pathologies.
+
+4. FORMATTING & TONE:
+- Provide a prioritized, actionable intervention plan using 3 to 4 concise bullet points.
+- Maintain a direct, professional clinical tone.
+
+PATIENT DATA:
+${rawInput}
+    `;
+
+    // -- 4-TIER FALLBACK CASCADE FUNCTIONS --
+
+    // Tier 1: Gemini 3.6 Flash
+    async function callGemini36() {
+        if(!GEMINI_KEY) throw new Error("No Gemini 3.6 Key");
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${GEMINI_KEY}`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ contents: [{ parts: [{ text: scenario }] }] })
+            body: JSON.stringify({ contents: [{ parts: [{ text: systemPrompt }] }] })
         });
-        if (!response.ok) throw new Error("Gemini API failed");
+        if (!response.ok) throw new Error("Gemini 3.6 Flash failed");
         const data = await response.json();
         return data.candidates[0].content.parts[0].text.trim();
     }
 
-    // Priority 3: Groq (Ultra-Fast Llama 3 Backup)
+    // Tier 2: Gemini 3.5 Flash
+    async function callGemini35() {
+        if(!GEMINI_KEY) throw new Error("No Gemini 3.5 Key");
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${GEMINI_KEY}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ contents: [{ parts: [{ text: systemPrompt }] }] })
+        });
+        if (!response.ok) throw new Error("Gemini 3.5 Flash failed");
+        const data = await response.json();
+        return data.candidates[0].content.parts[0].text.trim();
+    }
+
+    // Tier 3: Groq Llama 3.3 70B
     async function callGroq() {
         if(!GROQ_KEY) throw new Error("No Groq Key");
         const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
             method: "POST",
             headers: { "Authorization": `Bearer ${GROQ_KEY}`, "Content-Type": "application/json" },
-            body: JSON.stringify({ model: "llama-3.3-70b-versatile", messages: [{ role: "user", content: scenario }] })
+            body: JSON.stringify({ model: "llama-3.3-70b-versatile", messages: [{ role: "user", content: systemPrompt }] })
         });
-        if (!response.ok) throw new Error("Groq API failed");
+        if (!response.ok) throw new Error("Groq failed");
         const data = await response.json();
         return data.choices[0].message.content.trim();
     }
 
-    // 3. Execute Priority Chain
+    // Tier 4: Hugging Face Mixtral 8x7B
+    async function callHuggingFace() {
+        if(!HF_KEY) throw new Error("No HF Key");
+        const response = await fetch("https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1", {
+            method: "POST",
+            headers: { "Authorization": `Bearer ${HF_KEY}`, "Content-Type": "application/json" },
+            body: JSON.stringify({ inputs: systemPrompt, parameters: { max_new_tokens: 800, return_full_text: false } })
+        });
+        if (!response.ok) throw new Error("Hugging Face failed");
+        const data = await response.json();
+        return data[0].generated_text.trim();
+    }
+
+    // Execute Fallback Cascade
     try {
-        evaluationResult = await callHuggingFace();
-        modelUsed = "Hugging Face (Mixtral)";
+        evaluationResult = await callGemini36();
+        modelUsed = "Gemini 3.6 Flash";
     } catch (e1) {
         try {
-            evaluationResult = await callGemini();
-            modelUsed = "Gemini 1.5 Flash";
+            evaluationResult = await callGemini35();
+            modelUsed = "Gemini 3.5 Flash";
         } catch (e2) {
             try {
                 evaluationResult = await callGroq();
-                modelUsed = "Groq (Llama 3.3)";
+                modelUsed = "Groq (Llama 3.3 70B)";
             } catch (e3) {
-                return res.status(500).json({ evaluation: "Error: All AI APIs failed or API keys are missing.", modelUsed: "Failed" });
+                try {
+                    evaluationResult = await callHuggingFace();
+                    modelUsed = "Hugging Face (Mixtral 8x7B)";
+                } catch (e4) {
+                    return res.status(500).json({ evaluation: "Error: All AI models in the fallback chain failed.", modelUsed: "Failed" });
+                }
             }
         }
     }
 
-    // 4. Fire Data to Google Sheets Webhook
+    // 4. Clean evaluation text for Google Sheets (strip markdown and references)
+    let cleanSheetEval = evaluationResult
+        .replace(/#{1,6}\s?/g, '')     
+        .replace(/\*\*/g, '')          
+        .replace(/\*/g, '-')           
+        .split('Evidence-Based References')[0] 
+        .trim();
+
+    // 5. Fire Data to Google Sheets Webhook
     if (SHEET_WEBHOOK) {
         try {
             await fetch(SHEET_WEBHOOK, {
@@ -95,8 +145,8 @@ export default async function handler(req, res) {
                     discipline: discipline, 
                     tool: tool, 
                     modelUsed: modelUsed, 
-                    scenario: rawInput || scenario, // Sends ONLY the user's patient data to the sheet
-                    evaluation: evaluationResult 
+                    scenario: rawInput, 
+                    evaluation: cleanSheetEval 
                 })
             });
         } catch (err) { 
@@ -104,6 +154,5 @@ export default async function handler(req, res) {
         }
     }
 
-    // 5. Send result back to Frontend
     res.status(200).json({ evaluation: evaluationResult, modelUsed });
 }
