@@ -240,7 +240,6 @@
         .btn-success { background: linear-gradient(135deg, #059669 0%, #047857 100%); color: white; box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3); border: none; }
         .btn-danger { background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); color: white; box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3); border: none; }
 
-        /* FAST BUTTON FOR INSTANT GROQ ANSWERS */
         .fast-btn {
             background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
             color: white;
@@ -956,7 +955,7 @@
             }
         }
 
-        // NEW OPTIMIZED PROMPT FOR CASE ANALYZER WITH FAST MODE INTEGRATION
+        // DECOUPLED AI REQUEST & WEBHOOK SAVING
         async function evaluateCase(isFastMode = false) {
             const discipline = document.getElementById('discipline').value;
             const rawText = document.getElementById('scenario').value.trim();
@@ -1014,10 +1013,11 @@ ${rawText}
             `;
 
             try {
+                // STEP 1: Ask backend ONLY to evaluate AI (no saving yet)
                 const response = await fetch('/api/evaluate', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ scenario: strictPrompt, rawInput: rawText, discipline: discipline, tool: "Case Analyzer", fastMode: isFastMode }),
+                    body: JSON.stringify({ action: "evaluate", scenario: strictPrompt, rawInput: rawText, discipline: discipline, tool: "Case Analyzer", fastMode: isFastMode }),
                     signal: signal
                 });
 
@@ -1026,6 +1026,14 @@ ${rawText}
                 try { data = JSON.parse(text); } catch (e) { data = { evaluation: text }; }
 
                 let evalText = data.evaluation || JSON.stringify(data, null, 2);
+                let currentModel = data.modelUsed || "Unknown Model";
+
+                // STEP 2: Fire background save ONLY for the request that successfully reached the frontend
+                fetch('/api/evaluate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: "save", rawInput: rawText, discipline: discipline, tool: "Case Analyzer", evaluation: evalText, modelUsed: currentModel })
+                }).catch(e => console.error("Background sync dropped.", e));
 
                 const reportObj = {
                     title: `${discipline} — Case Analysis`,
@@ -1092,10 +1100,11 @@ CRITICAL SYSTEM INSTRUCTIONS:
             `;
 
             try {
+                // STEP 1: Ask backend ONLY to evaluate AI (no saving yet)
                 const response = await fetch('/api/evaluate', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ scenario: strictPrompt, rawInput: calcDataSummary, discipline: 'General Clinical', tool: toolName, fastMode: isFastMode }),
+                    body: JSON.stringify({ action: "evaluate", scenario: strictPrompt, rawInput: calcDataSummary, discipline: 'General Clinical', tool: toolName, fastMode: isFastMode }),
                     signal: signal
                 });
 
@@ -1104,6 +1113,14 @@ CRITICAL SYSTEM INSTRUCTIONS:
                 try { data = JSON.parse(text); } catch (e) { data = { evaluation: text }; }
 
                 let evalText = data.evaluation || JSON.stringify(data, null, 2);
+                let currentModel = data.modelUsed || "Unknown Model";
+
+                // STEP 2: Fire background save ONLY for the request that successfully reached the frontend
+                fetch('/api/evaluate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: "save", rawInput: calcDataSummary, discipline: 'General Clinical', tool: toolName, evaluation: evalText, modelUsed: currentModel })
+                }).catch(e => console.error("Background sync dropped.", e));
 
                 const reportObj = {
                     title: `General Assessment — (${calcDataSummary.split(':')[0]})`,
