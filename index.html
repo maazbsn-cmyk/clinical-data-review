@@ -51,18 +51,18 @@
         * { box-sizing: border-box; word-break: break-word; overflow-wrap: break-word; }
         body { font-family: system-ui, -apple-system, sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 0; display: flex; flex-direction: column; min-height: 100vh; overflow-x: hidden; transition: background-color 0.3s ease, color 0.3s ease; }
         
-        header { position: relative; background: var(--header-bg); color: var(--header-text); padding: 1.5rem 1rem; text-align: center; border-bottom: 3px solid #3b82f6; box-shadow: 0 4px 20px rgba(59, 130, 246, 0.15); margin-top: 1rem; transition: background 0.3s, color 0.3s; }
+        header { position: relative; background: var(--header-bg); color: var(--header-text); padding: 1.5rem 1rem; text-align: center; border-bottom: 3px solid #3b82f6; box-shadow: 0 4px 20px rgba(59, 130, 246, 0.15); transition: background 0.3s, color 0.3s; }
         h1 { margin: 0; font-size: 1.6rem; letter-spacing: -0.5px; background: linear-gradient(90deg, #60a5fa, #38bdf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .subtitle { color: var(--header-sub); font-size: 0.9rem; margin-top: 0.3rem; font-weight: 500; transition: color 0.3s; }
         
-        .theme-btn { position: absolute; top: 1.5rem; right: 1.5rem; width: auto; padding: 0.4rem 0.8rem; background: rgba(125,125,125,0.2); border: 1px solid var(--input-border); color: var(--header-text); border-radius: 6px; font-size: 0.8rem; box-shadow: none; cursor: pointer; transition: all 0.2s; }
+        .theme-btn { position: absolute; top: 1.25rem; right: 1.25rem; width: auto; padding: 0.4rem 0.8rem; background: rgba(125,125,125,0.2); border: 1px solid var(--input-border); color: var(--header-text); border-radius: 6px; font-size: 0.8rem; box-shadow: none; cursor: pointer; transition: all 0.2s; }
         .theme-btn:hover { opacity: 0.8; }
         
         @media (max-width: 600px) {
             .theme-btn { top: 0.5rem; right: 0.5rem; font-size: 0.75rem; padding: 0.35rem 0.6rem; }
         }
 
-        /* Top Navigation Panel */
+        /* Top Navigation Panel Below Header */
         .top-nav-wrapper { max-width: 1300px; width: 100%; margin: 1rem auto 0 auto; padding: 0 1rem; box-sizing: border-box; }
         .top-nav-panel { display: flex; justify-content: center; background: var(--card-bg); border: 1px solid var(--border); padding: 0.8rem 1.25rem; border-radius: 12px; box-shadow: var(--shadow); transition: background 0.3s, border 0.3s; }
         .nav-tabs { display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: center; width: 100%; }
@@ -74,17 +74,15 @@
         .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Grid Layouts for Internal Sections */
+        /* Grid Layouts for Sections */
         .tab-layout { display: flex; flex-direction: column; gap: 1.25rem; }
         .scanner-grid { display: flex; flex-direction: column; gap: 1.25rem; }
         
         @media (min-width: 1000px) {
             .tab-layout.two-col { display: grid; grid-template-columns: 3fr 2fr; align-items: start; }
-            /* 3-Column Grid for AI Triage */
             .scanner-grid { display: grid; grid-template-columns: 1fr 2.5fr 1fr; align-items: start; }
         }
 
-        /* Main Area */
         main { flex-grow: 1; max-width: 1300px; width: 100%; margin: 1.5rem auto; padding: 0 1rem; box-sizing: border-box; display: block; }
 
         .card { background: var(--card-bg); padding: 1.5rem; border-radius: 12px; box-shadow: var(--shadow); margin-bottom: 1.25rem; border: 1px solid var(--border); width: 100%; transition: background 0.3s, border 0.3s, box-shadow 0.3s; }
@@ -121,16 +119,16 @@
         button:disabled { background: var(--input-border); color: var(--muted); cursor: not-allowed; box-shadow: none; }
         
         .hidden { display: none !important; }
-        .output-card { border-left: 5px solid #3b82f6; margin-bottom: 1.5rem; background: var(--card-bg); }
-        .output-card h2 { color: var(--heading); margin-top: 0; font-size: 1.2rem; }
+        .output-card { border-left: 5px solid #3b82f6; margin-bottom: 0; background: var(--card-bg); }
+        .output-card h2 { color: var(--heading); margin-top: 0; font-size: 1.15rem; }
         
         .result-content { line-height: 1.6; font-size: 0.95rem; color: var(--text); }
-        .result-content h3 { color: var(--highlight); margin-top: 1.2rem; font-size: 1.05rem; }
+        .result-content h3 { color: var(--highlight); margin-top: 1rem; font-size: 1.05rem; }
         .result-content ul { padding-left: 1.2rem; margin: 0.5rem 0; }
         .result-content li { margin-bottom: 0.3rem; }
         
         .action-bar { display: flex; gap: 0.5rem; margin-top: 1.25rem; flex-wrap: wrap; border-top: 1px solid var(--border); padding-top: 1rem; }
-        .action-bar button { flex: 1; font-size: 0.9rem; padding: 0.75rem 0.5rem; }
+        .action-bar button { flex: 1; font-size: 0.85rem; padding: 0.65rem 0.5rem; }
         .btn-secondary { background: var(--tool-bg); color: var(--text); box-shadow: none; border: 1px solid var(--input-border); }
         .btn-secondary:hover { background: var(--input-border); }
         .btn-success { background: linear-gradient(135deg, #059669 0%, #047857 100%); box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3); }
@@ -139,8 +137,8 @@
         .progress-container { width: 100%; background: var(--border); border-radius: 9999px; height: 10px; margin: 0.75rem 0; overflow: hidden; border: 1px solid var(--input-border); }
         .progress-bar { width: 0%; height: 100%; background: var(--accent-gradient); transition: width 0.3s ease; }
 
-        .badges-row { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem; }
-        .model-badge, .verified-badge { padding: 0.3rem 0.8rem; border-radius: 9999px; font-size: 0.8rem; font-weight: 700; }
+        .badges-row { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.75rem; }
+        .model-badge, .verified-badge { padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 700; }
         .model-badge { background: rgba(59, 130, 246, 0.1); color: #3b82f6; border: 1px solid #3b82f6; }
         .verified-badge { background: rgba(16, 185, 129, 0.1); color: #10b981; border: 1px solid #10b981; }
         
@@ -154,13 +152,60 @@
         .notification-banner { background: var(--tool-bg); border-left: 4px solid #38bdf8; padding: 1rem; border-radius: 6px; margin-bottom: 1.25rem; font-size: 0.95rem; color: var(--text); display: flex; justify-content: space-between; align-items: center; transition: background 0.3s; }
         .notification-banner span { cursor: pointer; color: var(--muted); font-weight: bold; }
         .notification-banner span:hover { color: var(--heading); }
+
+        /* Floating FAB for Mobile References (Option 2) */
+        .mobile-ref-fab {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 99;
+            background: var(--accent-gradient);
+            color: white;
+            border: none;
+            padding: 12px 18px;
+            border-radius: 50px;
+            font-weight: bold;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 800px) {
+            .mobile-ref-fab { display: flex; align-items: center; gap: 6px; }
+            .reference-card { display: none !important; }
+        }
+
+        /* Modal Popup for Mobile References */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0,0,0,0.7); z-index: 1000;
+            display: flex; justify-content: center; align-items: center; padding: 1rem;
+            backdrop-filter: blur(4px);
+        }
+        .modal-content {
+            background: var(--card-bg); border: 1px solid var(--border);
+            border-radius: 12px; width: 100%; max-width: 500px;
+            max-height: 80vh; overflow-y: auto; padding: 1.25rem;
+            box-shadow: var(--shadow); color: var(--text);
+        }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; margin-bottom: 1rem; }
+        .modal-header h3 { margin: 0; color: var(--highlight); font-size: 1.1rem; }
+        .close-modal { cursor: pointer; font-weight: bold; font-size: 1.2rem; color: var(--muted); }
         
         footer { background: var(--bg); color: var(--muted); text-align: center; padding: 1.5rem 1rem; font-size: 0.85rem; margin-top: auto; border-top: 1px solid var(--border); transition: background 0.3s; }
     </style>
 </head>
 <body>
 
-    <!-- Top Navigation Panel -->
+    <!-- Header at the Very Top -->
+    <header>
+        <h1>Clinical Decision Support</h1>
+        <div class="subtitle">TPIHS (KMU, BSN)</div>
+        <button id="themeToggle" onclick="toggleTheme()" class="theme-btn">☀️ Light Mode</button>
+    </header>
+
+    <!-- Top Navigation Panel Below Header -->
     <div class="top-nav-wrapper">
         <div class="top-nav-panel">
             <div class="nav-tabs">
@@ -174,22 +219,16 @@
         </div>
     </div>
 
-    <header>
-        <h1>Clinical Decision Support</h1>
-        <div class="subtitle">TPIHS (KMU, BSN)</div>
-        <button id="themeToggle" onclick="toggleTheme()" class="theme-btn">☀️ Light Mode</button>
-    </header>
-
     <main>
         <div id="notificationArea"></div>
 
-        <!-- TAB 1: CASE ANALYZER (3 Columns on Desktop) -->
+        <!-- TAB 1: CASE ANALYZER (Department-Wise Comprehensive Evaluation) -->
         <div id="scanner-section" class="tab-content active">
             <div class="section-heading">AI Triage & Clinical Dashboard</div>
             
             <div class="scanner-grid">
                 
-                <!-- Left Info Column -->
+                <!-- Left Reference Card -->
                 <div class="card reference-card">
                     <h3>🩸 ABG & ROME Reference</h3>
                     <ul class="cheat-sheet-list">
@@ -200,34 +239,41 @@
                     </ul>
                 </div>
 
-                <!-- Center Main Column -->
-                <div id="inputCard" class="card" style="margin-bottom: 0;">
-                    <div class="label-row">
-                        <label for="scenario">Patient Scenario / Ward Data</label>
-                        <a class="insert-sample" onclick="insertSampleTriage()">Insert sample</a>
+                <!-- Center Column Slot -->
+                <div id="scanner-center-col">
+                    
+                    <!-- Input Form -->
+                    <div id="scannerInputCard" class="card" style="margin-bottom: 0;">
+                        <div class="label-row">
+                            <label for="scenario">Patient Scenario / Ward Data</label>
+                            <a class="insert-sample" onclick="insertSampleTriage()">Insert sample</a>
+                        </div>
+                        <textarea id="scenario" rows="6" placeholder="Type scenario, upload up to 10 ward sheet photos, or paste multiple unformatted patient data..."></textarea>
+
+                        <div class="input-tools">
+                            <input type="file" id="imageInput" accept="image/*" multiple class="hidden" onchange="handleImageUpload(event)">
+                            <button type="button" onclick="document.getElementById('imageInput').click()">📷 Upload Sheets</button>
+                            <button type="button" id="voiceBtn" onclick="startVoiceInput()">🎤 Voice Dictation</button>
+                        </div>
+
+                        <label for="discipline" style="display:block; margin-bottom:0.5rem;">Select Professional Discipline</label>
+                        <select id="discipline">
+                            <option value="Nursing">Nursing</option>
+                            <option value="Radiology">Radiology</option>
+                            <option value="Dental">Dental</option>
+                            <option value="Anaesthesia">Anaesthesia</option>
+                            <option value="Pharmacy">Pharmacy</option>
+                            <option value="Medical Laboratory Technology">Medical Lab Technology</option>
+                        </select>
+
+                        <button id="submitBtn" onclick="evaluateCase()">Analyze Case Priorities</button>
                     </div>
-                    <textarea id="scenario" rows="6" placeholder="Type scenario, upload up to 10 ward sheet photos, or paste multiple unformatted patient data..."></textarea>
 
-                    <div class="input-tools">
-                        <input type="file" id="imageInput" accept="image/*" multiple class="hidden" onchange="handleImageUpload(event)">
-                        <button type="button" onclick="document.getElementById('imageInput').click()">📷 Upload Sheets</button>
-                        <button type="button" id="voiceBtn" onclick="startVoiceInput()">🎤 Voice Dictation</button>
-                    </div>
-
-                    <label for="discipline" style="display:block; margin-bottom:0.5rem;">Select Professional Discipline</label>
-                    <select id="discipline">
-                        <option value="Nursing">Nursing</option>
-                        <option value="Radiology">Radiology</option>
-                        <option value="Dental">Dental</option>
-                        <option value="Anaesthesia">Anaesthesia</option>
-                        <option value="Pharmacy">Pharmacy</option>
-                        <option value="Medical Laboratory Technology">Medical Lab Technology</option>
-                    </select>
-
-                    <button id="submitBtn" onclick="evaluateCase()">Analyze Case Priorities</button>
+                    <!-- In-Place Results Rendered Here -->
+                    <div id="scannerResultCard" class="hidden"></div>
                 </div>
 
-                <!-- Right Info Column -->
+                <!-- Right Reference Card -->
                 <div class="card reference-card">
                     <h3>🚨 Emergency Protocols</h3>
                     <ul class="cheat-sheet-list">
@@ -241,41 +287,46 @@
             </div>
         </div>
 
-        <!-- TAB 2: GCS CALCULATOR -->
+        <!-- TAB 2: GCS CALCULATOR (Short General Evaluation) -->
         <div id="gcs-section" class="tab-content">
             <div class="section-heading">Glasgow Coma Scale (GCS) Calculator</div>
             <div class="tab-layout two-col">
-                <div class="card">
-                    <div class="label-row">
-                        <h3>GCS Parameters</h3>
-                        <a class="insert-sample" onclick="insertSampleGCS()">Insert sample</a>
+                
+                <div id="gcs-center-col">
+                    <div id="gcsInputCard" class="card">
+                        <div class="label-row">
+                            <h3>GCS Parameters</h3>
+                            <a class="insert-sample" onclick="insertSampleGCS()">Insert sample</a>
+                        </div>
+                        <div class="calc-group">
+                            <select id="gcsEye" onchange="calcGCS()">
+                                <option value="4">Eye: Spontaneous (4)</option>
+                                <option value="3">Eye: To Speech (3)</option>
+                                <option value="2">Eye: To Pain (2)</option>
+                                <option value="1">Eye: None (1)</option>
+                            </select>
+                            <select id="gcsVerbal" onchange="calcGCS()">
+                                <option value="5">Verbal: Oriented (5)</option>
+                                <option value="4">Verbal: Confused (4)</option>
+                                <option value="3">Verbal: Inappropriate Words (3)</option>
+                                <option value="2">Verbal: Incomprehensible Sounds (2)</option>
+                                <option value="1">Verbal: None (1)</option>
+                            </select>
+                            <select id="gcsMotor" onchange="calcGCS()">
+                                <option value="6">Motor: Obeys Commands (6)</option>
+                                <option value="5">Motor: Localizes Pain (5)</option>
+                                <option value="4">Motor: Withdraws from Pain (4)</option>
+                                <option value="3">Motor: Abnormal Flexion (3)</option>
+                                <option value="2">Motor: Abnormal Extension (2)</option>
+                                <option value="1">Motor: None (1)</option>
+                            </select>
+                            <div id="gcsRes" class="calc-result">GCS: 15 (Patient is normal, alert, and oriented.)</div>
+                            <button class="calc-btn" onclick="evaluateCalcResult('Glasgow Coma Scale score of ' + document.getElementById('gcsRes').innerText, 'gcs')">Evaluate Interventions</button>
+                        </div>
                     </div>
-                    <div class="calc-group">
-                        <select id="gcsEye" onchange="calcGCS()">
-                            <option value="4">Eye: Spontaneous (4)</option>
-                            <option value="3">Eye: To Speech (3)</option>
-                            <option value="2">Eye: To Pain (2)</option>
-                            <option value="1">Eye: None (1)</option>
-                        </select>
-                        <select id="gcsVerbal" onchange="calcGCS()">
-                            <option value="5">Verbal: Oriented (5)</option>
-                            <option value="4">Verbal: Confused (4)</option>
-                            <option value="3">Verbal: Inappropriate Words (3)</option>
-                            <option value="2">Verbal: Incomprehensible Sounds (2)</option>
-                            <option value="1">Verbal: None (1)</option>
-                        </select>
-                        <select id="gcsMotor" onchange="calcGCS()">
-                            <option value="6">Motor: Obeys Commands (6)</option>
-                            <option value="5">Motor: Localizes Pain (5)</option>
-                            <option value="4">Motor: Withdraws from Pain (4)</option>
-                            <option value="3">Motor: Abnormal Flexion (3)</option>
-                            <option value="2">Motor: Abnormal Extension (2)</option>
-                            <option value="1">Motor: None (1)</option>
-                        </select>
-                        <div id="gcsRes" class="calc-result">GCS: 15 (Patient is normal, alert, and oriented.)</div>
-                        <button class="calc-btn" onclick="evaluateCalcResult('Glasgow Coma Scale score of ' + document.getElementById('gcsRes').innerText)">Evaluate Interventions</button>
-                    </div>
+                    <div id="gcsResultCard" class="hidden"></div>
                 </div>
+
                 <div class="card reference-card">
                     <h3>🧠 GCS Scoring Guide</h3>
                     <ul class="cheat-sheet-list">
@@ -288,29 +339,34 @@
             </div>
         </div>
 
-        <!-- TAB 3: BMI CALCULATOR -->
+        <!-- TAB 3: BMI CALCULATOR (Short General Evaluation) -->
         <div id="bmi-section" class="tab-content">
             <div class="section-heading">Body Mass Index (BMI) Calculator</div>
             <div class="tab-layout two-col">
-                <div class="card">
-                    <div class="label-row">
-                        <h3>BMI Parameters</h3>
-                        <a class="insert-sample" onclick="insertSampleBMI()">Insert sample</a>
-                    </div>
-                    <div class="calc-group">
-                        <input type="number" id="bmiWt" placeholder="Weight (kg)" oninput="calcBMI()">
-                        <select id="bmiUnit" onchange="toggleHeightInputs(); calcBMI();">
-                            <option value="m">Height in Meters (m)</option>
-                            <option value="cm">Height in Centimeters (cm)</option>
-                            <option value="ft">Height in Feet & Inches</option>
-                        </select>
-                        <div id="heightInputContainer">
-                            <input type="number" id="bmiHt" placeholder="Height (e.g. 1.75)" oninput="calcBMI()">
+                
+                <div id="bmi-center-col">
+                    <div id="bmiInputCard" class="card">
+                        <div class="label-row">
+                            <h3>BMI Parameters</h3>
+                            <a class="insert-sample" onclick="insertSampleBMI()">Insert sample</a>
                         </div>
-                        <div id="bmiRes" class="calc-result">BMI: --</div>
-                        <button class="calc-btn" onclick="evaluateCalcResult('BMI calculation result: ' + document.getElementById('bmiRes').innerText)">Evaluate Interventions</button>
+                        <div class="calc-group">
+                            <input type="number" id="bmiWt" placeholder="Weight (kg)" oninput="calcBMI()">
+                            <select id="bmiUnit" onchange="toggleHeightInputs(); calcBMI();">
+                                <option value="m">Height in Meters (m)</option>
+                                <option value="cm">Height in Centimeters (cm)</option>
+                                <option value="ft">Height in Feet & Inches</option>
+                            </select>
+                            <div id="heightInputContainer">
+                                <input type="number" id="bmiHt" placeholder="Height (e.g. 1.75)" oninput="calcBMI()">
+                            </div>
+                            <div id="bmiRes" class="calc-result">BMI: --</div>
+                            <button class="calc-btn" onclick="evaluateCalcResult('BMI calculation result: ' + document.getElementById('bmiRes').innerText, 'bmi')">Evaluate Interventions</button>
+                        </div>
                     </div>
+                    <div id="bmiResultCard" class="hidden"></div>
                 </div>
+
                 <div class="card reference-card">
                     <h3>⚖️ WHO BMI Categories</h3>
                     <ul class="cheat-sheet-list">
@@ -324,22 +380,27 @@
             </div>
         </div>
 
-        <!-- TAB 4: MAP CALCULATOR -->
+        <!-- TAB 4: MAP CALCULATOR (Short General Evaluation) -->
         <div id="map-section" class="tab-content">
             <div class="section-heading">Mean Arterial Pressure (MAP) Calculator</div>
             <div class="tab-layout two-col">
-                <div class="card">
-                    <div class="label-row">
-                        <h3>MAP Parameters</h3>
-                        <a class="insert-sample" onclick="insertSampleMAP()">Insert sample</a>
+                
+                <div id="map-center-col">
+                    <div id="mapInputCard" class="card">
+                        <div class="label-row">
+                            <h3>MAP Parameters</h3>
+                            <a class="insert-sample" onclick="insertSampleMAP()">Insert sample</a>
+                        </div>
+                        <div class="calc-group">
+                            <input type="number" id="mapSbp" placeholder="Systolic Blood Pressure (mmHg)" oninput="calcMAP()">
+                            <input type="number" id="mapDbp" placeholder="Diastolic Blood Pressure (mmHg)" oninput="calcMAP()">
+                            <div id="mapRes" class="calc-result">MAP: -- mmHg</div>
+                            <button class="calc-btn" onclick="evaluateCalcResult('Mean Arterial Pressure calculation: ' + document.getElementById('mapRes').innerText, 'map')">Evaluate Interventions</button>
+                        </div>
                     </div>
-                    <div class="calc-group">
-                        <input type="number" id="mapSbp" placeholder="Systolic Blood Pressure (mmHg)" oninput="calcMAP()">
-                        <input type="number" id="mapDbp" placeholder="Diastolic Blood Pressure (mmHg)" oninput="calcMAP()">
-                        <div id="mapRes" class="calc-result">MAP: -- mmHg</div>
-                        <button class="calc-btn" onclick="evaluateCalcResult('Mean Arterial Pressure calculation: ' + document.getElementById('mapRes').innerText)">Evaluate Interventions</button>
-                    </div>
+                    <div id="mapResultCard" class="hidden"></div>
                 </div>
+
                 <div class="card reference-card">
                     <h3>🩸 MAP Target Ranges</h3>
                     <ul class="cheat-sheet-list">
@@ -352,24 +413,29 @@
             </div>
         </div>
 
-        <!-- TAB 5: FLUIDS CALCULATOR -->
+        <!-- TAB 5: FLUIDS CALCULATOR (Short General Evaluation) -->
         <div id="fluids-section" class="tab-content">
             <div class="section-heading">Maintenance Fluids (4-2-1 Rule) Calculator</div>
             <div class="tab-layout two-col">
-                <div class="card">
-                    <div class="label-row">
-                        <h3>Fluids Parameters</h3>
-                        <a class="insert-sample" onclick="insertSampleFluids()">Insert sample</a>
+                
+                <div id="fluids-center-col">
+                    <div id="fluidsInputCard" class="card">
+                        <div class="label-row">
+                            <h3>Fluids Parameters</h3>
+                            <a class="insert-sample" onclick="insertSampleFluids()">Insert sample</a>
+                        </div>
+                        <div class="calc-group">
+                            <select id="fluidAgeCat" onchange="calcFluids()" style="margin-bottom: 0.75rem;">
+                                <option value="adult">Adult / Child (&gt; 10 kg)</option>
+                                <option value="neonate">Neonate (&lt; 28 days)</option>
+                            </select>
+                            <input type="number" id="fluidWt" placeholder="Weight (kg)" oninput="calcFluids()">
+                            <div id="fluidRes" class="calc-result">Rate: -- mL/hr</div>
+                        </div>
                     </div>
-                    <div class="calc-group">
-                        <select id="fluidAgeCat" onchange="calcFluids()" style="margin-bottom: 0.75rem;">
-                            <option value="adult">Adult / Child (&gt; 10 kg)</option>
-                            <option value="neonate">Neonate (&lt; 28 days)</option>
-                        </select>
-                        <input type="number" id="fluidWt" placeholder="Weight (kg)" oninput="calcFluids()">
-                        <div id="fluidRes" class="calc-result">Rate: -- mL/hr</div>
-                    </div>
+                    <div id="fluidsResultCard" class="hidden"></div>
                 </div>
+
                 <div class="card reference-card">
                     <h3>💧 4-2-1 Rule Breakdown</h3>
                     <ul class="cheat-sheet-list">
@@ -397,20 +463,22 @@
                 </div>
             </div>
         </div>
-
-        <!-- GLOBAL OUTPUT CONTAINERS -->
-        <div id="loading" class="card hidden" style="text-align: center; padding: 2.5rem;">
-            <div class="loader"></div>
-            <p id="loadingText" style="font-weight: 600; color: var(--highlight); margin-bottom: 0.75rem; font-size: 1rem;">Processing clinical reports...</p>
-            <div class="progress-container">
-                <div id="progressBar" class="progress-bar"></div>
-            </div>
-            <button class="btn-danger" onclick="cancelEvaluation()" style="margin-top: 1rem; width: 100%;">Cancel & Keep Completed</button>
-        </div>
-        
-        <div id="resultsContainer" class="hidden"></div>
         
     </main>
+
+    <!-- Mobile Floating Reference FAB (Option 2) -->
+    <button class="mobile-ref-fab" onclick="openMobileRefModal()">ℹ️ Protocols & Reference</button>
+
+    <!-- Mobile Reference Modal Window -->
+    <div id="mobileRefModal" class="modal-overlay hidden" onclick="closeMobileRefModal()">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h3 id="modalTitle">Protocol Info</h3>
+                <span class="close-modal" onclick="closeMobileRefModal()">✕</span>
+            </div>
+            <div id="modalBody"></div>
+        </div>
+    </div>
 
     <footer>
         Clinical Decision Support - Educational use only. Developed by <strong>Maaz Ahmad</strong>.
@@ -458,6 +526,35 @@
             setTimeout(() => { if(area.innerHTML) area.innerHTML = ''; }, 6000);
         }
 
+        /* Mobile Reference Popup Modal Logic (Option 2) */
+        function openMobileRefModal() {
+            const activeTab = document.querySelector('.tab-content.active');
+            if (!activeTab) return;
+
+            const refCards = activeTab.querySelectorAll('.reference-card');
+            const modalBody = document.getElementById('modalBody');
+            
+            if (!refCards.length) {
+                showNotification("No protocol reference needed for this section.");
+                return;
+            }
+
+            modalBody.innerHTML = "";
+            refCards.forEach(card => {
+                const clone = card.cloneNode(true);
+                clone.style.display = "block";
+                clone.style.marginBottom = "1rem";
+                modalBody.appendChild(clone);
+            });
+
+            document.getElementById('mobileRefModal').classList.remove('hidden');
+        }
+
+        function closeMobileRefModal() {
+            document.getElementById('mobileRefModal').classList.add('hidden');
+        }
+
+        /* Samples Insertion */
         function insertSampleTriage() {
             extractedSheets = [];
             document.getElementById('scenario').value = "History: 58-year-old male, smoker (30 pack-years), hypertension (10 yrs), on amlodipine 10mg.\nPresentation: Sudden onset crushing substernal chest pain 1 hour ago, radiating to left arm, diaphoresis, nausea. No shortness of breath currently.\nVitals: BP 160/95, HR 104, RR 20, SpO2 96% on room air, Temp 36.8C, Pain 8/10.";
@@ -495,6 +592,7 @@
             showNotification("Fluids sample loaded (Child - 28kg).");
         }
 
+        /* Calculation Functions */
         function calcGCS() {
             const eye = parseInt(document.getElementById('gcsEye').value) || 0;
             const verbal = parseInt(document.getElementById('gcsVerbal').value) || 0;
@@ -602,56 +700,43 @@
             }
         }
 
-        async function evaluateCalcResult(calcDataSummary) {
+        /* In-Place Department-Wise Evaluation (Case Analyzer) */
+        async function evaluateCase() {
             const discipline = document.getElementById('discipline').value;
+            const rawText = document.getElementById('scenario').value.trim();
             const btn = document.getElementById('submitBtn');
-            const loading = document.getElementById('loading');
-            const resultsContainer = document.getElementById('resultsContainer');
-            const loadingText = document.getElementById('loadingText');
+            const inputCard = document.getElementById('scannerInputCard');
+            const resultCard = document.getElementById('scannerResultCard');
 
-            switchTab('scanner-section', document.querySelector('.nav-tab-btn'));
-
-            isCancelled = false;
-            document.getElementById('inputCard').classList.add('hidden');
-            resultsContainer.innerHTML = '';
-            resultsContainer.classList.remove('hidden');
-            loading.classList.remove('hidden');
-            loadingText.innerText = "Evaluating verified clinical interventions (Max 2-3 lines)...";
-
-            let navBar = document.getElementById('topNavBar');
-            if (!navBar) {
-                navBar = document.createElement('div');
-                navBar.id = 'topNavBar';
-                navBar.className = 'card';
-                navBar.style.textAlign = 'center';
-                navBar.innerHTML = `<button class="btn-secondary" onclick="resetForm()">← Back / Evaluate New Case(s)</button>`;
-                resultsContainer.appendChild(navBar);
+            if (!rawText) { 
+                showNotification("Please enter or upload a patient scenario."); 
+                return; 
             }
+
+            inputCard.classList.add('hidden');
+            resultCard.classList.remove('hidden');
+            resultCard.innerHTML = `
+                <div class="card" style="text-align:center; padding: 2rem;">
+                    <div class="loader"></div>
+                    <p style="font-weight:600; color:var(--highlight);">Analyzing case for ${discipline}...</p>
+                </div>
+            `;
 
             try {
                 const response = await fetch('/api/evaluate', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ scenario: `Provide extremely concise, high-yield interventions (maximum 2 to 3 bullet points) for this calculation assessment using peer-reviewed guidelines: ${calcDataSummary}`, discipline })
+                    body: JSON.stringify({ scenario: rawText, discipline })
                 });
-                
+
                 const text = await response.text();
                 let data;
-                try {
-                    data = JSON.parse(text);
-                } catch (err) {
-                    data = { evaluation: "Server Error / Raw Output:\n" + text, modelUsed: "Error" };
-                }
+                try { data = JSON.parse(text); } catch (e) { data = { evaluation: text, modelUsed: 'AI' }; }
 
-                let evalText = data.evaluation;
-                if (typeof evalText === 'object') {
-                    evalText = JSON.stringify(evalText, null, 2);
-                } else if (!evalText) {
-                    evalText = JSON.stringify(data, null, 2);
-                }
+                let evalText = data.evaluation || JSON.stringify(data, null, 2);
 
                 const reportObj = {
-                    title: `${discipline} — Calculator Assessment (${calcDataSummary.split(':')[0]})`,
+                    title: `${discipline} — Case Analysis`,
                     content: evalText,
                     date: new Date().toLocaleTimeString()
                 };
@@ -659,27 +744,90 @@
                 saveToLocalStorage();
                 renderHistoryVault();
 
-                const card = document.createElement('div');
-                card.className = 'card output-card';
-                card.innerHTML = `
-                    <div class="badges-row">
-                        <div class="model-badge">Model: ${data.modelUsed || 'AI'}</div>
-                        <div class="verified-badge">✓ Verified Guidelines</div>
-                    </div>
-                    <h2>${reportObj.title}</h2>
-                    <div class="result-content">${marked.parse(evalText)}</div>
-                    <div class="action-bar">
-                        <button class="btn-success" onclick="copyCardText(this)">Copy</button>
-                        <button class="btn-secondary" onclick="downloadCardText(this, 'Calc_Report')">Download TXT</button>
+                resultCard.innerHTML = `
+                    <div class="card output-card">
+                        <div class="badges-row">
+                            <div class="model-badge">Model: ${data.modelUsed || 'AI'}</div>
+                            <div class="verified-badge">✓ Verified Guidelines</div>
+                        </div>
+                        <h2>${reportObj.title}</h2>
+                        <div class="result-content">${marked.parse(evalText)}</div>
+                        <div class="action-bar">
+                            <button class="btn-secondary" onclick="resetTab('scanner')">← Back / Evaluate New Case</button>
+                            <button class="btn-success" onclick="copyCardText(this)">Copy</button>
+                            <button class="btn-secondary" onclick="downloadCardText(this, 'Case_Report')">Download TXT</button>
+                        </div>
                     </div>
                 `;
-                resultsContainer.appendChild(card);
-                window.scrollTo({ top: 0, behavior: 'smooth' });
             } catch (error) {
-                showNotification("Connection Error: " + error.message);
-            } finally {
-                loading.classList.add('hidden');
+                showNotification("Error: " + error.message);
+                resetTab('scanner');
             }
+        }
+
+        /* In-Place Short General Evaluation (GCS, BMI, MAP, FLUIDS) */
+        async function evaluateCalcResult(calcDataSummary, tabPrefix) {
+            const inputCard = document.getElementById(`${tabPrefix}InputCard`);
+            const resultCard = document.getElementById(`${tabPrefix}ResultCard`);
+
+            inputCard.classList.add('hidden');
+            resultCard.classList.remove('hidden');
+            resultCard.innerHTML = `
+                <div class="card" style="text-align:center; padding: 2rem;">
+                    <div class="loader"></div>
+                    <p style="font-weight:600; color:var(--highlight);">Evaluating concise interventions...</p>
+                </div>
+            `;
+
+            try {
+                const response = await fetch('/api/evaluate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        scenario: `Provide an extremely short, concise general clinical evaluation (maximum 2 to 3 bullet points) for this assessment: ${calcDataSummary}. Strictly avoid long intros or discipline-specific details.`, 
+                        discipline: 'General Clinical' 
+                    })
+                });
+
+                const text = await response.text();
+                let data;
+                try { data = JSON.parse(text); } catch (e) { data = { evaluation: text, modelUsed: 'AI' }; }
+
+                let evalText = data.evaluation || JSON.stringify(data, null, 2);
+
+                const reportObj = {
+                    title: `General Assessment — (${calcDataSummary.split(':')[0]})`,
+                    content: evalText,
+                    date: new Date().toLocaleTimeString()
+                };
+                evaluatedReportsStore.push(reportObj);
+                saveToLocalStorage();
+                renderHistoryVault();
+
+                resultCard.innerHTML = `
+                    <div class="card output-card">
+                        <div class="badges-row">
+                            <div class="model-badge">Concise Evaluation</div>
+                            <div class="verified-badge">✓ Verified Guidelines</div>
+                        </div>
+                        <h2>${reportObj.title}</h2>
+                        <div class="result-content">${marked.parse(evalText)}</div>
+                        <div class="action-bar">
+                            <button class="btn-secondary" onclick="resetTab('${tabPrefix}')">← Back / Recalculate</button>
+                            <button class="btn-success" onclick="copyCardText(this)">Copy</button>
+                        </div>
+                    </div>
+                `;
+            } catch (error) {
+                showNotification("Error: " + error.message);
+                resetTab(tabPrefix);
+            }
+        }
+
+        function resetTab(tabPrefix) {
+            document.getElementById(`${tabPrefix}ResultCard`).classList.add('hidden');
+            document.getElementById(`${tabPrefix}ResultCard`).innerHTML = '';
+            document.getElementById(`${tabPrefix}InputCard`).classList.remove('hidden');
         }
 
         async function handleImageUpload(event) {
@@ -691,37 +839,24 @@
                 return;
             }
 
-            const loading = document.getElementById('loading');
-            const inputCard = document.getElementById('inputCard');
-            const loadingText = document.getElementById('loadingText');
-
-            inputCard.classList.add('hidden');
-            loading.classList.remove('hidden');
-            loadingText.innerText = `Extracting text from ${files.length} ward sheet image(s)...`;
+            showNotification(`Extracting text from ${files.length} image(s)...`);
 
             try {
                 const worker = await Tesseract.createWorker('eng');
                 extractedSheets = [];
 
                 for (let i = 0; i < files.length; i++) {
-                    loadingText.innerText = `Extracting text from image ${i + 1} of ${files.length}...`;
                     const ret = await worker.recognize(files[i]);
-                    extractedSheets.push({
-                        name: files[i].name,
-                        text: ret.data.text.trim()
-                    });
+                    extractedSheets.push({ name: files[i].name, text: ret.data.text.trim() });
                 }
 
                 await worker.terminate();
 
                 document.getElementById('scenario').value = extractedSheets.map((s, idx) => `[Sheet ${idx + 1}: ${s.name}]\n${s.text}`).join("\n\n");
-                showNotification(`Successfully extracted text from ${files.length} ward sheet(s)!`);
+                showNotification(`Successfully extracted text from ${files.length} sheet(s)!`);
             } catch (err) {
                 showNotification("OCR Extraction failed: " + err.message);
                 extractedSheets = [];
-            } finally {
-                loading.classList.add('hidden');
-                inputCard.classList.remove('hidden');
             }
         }
 
@@ -746,9 +881,7 @@
                 scenarioBox.value += (scenarioBox.value ? " " : "") + transcript;
             };
 
-            recognition.onerror = () => {
-                showNotification("Voice recognition error occurred.");
-            };
+            recognition.onerror = () => { showNotification("Voice recognition error."); };
 
             recognition.onend = () => {
                 voiceBtn.innerText = "🎤 Voice Dictation";
@@ -756,162 +889,6 @@
             };
 
             recognition.start();
-        }
-
-        function cancelEvaluation() {
-            isCancelled = true;
-        }
-
-        function smartSplitScenarios(rawText) {
-            const lines = rawText.split('\n');
-            let scenarios = [];
-            let currentTitle = "Patient Case 1";
-            let currentBody = [];
-
-            let pattern = /^(\d+[\.\)]\s*|patient\s*\d+|case\s*\d+)/i;
-
-            for (let line of lines) {
-                if (pattern.test(line.trim()) && currentBody.length > 0) {
-                    scenarios.push({
-                        title: currentTitle,
-                        scenario: currentBody.join('\n').trim()
-                    });
-                    currentTitle = line.trim().substring(0, 40);
-                    currentBody = [line];
-                } else {
-                    currentBody.push(line);
-                }
-            }
-            if (currentBody.length > 0) {
-                scenarios.push({
-                    title: currentTitle,
-                    scenario: currentBody.join('\n').trim()
-                });
-            }
-
-            if (scenarios.length === 0 || scenarios.every(s => s.scenario.length < 5)) {
-                return [{ title: "Clinical Evaluation Report", scenario: rawText }];
-            }
-            return scenarios;
-        }
-
-        async function evaluateCase() {
-            const discipline = document.getElementById('discipline').value;
-            const rawText = document.getElementById('scenario').value.trim();
-            const btn = document.getElementById('submitBtn');
-            const loading = document.getElementById('loading');
-            const inputCard = document.getElementById('inputCard');
-            const resultsContainer = document.getElementById('resultsContainer');
-            const loadingText = document.getElementById('loadingText');
-            const progressBar = document.getElementById('progressBar');
-
-            if (!rawText) { 
-                showNotification("Please enter or upload a patient scenario."); 
-                return; 
-            }
-
-            isCancelled = false;
-            let scenariosToProcess = [];
-
-            if (extractedSheets.length > 0) {
-                scenariosToProcess = extractedSheets.map((sheet, index) => ({
-                    title: `Ward Sheet ${index + 1}: ${sheet.name}`,
-                    scenario: sheet.text
-                }));
-            } else {
-                scenariosToProcess = smartSplitScenarios(rawText);
-            }
-
-            btn.disabled = true;
-            inputCard.classList.add('hidden');
-            resultsContainer.innerHTML = '';
-            resultsContainer.classList.remove('hidden');
-            loading.classList.remove('hidden');
-            progressBar.style.width = '0%';
-
-            let navBar = document.getElementById('topNavBar');
-            if (!navBar) {
-                navBar = document.createElement('div');
-                navBar.id = 'topNavBar';
-                navBar.className = 'card';
-                navBar.style.textAlign = 'center';
-                navBar.innerHTML = `<button class="btn-secondary" onclick="resetForm()">← Back / Evaluate New Case(s)</button>`;
-                resultsContainer.appendChild(navBar);
-            }
-
-            const total = scenariosToProcess.length;
-            let completedCount = 0;
-
-            try {
-                for (let i = 0; i < total; i++) {
-                    if (isCancelled) {
-                        break;
-                    }
-
-                    const pct = Math.round(((i) / total) * 100);
-                    progressBar.style.width = `${pct}%`;
-                    loadingText.innerText = `Processing report ${i + 1} of ${total} (Completed: ${completedCount})...`;
-                    
-                    const response = await fetch('/api/evaluate', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ scenario: scenariosToProcess[i].scenario, discipline })
-                    });
-                    
-                    const text = await response.text();
-                    let data;
-                    try {
-                        data = JSON.parse(text);
-                    } catch (err) {
-                        data = { evaluation: "Server Error / Raw Output:\n" + text, modelUsed: "Error" };
-                    }
-
-                    let evalText = data.evaluation;
-                    if (typeof evalText === 'object') {
-                        evalText = JSON.stringify(evalText, null, 2);
-                    } else if (!evalText) {
-                        evalText = JSON.stringify(data, null, 2);
-                    }
-
-                    completedCount++;
-                    progressBar.style.width = `${Math.round((completedCount / total) * 100)}%`;
-
-                    const reportObj = {
-                        title: `${discipline} — ${scenariosToProcess[i].title}`,
-                        content: evalText,
-                        date: new Date().toLocaleTimeString()
-                    };
-                    evaluatedReportsStore.push(reportObj);
-                    saveToLocalStorage();
-                    renderHistoryVault();
-
-                    const card = document.createElement('div');
-                    card.className = 'card output-card';
-                    card.innerHTML = `
-                        <div class="badges-row">
-                            <div class="model-badge">Model: ${data.modelUsed || 'AI'}</div>
-                            <div class="verified-badge">✓ Verified Guidelines</div>
-                        </div>
-                        <h2>${reportObj.title}</h2>
-                        <div class="result-content">${marked.parse(evalText)}</div>
-                        <div class="action-bar">
-                            <button class="btn-success" onclick="copyCardText(this)">Copy</button>
-                            <button class="btn-secondary" onclick="downloadCardText(this, 'Report_${completedCount}')">Download TXT</button>
-                        </div>
-                    `;
-                    resultsContainer.appendChild(card);
-                }
-
-                loading.classList.add('hidden');
-                if (isCancelled) {
-                    showNotification(`Evaluation cancelled. Showing ${completedCount} completed report(s).`);
-                }
-            } catch (error) {
-                loading.classList.add('hidden');
-                showNotification("Connection Error: " + error.message);
-            } finally {
-                btn.disabled = false;
-            }
         }
 
         function saveToLocalStorage() {
@@ -937,43 +914,29 @@
                 return;
             }
             list.innerHTML = ``;
-            evaluatedReportsStore.forEach((rep, idx) => {
+            evaluatedReportsStore.forEach((rep) => {
                 const li = document.createElement('li');
                 li.innerText = `[${rep.date}] ${rep.title}`;
                 li.onclick = () => {
                     switchTab('scanner-section', document.querySelector('.nav-tab-btn'));
-                    
-                    const resultsContainer = document.getElementById('resultsContainer');
-                    const inputCard = document.getElementById('inputCard');
-                    inputCard.classList.add('hidden');
-                    resultsContainer.classList.remove('hidden');
+                    const resultCard = document.getElementById('scannerResultCard');
+                    document.getElementById('scannerInputCard').classList.add('hidden');
+                    resultCard.classList.remove('hidden');
 
-                    let navBar = document.getElementById('topNavBar');
-                    if (!navBar) {
-                        navBar = document.createElement('div');
-                        navBar.id = 'topNavBar';
-                        navBar.className = 'card';
-                        navBar.style.textAlign = 'center';
-                        navBar.innerHTML = `<button class="btn-secondary" onclick="resetForm()">← Back / Evaluate New Case(s)</button>`;
-                        resultsContainer.prepend(navBar);
-                    }
-
-                    const card = document.createElement('div');
-                    card.className = 'card output-card';
-                    card.innerHTML = `
-                        <div class="badges-row">
-                            <div class="model-badge">Archived Report</div>
-                            <div class="verified-badge">✓ Verified Guidelines</div>
-                        </div>
-                        <h2>${rep.title} (${rep.date})</h2>
-                        <div class="result-content">${marked.parse(rep.content)}</div>
-                        <div class="action-bar">
-                            <button class="btn-success" onclick="copyCardText(this)">Copy</button>
-                            <button class="btn-secondary" onclick="downloadCardText(this, 'Archived_Report')">Download TXT</button>
+                    resultCard.innerHTML = `
+                        <div class="card output-card">
+                            <div class="badges-row">
+                                <div class="model-badge">Archived Report</div>
+                                <div class="verified-badge">✓ Verified Guidelines</div>
+                            </div>
+                            <h2>${rep.title} (${rep.date})</h2>
+                            <div class="result-content">${marked.parse(rep.content)}</div>
+                            <div class="action-bar">
+                                <button class="btn-secondary" onclick="resetTab('scanner')">← Back to Inputs</button>
+                                <button class="btn-success" onclick="copyCardText(this)">Copy</button>
+                            </div>
                         </div>
                     `;
-                    resultsContainer.appendChild(card);
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
                 };
                 list.appendChild(li);
             });
@@ -1001,17 +964,6 @@
             a.download = `Master_Clinical_Batch_Report.txt`;
             a.click();
             URL.revokeObjectURL(url);
-        }
-
-        function resetForm() {
-            switchTab('scanner-section', document.querySelector('.nav-tab-btn'));
-            document.getElementById('resultsContainer').classList.add('hidden');
-            document.getElementById('resultsContainer').innerHTML = '';
-            document.getElementById('inputCard').classList.remove('hidden');
-            document.getElementById('scenario').value = '';
-            document.getElementById('imageInput').value = '';
-            extractedSheets = [];
-            isCancelled = false;
         }
 
         function copyCardText(button) {
