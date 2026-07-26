@@ -3,7 +3,15 @@ export default async function handler(req, res) {
         return res.status(405).send('Method Not Allowed');
     }
 
-    // Added fastMode parameter
+    // 1. KILL SWITCH: Detects if the frontend aborted the request (e.g., clicked "Answer Now")
+    let isCancelled = false;
+    const abortController = new AbortController();
+    
+    req.on('close', () => {
+        isCancelled = true;
+        abortController.abort(); // Immediately kills any pending AI fetch requests
+    });
+
     const { rawInput, discipline, tool = "General Tool", fastMode = false } = req.body;
 
     const ip = req.headers['x-forwarded-for'] || 'Unknown IP';
@@ -48,12 +56,14 @@ PATIENT DATA:
 ${rawInput}
     `;
 
+    // 2. Added `signal: abortController.signal` to all fetches so they die instantly if cancelled
     async function callGemini36() {
         if(!GEMINI_KEY) throw new Error("No Gemini 3.6 Key");
         const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${GEMINI_KEY}`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ contents: [{ parts: [{ text: systemPrompt }] }] })
+            body: JSON.stringify({ contents: [{ parts: [{ text: systemPrompt }] }] }),
+            signal: abortController.signal
         });
         if (!response.ok) throw new Error("Gemini 3.6 Flash failed");
         const data = await response.json();
@@ -65,7 +75,8 @@ ${rawInput}
         const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${GEMINI_KEY}`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ contents: [{ parts: [{ text: systemPrompt }] }] })
+            body: JSON.stringify({ contents: [{ parts: [{ text: systemPrompt }] }] }),
+            signal: abortController.signal
         });
         if (!response.ok) throw new Error("Gemini 3.5 Flash failed");
         const data = await response.json();
@@ -77,7 +88,8 @@ ${rawInput}
         const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
             method: "POST",
             headers: { "Authorization": `Bearer ${GROQ_KEY}`, "Content-Type": "application/json" },
-            body: JSON.stringify({ model: "llama-3.3-70b-versatile", messages: [{ role: "user", content: systemPrompt }] })
+            body: JSON.stringify({ model: "llama-3.3-70b-versatile", messages: [{ role: "user", content: systemPrompt }] }),
+            signal: abortController.signal
         });
         if (!response.ok) throw new Error("Groq failed");
         const data = await response.json();
@@ -89,23 +101,26 @@ ${rawInput}
         const response = await fetch("https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1", {
             method: "POST",
             headers: { "Authorization": `Bearer ${HF_KEY}`, "Content-Type": "application/json" },
-            body: JSON.stringify({ inputs: systemPrompt, parameters: { max_new_tokens: 800, return_full_text: false } })
+            body: JSON.stringify({ inputs: systemPrompt, parameters: { max_new_tokens: 800, return_full_text: false } }),
+            signal: abortController.signal
         });
         if (!response.ok) throw new Error("Hugging Face failed");
         const data = await response.json();
         return data[0].generated_text.trim();
     }
 
-    // AI ROUTING LOGIC (Fast Mode vs Normal Mode)
+    // 3. Prevent fallbacks if the failure was caused by the user clicking "Answer Now"
     if (fastMode) {
         try {
             evaluationResult = await callGroq();
             modelUsed = "Groq (Llama 3.3 70B)";
         } catch (e1) {
+            if (isCancelled) return; // Exit immediately
             try {
                 evaluationResult = await callGemini36();
                 modelUsed = "Gemini 3.6 Flash";
             } catch (e2) {
+                if (isCancelled) return;
                 return res.status(500).json({ evaluation: "Error: Fast AI models failed.", modelUsed: "Failed" });
             }
         }
@@ -114,23 +129,32 @@ ${rawInput}
             evaluationResult = await callGemini36();
             modelUsed = "Gemini 3.6 Flash";
         } catch (e1) {
+            if (isCancelled) return; // Exit immediately, DO NOT fallback
             try {
                 evaluationResult = await callGemini35();
                 modelUsed = "Gemini 3.5 Flash";
             } catch (e2) {
+                if (isCancelled) return;
                 try {
                     evaluationResult = await callGroq();
                     modelUsed = "Groq (Llama 3.3 70B)";
                 } catch (e3) {
+                    if (isCancelled) return;
                     try {
                         evaluationResult = await callHuggingFace();
                         modelUsed = "Hugging Face (Mixtral 8x7B)";
                     } catch (e4) {
+                        if (isCancelled) return;
                         return res.status(500).json({ evaluation: "Error: All AI models failed.", modelUsed: "Failed" });
                     }
                 }
             }
         }
+    }
+
+    // 4. Final strict check: Do not execute webhooks if user cancelled
+    if (isCancelled) {
+        return; 
     }
 
     let docEvaluation = evaluationResult.split(/###?\s*Evidence-Based References/i)[0];
@@ -154,16 +178,19 @@ ${rawInput}
                     tool: tool, 
                     modelUsed: modelUsed 
                 }),
-                redirect: 'follow'
+                redirect: 'follow',
+                signal: abortController.signal
             });
             const text = await sheetRes.text();
             if (text && !text.startsWith("Error")) {
                 uniqueCode = text.trim();
             }
         } catch (err) { 
-            console.error("Sheet sync failed", err); 
+            if (!isCancelled) console.error("Sheet sync failed", err); 
         }
     }
+
+    if (isCancelled) return;
 
     if (DOC_WEBHOOK) {
         try {
@@ -175,12 +202,15 @@ ${rawInput}
                     scenario: rawInput, 
                     evaluation: docEvaluation 
                 }),
-                redirect: 'follow'
+                redirect: 'follow',
+                signal: abortController.signal
             });
         } catch (err) { 
-            console.error("Doc sync failed", err); 
+            if (!isCancelled) console.error("Doc sync failed", err); 
         }
     }
 
-    res.status(200).json({ evaluation: evaluationResult, modelUsed });
+    if (!isCancelled) {
+        res.status(200).json({ evaluation: evaluationResult, modelUsed });
+    }
 }
