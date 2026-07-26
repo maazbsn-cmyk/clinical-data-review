@@ -489,7 +489,7 @@
                                 <option value="1">Motor: None (1)</option>
                             </select>
                             <div id="gcsRes" class="calc-result">GCS: 15 (Patient is normal, alert, and oriented.)</div>
-                            <button class="calc-btn" onclick="evaluateCalcResult('Glasgow Coma Scale score of ' + document.getElementById('gcsRes').innerText, 'gcs', 'GCS Calculator')">Evaluate Interventions</button>
+                            <button class="calc-btn" onclick="triggerCalcEval('gcs', 'GCS Calculator')">Evaluate Interventions</button>
                         </div>
                     </div>
                     <div id="gcsResultCard" class="hidden"></div>
@@ -528,7 +528,7 @@
                                 <input type="number" id="bmiHt" placeholder="Height (e.g. 1.75)" oninput="calcBMI()">
                             </div>
                             <div id="bmiRes" class="calc-result">BMI: --</div>
-                            <button class="calc-btn" onclick="evaluateCalcResult('BMI calculation result: ' + document.getElementById('bmiRes').innerText, 'bmi', 'BMI Calculator')">Evaluate Interventions</button>
+                            <button class="calc-btn" onclick="triggerCalcEval('bmi', 'BMI Calculator')">Evaluate Interventions</button>
                         </div>
                     </div>
                     <div id="bmiResultCard" class="hidden"></div>
@@ -561,7 +561,7 @@
                             <input type="number" id="mapSbp" placeholder="Systolic Blood Pressure (mmHg)" oninput="calcMAP()">
                             <input type="number" id="mapDbp" placeholder="Diastolic Blood Pressure (mmHg)" oninput="calcMAP()">
                             <div id="mapRes" class="calc-result">MAP: -- mmHg</div>
-                            <button class="calc-btn" onclick="evaluateCalcResult('Mean Arterial Pressure calculation: ' + document.getElementById('mapRes').innerText, 'map', 'MAP Calculator')">Evaluate Interventions</button>
+                            <button class="calc-btn" onclick="triggerCalcEval('map', 'MAP Calculator')">Evaluate Interventions</button>
                         </div>
                     </div>
                     <div id="mapResultCard" class="hidden"></div>
@@ -596,7 +596,7 @@
                             </select>
                             <input type="number" id="fluidWt" placeholder="Weight (kg)" oninput="calcFluids()">
                             <div id="fluidRes" class="calc-result">Rate: -- mL/hr</div>
-                            <button class="calc-btn" onclick="evaluateCalcResult('Fluid requirement calculation result: ' + document.getElementById('fluidRes').innerText, 'fluids', 'Fluids Calculator')">Evaluate Interventions</button>
+                            <button class="calc-btn" onclick="triggerCalcEval('fluids', 'Fluids Calculator')">Evaluate Interventions</button>
                         </div>
                     </div>
                     <div id="fluidsResultCard" class="hidden"></div>
@@ -635,7 +635,7 @@
                                 <option value="60">Micro: 60 gtt/mL (Burette)</option>
                             </select>
                             <div id="ivRes" class="calc-result">Drip Rate: -- gtt/min</div>
-                            <button class="calc-btn" onclick="evaluateCalcResult('IV Drip Rate calculation result: ' + document.getElementById('ivRes').innerText, 'iv', 'IV Drips Calculator')">Evaluate Interventions</button>
+                            <button class="calc-btn" onclick="triggerCalcEval('iv', 'IV Drips Calculator')">Evaluate Interventions</button>
                         </div>
                     </div>
                     <div id="ivResultCard" class="hidden"></div>
@@ -688,9 +688,9 @@
 
     <script>
         let extractedSheets = [];
-        let isCancelled = false;
         let evaluatedReportsStore = [];
         let currentAbortController = null;
+        let currentCalcStore = {};
 
         function toggleMobileMenu() {
             const navWrapper = document.getElementById('navWrapper');
@@ -955,7 +955,16 @@
             }
         }
 
-        // DECOUPLED AI REQUEST & WEBHOOK SAVING
+        function triggerCalcEval(tabPrefix, toolName) {
+            const calcDataSummary = document.getElementById(`${tabPrefix}Res`).innerText;
+            if (calcDataSummary.includes("--")) {
+                showNotification("⚠️ Please enter numbers to calculate the result before evaluating.");
+                return;
+            }
+            currentCalcStore[tabPrefix] = calcDataSummary;
+            evaluateCalcResult(tabPrefix, toolName, false);
+        }
+
         async function evaluateCase(isFastMode = false) {
             const discipline = document.getElementById('discipline').value;
             const rawText = document.getElementById('scenario').value.trim();
@@ -1013,7 +1022,6 @@ ${rawText}
             `;
 
             try {
-                // STEP 1: Ask backend ONLY to evaluate AI (no saving yet)
                 const response = await fetch('/api/evaluate', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -1028,7 +1036,6 @@ ${rawText}
                 let evalText = data.evaluation || JSON.stringify(data, null, 2);
                 let currentModel = data.modelUsed || "Unknown Model";
 
-                // STEP 2: Fire background save ONLY for the request that successfully reached the frontend
                 fetch('/api/evaluate', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -1059,20 +1066,14 @@ ${rawText}
                     </div>
                 `;
             } catch (error) {
-                if (error.name === 'AbortError') {
-                    console.log("Standard request aborted for Fast Mode.");
-                    return; 
-                }
+                if (error.name === 'AbortError') return; 
                 showNotification("Error: " + error.message);
                 resetTab('scanner');
             }
         }
 
-        async function evaluateCalcResult(calcDataSummary, tabPrefix, toolName, isFastMode = false) {
-            if (calcDataSummary.includes("--")) {
-                showNotification("⚠️ Please enter numbers to calculate the result before evaluating.");
-                return;
-            }
+        async function evaluateCalcResult(tabPrefix, toolName, isFastMode = false) {
+            const calcDataSummary = currentCalcStore[tabPrefix] || document.getElementById(`${tabPrefix}Res`).innerText;
 
             const inputCard = document.getElementById(`${tabPrefix}InputCard`);
             const resultCard = document.getElementById(`${tabPrefix}ResultCard`);
@@ -1087,7 +1088,7 @@ ${rawText}
                 <div class="card" style="text-align:center; padding: 2rem; display: flex; flex-direction: column; align-items: center;">
                     <div class="loader"></div>
                     <p style="font-weight:600; color:var(--highlight); margin-bottom: 0;">Evaluating concise interventions...</p>
-                    ${!isFastMode ? `<button class="fast-btn" onclick="evaluateCalcResult('${calcDataSummary}', '${tabPrefix}', '${toolName}', true)">⚡ Answer Now</button>` : `<p style="color: #f59e0b; font-size: 0.85rem; font-weight: bold; margin-top: 1rem;">⚡ Fast Mode Activated</p>`}
+                    ${!isFastMode ? `<button class="fast-btn" onclick="evaluateCalcResult('${tabPrefix}', '${toolName}', true)">⚡ Answer Now</button>` : `<p style="color: #f59e0b; font-size: 0.85rem; font-weight: bold; margin-top: 1rem;">⚡ Fast Mode Activated</p>`}
                 </div>
             `;
 
@@ -1100,7 +1101,6 @@ CRITICAL SYSTEM INSTRUCTIONS:
             `;
 
             try {
-                // STEP 1: Ask backend ONLY to evaluate AI (no saving yet)
                 const response = await fetch('/api/evaluate', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -1115,7 +1115,6 @@ CRITICAL SYSTEM INSTRUCTIONS:
                 let evalText = data.evaluation || JSON.stringify(data, null, 2);
                 let currentModel = data.modelUsed || "Unknown Model";
 
-                // STEP 2: Fire background save ONLY for the request that successfully reached the frontend
                 fetch('/api/evaluate', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -1145,10 +1144,7 @@ CRITICAL SYSTEM INSTRUCTIONS:
                     </div>
                 `;
             } catch (error) {
-                if (error.name === 'AbortError') {
-                    console.log("Standard request aborted for Fast Mode.");
-                    return; 
-                }
+                if (error.name === 'AbortError') return; 
                 showNotification("Error: " + error.message);
                 resetTab(tabPrefix);
             }
