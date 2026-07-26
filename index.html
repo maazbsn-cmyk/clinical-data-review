@@ -647,10 +647,8 @@
         
     </main>
 
-    <!-- Circular Mobile FAB -->
     <button class="mobile-ref-fab" onclick="openMobileRefModal()" title="View Protocols">ℹ️</button>
 
-    <!-- Mobile Reference Modal Window -->
     <div id="mobileRefModal" class="modal-overlay hidden" onclick="closeMobileRefModal()">
         <div class="modal-content" onclick="event.stopPropagation()">
             <div class="modal-header">
@@ -933,7 +931,7 @@
             }
         }
 
-        // Updated backend fetch explicitly sending the "tool" name
+        // NEW OPTIMIZED PROMPT FOR CASE ANALYZER
         async function evaluateCase() {
             const discipline = document.getElementById('discipline').value;
             const rawText = document.getElementById('scenario').value.trim();
@@ -955,11 +953,31 @@
             `;
 
             const strictPrompt = `
-CRITICAL SYSTEM INSTRUCTIONS:
-1. Analyze the following data for the ${discipline} discipline.
-2. GUARDRAIL 1: If the input contains profanity, jokes, video games, or completely non-clinical/irrelevant text, YOU MUST SOLELY REPLY WITH: "Irrelevant or invalid data provided. Please enter a valid clinical patient scenario."
-3. GUARDRAIL 2: If the clinical data provided is completely normal/healthy, state clearly that no acute interventions are needed and to continue routine care.
-4. Provide Evidence-Based References.
+CRITICAL SYSTEM INSTRUCTIONS: MULTI-DISCIPLINARY CLINICAL DATA ANALYSIS
+
+TARGET DISCIPLINE: ${discipline}
+
+1. VALIDATION & GUARDRAILS (STRICT COMPLIANCE REQUIRED):
+- GUARDRAIL 1 (Irrelevant Data): If the input contains profanity, jokes, video game references, or completely non-clinical text, YOU MUST SOLELY REPLY WITH EXACTLY: "Irrelevant or invalid data provided. Please enter a valid clinical patient scenario." Do not generate any other text.
+- GUARDRAIL 2 (Normal Findings): If the clinical data provided is completely normal, healthy, or clinically stable, state clearly: "Values are within normal limits. No acute interventions required. Continue routine monitoring and standard care." Do not suggest unnecessary emergency protocols, IV access, or acute monitoring.
+
+2. DISCIPLINE-SPECIFIC ANALYSIS:
+Analyze the data strictly through the lens of the target discipline (${discipline}). Ignore interventions outside this scope.
+- Nursing: Focus on immediate patient assessment, vital sign monitoring parameters, and direct nursing care actions.
+- Radiology: Focus on urgent imaging protocols, identifying potential abnormalities, and clinical correlation recommendations.
+- Pharmacy: Focus on medication review, contraindications, adverse reactions, and pharmacotherapy optimization.
+- Anaesthesia: Focus on preoperative risk assessment, airway status, and sedation/anesthesia considerations.
+- Medical Laboratory Technology (MLT): Focus on interpretation of lab values, abnormal patterns, and clinical correlation.
+- Dental Sciences: Focus on oral health assessment, dental pathologies, and therapeutic recommendations.
+
+3. CLINICAL REASONING & OUTPUT FORMAT:
+- Maintain a direct, objective, and strictly professional tone. Strip away all conversational filler.
+- Identify key findings and highlight any acute red flags.
+- Provide a prioritized, actionable intervention plan using a maximum of 3 to 4 concise bullet points.
+
+4. EVIDENCE-BASED REQUIREMENT:
+- Ground all recommendations in current, peer-reviewed clinical guidelines. Do not provide diagnostic certainty without sufficient data.
+- Include an "Evidence-Based References" section at the bottom citing 1 to 2 authoritative sources (e.g., WHO, CDC, NICE, or standard medical texts) that support your specific interventions.
 
 PATIENT DATA:
 ${rawText}
@@ -969,7 +987,8 @@ ${rawText}
                 const response = await fetch('/api/evaluate', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ scenario: strictPrompt, discipline, tool: "Case Analyzer" })
+                    // Send strictPrompt to AI, but send rawText to save cleanly in Google Sheets
+                    body: JSON.stringify({ scenario: strictPrompt, rawInput: rawText, discipline: discipline, tool: "Case Analyzer" })
                 });
 
                 const text = await response.text();
@@ -1007,7 +1026,6 @@ ${rawText}
             }
         }
 
-        // Updated backend fetch explicitly sending the "tool" name
         async function evaluateCalcResult(calcDataSummary, tabPrefix, toolName) {
             if (calcDataSummary.includes("--")) {
                 showNotification("⚠️ Please enter numbers to calculate the result before evaluating.");
@@ -1038,7 +1056,8 @@ CRITICAL SYSTEM INSTRUCTIONS:
                 const response = await fetch('/api/evaluate', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ scenario: strictPrompt, discipline: 'General Clinical', tool: toolName })
+                    // Send strictPrompt to AI, but send calcDataSummary to save cleanly in Google Sheets
+                    body: JSON.stringify({ scenario: strictPrompt, rawInput: calcDataSummary, discipline: 'General Clinical', tool: toolName })
                 });
 
                 const text = await response.text();
