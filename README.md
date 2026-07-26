@@ -36,12 +36,15 @@ The frontend dynamically injects strict prompts based on the tool being used to 
 *   **Backend & Hosting:** Node.js, deployed on Vercel Serverless Functions (`api/evaluate.js`).
 *   **AI Provider & Models:** 
     *   *Primary Models:* Google `gemini-3.6-flash` & `gemini-3.5-flash`
-    *   *Fast Mode / Secondary:* Groq `llama-3.3-70b-versatile`
+    *   *Fast Mode / Groq Fallback Chain:*
+        1. `llama-3.3-70b-versatile`
+        2. `qwen/qwen3-32b`
+        3. `openai/gpt-oss-120b`
     *   *Fallback Model:* Hugging Face `mistralai/Mixtral-8x7B-Instruct-v0.1`
 *   **External Libraries:** 
     *   `Tesseract.js` (Client-side image-to-text OCR).
     *   `Marked.js` (Parsing AI Markdown responses into clean HTML).
-*   **Database Sync:** Google Apps Script Webhooks (Google Sheets & Google Docs).
+*   **Database Sync:** Serverless Webhooks for background metadata logging and report generation.
 
 ## F. Application Screenshots
 
