@@ -49,31 +49,27 @@
         * { box-sizing: border-box; word-break: break-word; overflow-wrap: break-word; }
         body { font-family: system-ui, -apple-system, sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 0; display: flex; flex-direction: column; min-height: 100vh; overflow-x: hidden; transition: background-color 0.3s ease, color 0.3s ease; }
         
-        /* NEW FIXED HEADER LAYOUT */
+        /* BULLETPROOF 3-COLUMN FLEXBOX HEADER */
         header { 
-            position: relative; 
             background: var(--header-bg); 
             color: var(--header-text); 
-            padding: 1.5rem 5rem; /* Padding prevents text from hiding under absolute buttons */
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
+            padding: 1rem 2rem; 
             border-bottom: 3px solid #3b82f6; 
             box-shadow: 0 4px 20px rgba(59, 130, 246, 0.15); 
             transition: background 0.3s, color 0.3s; 
             z-index: 100;
-            min-height: 80px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
-        h1 { margin: 0; font-size: 1.6rem; letter-spacing: -0.5px; background: linear-gradient(90deg, #60a5fa, #38bdf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-align: center; }
-        .subtitle { color: var(--header-sub); font-size: 0.9rem; margin-top: 0.3rem; font-weight: 500; transition: color 0.3s; text-align: center; }
+        .header-left { flex: 1; display: flex; justify-content: flex-start; align-items: center; }
+        .header-center { display: flex; flex-direction: column; align-items: center; text-align: center; }
+        .header-right { flex: 1; display: flex; justify-content: flex-end; align-items: center; }
+
+        h1 { margin: 0; font-size: 1.6rem; letter-spacing: -0.5px; background: linear-gradient(90deg, #60a5fa, #38bdf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .subtitle { color: var(--header-sub); font-size: 0.9rem; margin-top: 0.3rem; font-weight: 500; transition: color 0.3s; }
         
-        /* THEME BUTTON - ABSOLUTE RIGHT */
         .theme-btn { 
-            position: absolute; 
-            right: 1.5rem; 
-            top: 50%;
-            transform: translateY(-50%);
             padding: 0.5rem 1rem; 
             background: rgba(125,125,125,0.15); 
             border: 1px solid var(--border); 
@@ -89,13 +85,8 @@
         }
         .theme-btn:hover { background: rgba(125,125,125,0.3); }
         
-        /* HAMBURGER MENU - ABSOLUTE LEFT (PERFECTLY CENTERED SVG) */
         .mobile-hamburger { 
             display: none; 
-            position: absolute; 
-            left: 1.5rem; 
-            top: 50%;
-            transform: translateY(-50%);
             background: rgba(125,125,125,0.15); 
             border: 1px solid var(--border); 
             color: var(--header-text); 
@@ -109,24 +100,12 @@
         .mobile-hamburger:hover { background: rgba(125,125,125,0.3); }
 
         @media (max-width: 800px) {
-            header { padding: 1.25rem 4.5rem; }
-            h1 { font-size: 1.25rem; }
-            .subtitle { font-size: 0.8rem; }
+            header { padding: 1rem 0.75rem; }
+            h1 { font-size: 1.15rem; }
+            .subtitle { font-size: 0.75rem; }
             .theme-text { display: none; }
-            .theme-btn { 
-                right: 1rem; 
-                padding: 0; 
-                width: 42px; 
-                height: 42px; 
-                border-radius: 50%; 
-                justify-content: center; 
-            }
-            .mobile-hamburger { 
-                display: flex; 
-                left: 1rem;
-                width: 42px; 
-                height: 42px;
-            }
+            .theme-btn { padding: 0; width: 42px; height: 42px; border-radius: 50%; justify-content: center; }
+            .mobile-hamburger { display: flex; width: 42px; height: 42px; }
         }
 
         /* Top Navigation Panel */
@@ -169,7 +148,6 @@
         .cheat-sheet-list li { margin-bottom: 0.5rem; }
         .section-heading { font-size: 1.2rem; color: var(--highlight); font-weight: 700; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; border-left: 4px solid #3b82f6; padding-left: 0.75rem; }
 
-        /* NEW STRICT LABEL ROW WITH INSERT SAMPLE ON RIGHT */
         .label-row { 
             display: flex; 
             justify-content: space-between; 
@@ -202,13 +180,12 @@
         }
         .insert-sample:hover { background: #3b82f6; color: white; }
         
-        /* NEW CUSTOM DROPDOWNS (SELECT MENUS) */
+        /* Custom Select Menus */
         select {
             appearance: none;
             -webkit-appearance: none;
             -moz-appearance: none;
             background-color: var(--input-bg);
-            /* Custom blue chevron SVG */
             background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%233b82f6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
             background-repeat: no-repeat;
             background-position: right 1rem center;
@@ -261,6 +238,7 @@
         .btn-secondary { background: var(--tool-bg); color: var(--text); box-shadow: none; border: 1px solid var(--input-border); }
         .btn-secondary:hover { background: var(--input-border); }
         .btn-success { background: linear-gradient(135deg, #059669 0%, #047857 100%); box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3); }
+        .btn-danger { background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3); }
         
         .badges-row { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.75rem; }
         .verified-badge { padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 700; background: rgba(16, 185, 129, 0.1); color: #10b981; border: 1px solid #10b981; }
@@ -365,21 +343,24 @@
     <div id="notificationArea"></div>
     <div id="mobileMenuOverlay" onclick="toggleMobileMenu()"></div>
 
-    <!-- NEW STRUCTURAL HEADER -->
+    <!-- BULLETPROOF 3-COLUMN FLEXBOX HEADER -->
     <header>
-        <button class="mobile-hamburger" onclick="toggleMobileMenu()">
-            <!-- Clean SVG Hamburger Icon -->
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
-        </button>
+        <div class="header-left">
+            <button class="mobile-hamburger" onclick="toggleMobileMenu()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+            </button>
+        </div>
         
-        <div class="header-titles">
+        <div class="header-center">
             <h1>Clinical Decision Support</h1>
             <div class="subtitle">TPIHS (KMU, BSN)</div>
         </div>
         
-        <button id="themeToggle" onclick="toggleTheme()" class="theme-btn">
-            <span class="theme-icon">💡</span><span class="theme-text"> Light Mode</span>
-        </button>
+        <div class="header-right">
+            <button id="themeToggle" onclick="toggleTheme()" class="theme-btn">
+                <span class="theme-icon">💡</span><span class="theme-text"> Light Mode</span>
+            </button>
+        </div>
     </header>
 
     <div class="top-nav-wrapper" id="navWrapper">
@@ -587,7 +568,7 @@
                             <a class="insert-sample" onclick="insertSampleFluids()">Insert sample</a>
                         </div>
                         <div class="calc-group">
-                            <select id="fluidAgeCat" onchange="calcFluids()">
+                            <select id="fluidAgeCat" onchange="calcFluids()" style="margin-bottom: 0.75rem;">
                                 <option value="adult">Adult / Child (&gt; 10 kg)</option>
                                 <option value="neonate">Neonate (&lt; 28 days)</option>
                             </select>
@@ -624,7 +605,7 @@
                         <div class="calc-group">
                             <input type="number" id="ivVol" placeholder="Total Volume (mL)" oninput="calcIVDrip()">
                             <input type="number" id="ivTime" placeholder="Time (Hours)" oninput="calcIVDrip()">
-                            <select id="ivDrop" onchange="calcIVDrip()">
+                            <select id="ivDrop" onchange="calcIVDrip()" style="margin-top: 0.2rem;">
                                 <option value="0">Select Drop Factor...</option>
                                 <option value="10">Macro: 10 gtt/mL</option>
                                 <option value="15">Macro: 15 gtt/mL</option>
@@ -719,7 +700,6 @@
             }
         }
 
-        // Updated Icon-based Theme Switcher
         function toggleTheme() {
             const body = document.body;
             body.classList.toggle('light-theme');
@@ -744,7 +724,6 @@
             }
         });
 
-        // Sliding Top-Right Notification
         function showNotification(message) {
             const area = document.getElementById('notificationArea');
             const notif = document.createElement('div');
@@ -790,7 +769,6 @@
             document.getElementById('mobileRefModal').classList.add('hidden');
         }
 
-        /* Samples Insertion */
         function insertSampleTriage() {
             extractedSheets = [];
             document.getElementById('scenario').value = "History: 58-year-old male, smoker (30 pack-years), hypertension (10 yrs), on amlodipine 10mg.\nPresentation: Sudden onset crushing substernal chest pain 1 hour ago, radiating to left arm, diaphoresis, nausea. No shortness of breath currently.\nVitals: BP 160/95, HR 104, RR 20, SpO2 96% on room air, Temp 36.8C, Pain 8/10.";
@@ -836,7 +814,6 @@
             showNotification("IV Drip sample loaded.");
         }
 
-        /* Calculation Functions */
         function calcGCS() {
             const eye = parseInt(document.getElementById('gcsEye').value) || 0;
             const verbal = parseInt(document.getElementById('gcsVerbal').value) || 0;
