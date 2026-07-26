@@ -43,7 +43,7 @@
         * { box-sizing: border-box; word-break: break-word; overflow-wrap: break-word; }
         body { font-family: system-ui, -apple-system, sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 0; display: flex; flex-direction: column; min-height: 100vh; overflow-x: hidden; transition: background-color 0.3s ease, color 0.3s ease; }
         
-        header { position: relative; background: linear-gradient(135deg, #1e1b4b 0%, #0f172a 100%); color: white; padding: 1.5rem 1rem; text-align: center; border-bottom: 3px solid #3b82f6; box-shadow: 0 4px 20px rgba(59, 130, 246, 0.15); }
+        header { position: relative; background: linear-gradient(135deg, #1e1b4b 0%, #0f172a 100%); color: white; padding: 1.5rem 1rem; text-align: center; border-bottom: 3px solid #3b82f6; box-shadow: 0 4px 20px rgba(59, 130, 246, 0.15); margin-top: 1rem; }
         h1 { margin: 0; font-size: 1.6rem; letter-spacing: -0.5px; background: linear-gradient(90deg, #60a5fa, #38bdf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .subtitle { color: #94a3b8; font-size: 0.9rem; margin-top: 0.3rem; font-weight: 500; }
         
@@ -54,11 +54,11 @@
             .theme-btn { top: 0.5rem; right: 0.5rem; font-size: 0.75rem; padding: 0.35rem 0.6rem; }
         }
 
-        /* Top Navigation Panel - Single Row of Tabs */
-        .top-nav-wrapper { max-width: 900px; width: 100%; margin: 1.5rem auto 0 auto; padding: 0 1rem; box-sizing: border-box; }
+        /* Top Navigation Panel - Moved to top */
+        .top-nav-wrapper { max-width: 1000px; width: 100%; margin: 1rem auto 0 auto; padding: 0 1rem; box-sizing: border-box; }
         .top-nav-panel { display: flex; justify-content: center; background: var(--card-bg); border: 1px solid var(--border); padding: 0.8rem 1.25rem; border-radius: 12px; box-shadow: var(--shadow); }
         .nav-tabs { display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: center; width: 100%; }
-        .nav-tab-btn { flex: 1; min-width: 120px; background: var(--tool-bg); color: var(--text); border: 1px solid var(--input-border); padding: 0.6rem 0.5rem; border-radius: 6px; font-weight: bold; cursor: pointer; transition: all 0.2s; font-size: 0.8rem; text-transform: uppercase; text-align: center; }
+        .nav-tab-btn { flex: 1; min-width: 110px; background: var(--tool-bg); color: var(--text); border: 1px solid var(--input-border); padding: 0.6rem 0.5rem; border-radius: 6px; font-weight: bold; cursor: pointer; transition: all 0.2s; font-size: 0.75rem; text-transform: uppercase; text-align: center; }
         .nav-tab-btn:hover { border-color: var(--highlight); color: var(--highlight); }
         .nav-tab-btn.active { background: var(--accent-gradient); color: white; border-color: transparent; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3); }
         
@@ -139,37 +139,38 @@
     </style>
 </head>
 <body>
+
+    <!-- Navigation Panel is now ABOVE the Header -->
+    <div class="top-nav-wrapper">
+        <div class="top-nav-panel">
+            <div class="nav-tabs">
+                <button class="nav-tab-btn active" onclick="switchTab('scanner-section', this)">⚡ AI TRIAGE</button>
+                <button class="nav-tab-btn" onclick="switchTab('gcs-section', this)">🧠 GCS CALC</button>
+                <button class="nav-tab-btn" onclick="switchTab('bmi-section', this)">⚖️ BMI CALC</button>
+                <button class="nav-tab-btn" onclick="switchTab('map-section', this)">🩸 MAP CALC</button>
+                <button class="nav-tab-btn" onclick="switchTab('fluids-section', this)">💧 FLUIDS CALC</button>
+                <button class="nav-tab-btn" onclick="switchTab('info-section', this)">ℹ️ PROTOCOLS</button>
+                <button class="nav-tab-btn" onclick="switchTab('vault-section', this)">🗄️ ARCHIVE</button>
+            </div>
+        </div>
+    </div>
+
     <header>
         <h1>Clinical Decision Support</h1>
         <div class="subtitle">TPIHS (KMU, BSN)</div>
         <button id="themeToggle" onclick="toggleTheme()" class="theme-btn">☀️ Light Mode</button>
     </header>
 
-    <!-- Navigation Panel -->
-    <div class="top-nav-wrapper">
-        <div class="top-nav-panel">
-            <div class="nav-tabs">
-                <button class="nav-tab-btn active" onclick="switchTab('scanner-section', this)">🔍 SCANNER</button>
-                <button class="nav-tab-btn" onclick="switchTab('gcs-section', this)">🧠 GCS</button>
-                <button class="nav-tab-btn" onclick="switchTab('bmi-section', this)">⚖️ BMI</button>
-                <button class="nav-tab-btn" onclick="switchTab('map-section', this)">🩸 MAP</button>
-                <button class="nav-tab-btn" onclick="switchTab('fluids-section', this)">💧 FLUIDS</button>
-                <button class="nav-tab-btn" onclick="switchTab('info-section', this)">ℹ️ INFO</button>
-                <button class="nav-tab-btn" onclick="switchTab('vault-section', this)">📂 VAULT</button>
-            </div>
-        </div>
-    </div>
-
     <main>
         <div id="notificationArea"></div>
 
-        <!-- TAB 1: CLINICAL SCANNER -->
+        <!-- TAB 1: AI TRIAGE (SCANNER) -->
         <div id="scanner-section" class="tab-content active">
-            <div class="section-heading">Clinical Evaluation & Ward Dashboard</div>
+            <div class="section-heading">AI Triage & Clinical Dashboard</div>
             <div id="inputCard" class="card">
                 <div class="label-row">
                     <label for="scenario">Patient Scenario / Ward Data</label>
-                    <a class="insert-sample" onclick="insertSample()">Insert sample case</a>
+                    <a class="insert-sample" onclick="insertSampleTriage()">Insert sample case</a>
                 </div>
                 <textarea id="scenario" rows="6" placeholder="Type scenario, upload up to 10 ward sheet photos, or paste multiple unformatted patient data..."></textarea>
 
@@ -195,9 +196,12 @@
 
         <!-- TAB 2: GCS CALCULATOR -->
         <div id="gcs-section" class="tab-content">
-            <div class="section-heading">Neurological Assessment</div>
+            <div class="section-heading">Glasgow Coma Scale (GCS) Calculator</div>
             <div class="card">
-                <h3>Glasgow Coma Scale (GCS)</h3>
+                <div class="label-row">
+                    <h3>GCS Parameters</h3>
+                    <a class="insert-sample" onclick="insertSampleGCS()">Insert sample</a>
+                </div>
                 <div class="calc-group">
                     <select id="gcsEye" onchange="calcGCS()">
                         <option value="4">Eye: Spontaneous (4)</option>
@@ -228,9 +232,12 @@
 
         <!-- TAB 3: BMI CALCULATOR -->
         <div id="bmi-section" class="tab-content">
-            <div class="section-heading">Anthropometric Assessment</div>
+            <div class="section-heading">Body Mass Index (BMI) Calculator</div>
             <div class="card">
-                <h3>Body Mass Index (BMI)</h3>
+                <div class="label-row">
+                    <h3>BMI Parameters</h3>
+                    <a class="insert-sample" onclick="insertSampleBMI()">Insert sample</a>
+                </div>
                 <div class="calc-group">
                     <input type="number" id="bmiWt" placeholder="Weight (kg)" oninput="calcBMI()">
                     <select id="bmiUnit" onchange="toggleHeightInputs(); calcBMI();">
@@ -249,9 +256,12 @@
 
         <!-- TAB 4: MAP CALCULATOR -->
         <div id="map-section" class="tab-content">
-            <div class="section-heading">Hemodynamic Assessment</div>
+            <div class="section-heading">Mean Arterial Pressure (MAP) Calculator</div>
             <div class="card">
-                <h3>Mean Arterial Pressure (MAP)</h3>
+                <div class="label-row">
+                    <h3>MAP Parameters</h3>
+                    <a class="insert-sample" onclick="insertSampleMAP()">Insert sample</a>
+                </div>
                 <div class="calc-group">
                     <input type="number" id="mapSbp" placeholder="Systolic Blood Pressure (mmHg)" oninput="calcMAP()">
                     <input type="number" id="mapDbp" placeholder="Diastolic Blood Pressure (mmHg)" oninput="calcMAP()">
@@ -263,9 +273,12 @@
 
         <!-- TAB 5: FLUIDS CALCULATOR -->
         <div id="fluids-section" class="tab-content">
-            <div class="section-heading">Pediatric & Adult Hydration</div>
+            <div class="section-heading">Maintenance Fluids (4-2-1 Rule) Calculator</div>
             <div class="card">
-                <h3>Maintenance Fluids (4-2-1 Rule)</h3>
+                <div class="label-row">
+                    <h3>Fluids Parameters</h3>
+                    <a class="insert-sample" onclick="insertSampleFluids()">Insert sample</a>
+                </div>
                 <div class="calc-group">
                     <select id="fluidAgeCat" onchange="calcFluids()" style="margin-bottom: 0.75rem;">
                         <option value="adult">Adult / Child (&gt; 10 kg)</option>
@@ -279,7 +292,7 @@
 
         <!-- TAB 6: PROTOCOLS & INFO -->
         <div id="info-section" class="tab-content">
-            <div class="section-heading">Clinical Protocols & Cheat Sheets</div>
+            <div class="section-heading">Clinical Protocols & Reference</div>
             <div class="card">
                 <h3>ABG Normal Values</h3>
                 <ul class="cheat-sheet-list">
@@ -310,17 +323,17 @@
             </div>
         </div>
 
-        <!-- TAB 7: LOCAL VAULT -->
+        <!-- TAB 7: CLINICAL ARCHIVE -->
         <div id="vault-section" class="tab-content">
-            <div class="section-heading">Secure Data Storage</div>
+            <div class="section-heading">Clinical History Archive</div>
             <div class="card">
-                <h3>Local History Vault</h3>
-                <p style="font-size: 0.85rem; color: var(--muted); margin-top: 0; margin-bottom: 1rem;">Recent evaluated ward reports saved locally on your device.</p>
+                <h3>Archived Patient Reports</h3>
+                <p style="font-size: 0.85rem; color: var(--muted); margin-top: 0; margin-bottom: 1rem;">Recent evaluated clinical reports are securely saved locally on your device.</p>
                 <ul id="historyList" class="history-list">
                     <li style="text-align: center;">No stored reports yet.</li>
                 </ul>
                 <div class="input-tools" style="margin-top: 1.5rem; margin-bottom: 0;">
-                    <button class="btn-secondary" onclick="clearHistory()">🗑️ Clear Vault</button>
+                    <button class="btn-secondary" onclick="clearHistory()">🗑️ Clear Archive</button>
                     <button class="btn-success" onclick="exportBatchPDF()">📄 Export Master TXT</button>
                 </div>
             </div>
@@ -388,11 +401,45 @@
             setTimeout(() => { if(area.innerHTML) area.innerHTML = ''; }, 6000);
         }
 
-        function insertSample() {
+        // Sample Insertion Functions
+        function insertSampleTriage() {
             extractedSheets = [];
             document.getElementById('scenario').value = "History: 58-year-old male, smoker (30 pack-years), hypertension (10 yrs), on amlodipine 10mg.\nPresentation: Sudden onset crushing substernal chest pain 1 hour ago, radiating to left arm, diaphoresis, nausea. No shortness of breath currently.\nVitals: BP 160/95, HR 104, RR 20, SpO2 96% on room air, Temp 36.8C, Pain 8/10.";
+            showNotification("AI Triage sample loaded.");
         }
 
+        function insertSampleGCS() {
+            document.getElementById('gcsEye').value = "3"; // To Speech
+            document.getElementById('gcsVerbal').value = "4"; // Confused
+            document.getElementById('gcsMotor').value = "5"; // Localizes Pain
+            calcGCS();
+            showNotification("GCS sample loaded (Moderate impairment).");
+        }
+
+        function insertSampleBMI() {
+            document.getElementById('bmiWt').value = "85";
+            document.getElementById('bmiUnit').value = "m";
+            toggleHeightInputs();
+            document.getElementById('bmiHt').value = "1.75";
+            calcBMI();
+            showNotification("BMI sample loaded.");
+        }
+
+        function insertSampleMAP() {
+            document.getElementById('mapSbp').value = "165";
+            document.getElementById('mapDbp').value = "95";
+            calcMAP();
+            showNotification("MAP sample loaded (Hypertensive).");
+        }
+
+        function insertSampleFluids() {
+            document.getElementById('fluidAgeCat').value = "adult";
+            document.getElementById('fluidWt').value = "28";
+            calcFluids();
+            showNotification("Fluids sample loaded (Child - 28kg).");
+        }
+
+        // Calculation Logic
         function calcGCS() {
             const eye = parseInt(document.getElementById('gcsEye').value) || 0;
             const verbal = parseInt(document.getElementById('gcsVerbal').value) || 0;
@@ -500,6 +547,7 @@
             }
         }
 
+        // AI API Evaluation Logic
         async function evaluateCalcResult(calcDataSummary) {
             const discipline = document.getElementById('discipline').value;
             const btn = document.getElementById('submitBtn');
@@ -904,7 +952,7 @@
         }
 
         function resetForm() {
-            // Force reset back to the Clinical Scanner Tab
+            // Force reset back to the AI Triage Tab
             switchTab('scanner-section', document.querySelector('.nav-tab-btn'));
             
             document.getElementById('resultsContainer').classList.add('hidden');
