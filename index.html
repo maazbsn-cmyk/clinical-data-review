@@ -11,7 +11,6 @@
             --primary: #0f172a; 
             --accent: #2563eb; 
             --accent-gradient: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-            /* Dark Theme Colors */
             --bg: #070a12; 
             --card-bg: #0f172a; 
             --border: #1e293b;
@@ -30,7 +29,6 @@
         }
         
         body.light-theme {
-            /* Light Theme Colors */
             --bg: #f1f5f9; 
             --card-bg: #ffffff; 
             --border: #cbd5e1;
@@ -51,20 +49,50 @@
         * { box-sizing: border-box; word-break: break-word; overflow-wrap: break-word; }
         body { font-family: system-ui, -apple-system, sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 0; display: flex; flex-direction: column; min-height: 100vh; overflow-x: hidden; transition: background-color 0.3s ease, color 0.3s ease; }
         
-        header { position: relative; background: var(--header-bg); color: var(--header-text); padding: 1.5rem 1rem; text-align: center; border-bottom: 3px solid #3b82f6; box-shadow: 0 4px 20px rgba(59, 130, 246, 0.15); transition: background 0.3s, color 0.3s; z-index: 100; }
-        h1 { margin: 0; font-size: 1.6rem; letter-spacing: -0.5px; background: linear-gradient(90deg, #60a5fa, #38bdf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        /* FIXED HEADER GRID LAYOUT */
+        header { 
+            background: var(--header-bg); 
+            color: var(--header-text); 
+            padding: 1.2rem 1rem; 
+            border-bottom: 3px solid #3b82f6; 
+            box-shadow: 0 4px 20px rgba(59, 130, 246, 0.15); 
+            transition: background 0.3s, color 0.3s; 
+            z-index: 100;
+            display: grid;
+            grid-template-columns: 60px 1fr 60px;
+            align-items: center;
+        }
+        .header-titles { text-align: center; display: flex; flex-direction: column; justify-content: center; }
+        h1 { margin: 0; font-size: 1.6rem; letter-spacing: -0.5px; background: linear-gradient(90deg, #60a5fa, #38bdf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 1.2; }
         .subtitle { color: var(--header-sub); font-size: 0.9rem; margin-top: 0.3rem; font-weight: 500; transition: color 0.3s; }
         
-        .theme-btn { position: absolute; top: 1.25rem; right: 1.25rem; padding: 0.4rem 0.8rem; background: rgba(125,125,125,0.2); border: 1px solid var(--input-border); color: var(--header-text); border-radius: 6px; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 5px; }
+        .theme-btn { 
+            background: rgba(125,125,125,0.2); 
+            border: 1px solid var(--input-border); 
+            color: var(--header-text); 
+            border-radius: 6px; 
+            font-size: 0.85rem; 
+            cursor: pointer; 
+            transition: all 0.2s; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 5px; 
+            padding: 0.4rem 0.8rem;
+            width: max-content;
+            margin-left: auto;
+        }
         .theme-btn:hover { opacity: 0.8; }
         
-        .mobile-hamburger { display: none; position: absolute; left: 1rem; top: 1.5rem; background: none; border: none; color: var(--header-text); font-size: 1.8rem; cursor: pointer; transition: transform 0.2s; }
+        .mobile-hamburger { display: none; background: none; border: none; color: var(--header-text); font-size: 1.8rem; cursor: pointer; padding: 0; text-align: left; }
         
         @media (max-width: 800px) {
+            header { grid-template-columns: 45px 1fr 45px; gap: 10px; padding: 1rem 0.5rem; }
+            h1 { font-size: 1.15rem; }
+            .subtitle { font-size: 0.75rem; }
             .theme-text { display: none; }
-            .theme-btn { top: 1.25rem; right: 1rem; padding: 0.5rem; border-radius: 50%; width: 42px; height: 42px; justify-content: center; font-size: 1.2rem; }
+            .theme-btn { padding: 0; border-radius: 50%; width: 42px; height: 42px; margin-left: auto; }
             .mobile-hamburger { display: block; }
-            header { padding-top: 1.8rem; padding-bottom: 1.8rem; }
         }
 
         /* Top Navigation Panel */
@@ -162,8 +190,8 @@
         /* FIXED: Top-Right Notification System */
         #notificationArea {
             position: fixed;
-            top: 25px;
-            right: 25px;
+            top: 20px;
+            right: 20px;
             z-index: 9999;
             display: flex;
             flex-direction: column;
@@ -227,7 +255,6 @@
         @media (max-width: 800px) {
             .mobile-ref-fab { display: flex; }
             .reference-card { display: none !important; }
-            #notificationArea { top: 20px; right: 15px; } 
         }
 
         /* Modal Popup */
@@ -255,13 +282,20 @@
     <div id="notificationArea"></div>
     <div id="mobileMenuOverlay" onclick="toggleMobileMenu()"></div>
 
+    <!-- GRID-BASED HEADER TO PREVENT OVERLAPS -->
     <header>
-        <button class="mobile-hamburger" onclick="toggleMobileMenu()">☰</button>
-        <h1>Clinical Decision Support</h1>
-        <div class="subtitle">TPIHS (KMU, BSN)</div>
-        <button id="themeToggle" onclick="toggleTheme()" class="theme-btn">
-            <span class="theme-icon">💡</span><span class="theme-text"> Light Mode</span>
-        </button>
+        <div>
+            <button class="mobile-hamburger" onclick="toggleMobileMenu()">☰</button>
+        </div>
+        <div class="header-titles">
+            <h1>Clinical Decision Support</h1>
+            <div class="subtitle">TPIHS (KMU, BSN)</div>
+        </div>
+        <div>
+            <button id="themeToggle" onclick="toggleTheme()" class="theme-btn">
+                <span class="theme-icon">💡</span><span class="theme-text"> Light Mode</span>
+            </button>
+        </div>
     </header>
 
     <div class="top-nav-wrapper" id="navWrapper">
