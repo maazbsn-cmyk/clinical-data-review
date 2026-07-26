@@ -1,7 +1,10 @@
 export default async function handler(req, res) {
-    if (req.method !== 'POST') return res.status(405).send('Method Not Allowed');
+    if (req.method !== 'POST') {
+        return res.status(405).send('Method Not Allowed');
+    }
 
-    const { scenario, discipline, tool = "General Tool" } = req.body;
+    // Notice we receive both the full AI 'scenario' prompt and the 'rawInput' for the Google Sheet
+    const { scenario, rawInput, discipline, tool = "General Tool" } = req.body;
 
     // 1. Extract User Location and IP automatically provided by Vercel
     const ip = req.headers['x-forwarded-for'] || 'Unknown IP';
@@ -20,17 +23,20 @@ export default async function handler(req, res) {
 
     // -- FALLBACK AI FUNCTIONS --
 
-    // Priority 1: Hugging Face (Mistral/Medical open weights)
+    // Priority 1: Hugging Face (Mixtral 8x7B Medical-capable)
     async function callHuggingFace() {
         if(!HF_KEY) throw new Error("No HF Key");
         const response = await fetch("https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1", {
             method: "POST",
             headers: { "Authorization": `Bearer ${HF_KEY}`, "Content-Type": "application/json" },
-            body: JSON.stringify({ inputs: scenario, parameters: { max_new_tokens: 500 } })
+            body: JSON.stringify({ 
+                inputs: scenario, 
+                parameters: { max_new_tokens: 800, return_full_text: false } 
+            })
         });
-        if (!response.ok) throw new Error("Hugging Face API failed or is asleep");
+        if (!response.ok) throw new Error("Hugging Face API failed or is loading");
         const data = await response.json();
-        return data[0].generated_text.replace(scenario, "").trim();
+        return data[0].generated_text.trim();
     }
 
     // Priority 2: Google Gemini (High Capacity)
@@ -46,7 +52,7 @@ export default async function handler(req, res) {
         return data.candidates[0].content.parts[0].text.trim();
     }
 
-    // Priority 3: Groq (Ultra-Fast Fallback)
+    // Priority 3: Groq (Ultra-Fast Llama 3 Backup)
     async function callGroq() {
         if(!GROQ_KEY) throw new Error("No Groq Key");
         const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -72,18 +78,26 @@ export default async function handler(req, res) {
                 evaluationResult = await callGroq();
                 modelUsed = "Groq (Llama 3.3)";
             } catch (e3) {
-                return res.status(500).json({ evaluation: "Error: All AI APIs failed or keys are missing.", modelUsed: "Failed" });
+                return res.status(500).json({ evaluation: "Error: All AI APIs failed or API keys are missing.", modelUsed: "Failed" });
             }
         }
     }
 
-    // 4. Fire Data to Google Sheets
+    // 4. Fire Data to Google Sheets Webhook
     if (SHEET_WEBHOOK) {
         try {
             await fetch(SHEET_WEBHOOK, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ ipAddress: ip, location, discipline, tool, modelUsed, scenario, evaluation: evaluationResult })
+                body: JSON.stringify({ 
+                    ipAddress: ip, 
+                    location: location, 
+                    discipline: discipline, 
+                    tool: tool, 
+                    modelUsed: modelUsed, 
+                    scenario: rawInput || scenario, // Sends ONLY the user's patient data to the sheet
+                    evaluation: evaluationResult 
+                })
             });
         } catch (err) { 
             console.error("Google Sheets Sync Failed", err); 
