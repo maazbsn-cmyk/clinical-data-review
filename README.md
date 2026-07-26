@@ -15,7 +15,7 @@
 ## C. Core Features
 *   **AI Clinical Triage Engine:** Automatically parses unstructured, multi-patient scenarios into high-yield, discipline-specific management steps.
 *   **Dual-Mode AI Routing (Fast Mode ⚡):** Standard requests route through Google Gemini for deep analysis with mandatory evidence-based references. If a user is in a hurry, clicking "Answer Now" instantly aborts the slow request and reroutes through Groq for immediate, low-latency protocols.
-*   **Decoupled Database Logging:** AI generation is decoupled from logging. Background webhooks automatically format and push execution metadata to Google Sheets and clean, markdown-free clinical reports to Google Docs without slowing down the UI.
+*   **Decoupled Database Logging:** AI generation is decoupled from logging. Background webhooks automatically format and push execution metadata and clean, markdown-free clinical reports to a secure, isolated cloud datab
 *   **Optical Character Recognition (OCR):** Upload up to 10 physical ward sheet photos simultaneously; the app extracts the text locally using Tesseract.js for immediate clinical evaluation.
 *   **Voice Dictation:** Hands-free patient history entry via the Web Speech API.
 *   **Interactive Clinical Calculators:** Features real-time calculation for Glasgow Coma Scale (GCS), Body Mass Index (BMI), Mean Arterial Pressure (MAP), Maintenance Fluids (4-2-1 Rule), and IV Drip Rates.
