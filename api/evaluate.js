@@ -35,7 +35,8 @@ export default async function handler(req, res) {
         }
 
         if (DOC_WEBHOOK) {
-            let docEvaluation = evaluation.split(/###?\s*Evidence-Based References/i)[0]
+            // Enhanced regex catches all variations from Gemini, Groq, and Hugging Face
+            let docEvaluation = evaluation.split(/(?:\n|^)(?:#{1,6}|\*\*|\*)*\s*(?:Evidence-?Based\s+)?References:?/i)[0]
                 .replace(/\*\*(.*?)\*\*/g, '$1') 
                 .replace(/(^\s*\*|\n\s*\*)\s/g, '\n• ') 
                 .replace(/#{1,6}\s?/g, '')       
