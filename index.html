@@ -23,6 +23,7 @@
             --muted: #94a3b8;
             --highlight: #38bdf8;
             --shadow: 0 6px 20px rgba(0,0,0,0.4);
+            --reference-bg: #111827;
         }
         
         body.light-theme {
@@ -38,12 +39,13 @@
             --muted: #64748b;
             --highlight: #0284c7;
             --shadow: 0 4px 12px rgba(0,0,0,0.05);
+            --reference-bg: #f8fafc;
         }
 
         * { box-sizing: border-box; word-break: break-word; overflow-wrap: break-word; }
         body { font-family: system-ui, -apple-system, sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 0; display: flex; flex-direction: column; min-height: 100vh; overflow-x: hidden; transition: background-color 0.3s ease, color 0.3s ease; }
         
-        header { position: relative; background: linear-gradient(135deg, #1e1b4b 0%, #0f172a 100%); color: white; padding: 1.5rem 1rem; text-align: center; border-bottom: 3px solid #3b82f6; box-shadow: 0 4px 20px rgba(59, 130, 246, 0.15); margin-top: 1rem; }
+        header { position: relative; background: linear-gradient(135deg, #1e1b4b 0%, #0f172a 100%); color: white; padding: 1.5rem 1rem; text-align: center; border-bottom: 3px solid #3b82f6; box-shadow: 0 4px 20px rgba(59, 130, 246, 0.15); margin-top: 1rem; transition: background 0.3s; }
         h1 { margin: 0; font-size: 1.6rem; letter-spacing: -0.5px; background: linear-gradient(90deg, #60a5fa, #38bdf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .subtitle { color: #94a3b8; font-size: 0.9rem; margin-top: 0.3rem; font-weight: 500; }
         
@@ -54,11 +56,11 @@
             .theme-btn { top: 0.5rem; right: 0.5rem; font-size: 0.75rem; padding: 0.35rem 0.6rem; }
         }
 
-        /* Top Navigation Panel - Moved to top */
+        /* Top Navigation Panel */
         .top-nav-wrapper { max-width: 1000px; width: 100%; margin: 1rem auto 0 auto; padding: 0 1rem; box-sizing: border-box; }
-        .top-nav-panel { display: flex; justify-content: center; background: var(--card-bg); border: 1px solid var(--border); padding: 0.8rem 1.25rem; border-radius: 12px; box-shadow: var(--shadow); }
+        .top-nav-panel { display: flex; justify-content: center; background: var(--card-bg); border: 1px solid var(--border); padding: 0.8rem 1.25rem; border-radius: 12px; box-shadow: var(--shadow); transition: background 0.3s, border 0.3s; }
         .nav-tabs { display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: center; width: 100%; }
-        .nav-tab-btn { flex: 1; min-width: 110px; background: var(--tool-bg); color: var(--text); border: 1px solid var(--input-border); padding: 0.6rem 0.5rem; border-radius: 6px; font-weight: bold; cursor: pointer; transition: all 0.2s; font-size: 0.75rem; text-transform: uppercase; text-align: center; }
+        .nav-tab-btn { flex: 1; min-width: 100px; background: var(--tool-bg); color: var(--text); border: 1px solid var(--input-border); padding: 0.6rem 0.5rem; border-radius: 6px; font-weight: bold; cursor: pointer; transition: all 0.2s; font-size: 0.75rem; text-transform: uppercase; text-align: center; }
         .nav-tab-btn:hover { border-color: var(--highlight); color: var(--highlight); }
         .nav-tab-btn.active { background: var(--accent-gradient); color: white; border-color: transparent; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3); }
         
@@ -66,28 +68,37 @@
         .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Single Column Main Area */
-        main { flex-grow: 1; max-width: 900px; width: 100%; margin: 1.5rem auto; padding: 0 1rem; box-sizing: border-box; display: block; }
+        /* Grid Layouts for Internal Sections */
+        .tab-layout { display: flex; flex-direction: column; gap: 1.25rem; }
+        @media (min-width: 800px) {
+            .tab-layout.two-col { display: grid; grid-template-columns: 3fr 2fr; align-items: start; }
+            .tab-layout.half-half { display: grid; grid-template-columns: 1fr 1fr; align-items: start; }
+        }
 
-        .card { background: var(--card-bg); padding: 1.5rem; border-radius: 12px; box-shadow: var(--shadow); margin-bottom: 1.25rem; border: 1px solid var(--border); width: 100%; transition: background 0.3s, border 0.3s; }
-        .card h3 { margin-top: 0; color: var(--highlight); font-size: 1.1rem; border-bottom: 2px solid var(--border); padding-bottom: 0.5rem; margin-bottom: 1rem; }
+        /* Main Area */
+        main { flex-grow: 1; max-width: 1000px; width: 100%; margin: 1.5rem auto; padding: 0 1rem; box-sizing: border-box; display: block; }
+
+        .card { background: var(--card-bg); padding: 1.5rem; border-radius: 12px; box-shadow: var(--shadow); margin-bottom: 1.25rem; border: 1px solid var(--border); width: 100%; transition: background 0.3s, border 0.3s, box-shadow 0.3s; }
+        .reference-card { background: var(--reference-bg); border: 1px dashed var(--input-border); box-shadow: none; }
         
-        .cheat-sheet-list { padding-left: 1.2rem; font-size: 0.9rem; line-height: 1.5; color: var(--muted); margin: 0; }
+        .card h3 { margin-top: 0; color: var(--highlight); font-size: 1.05rem; border-bottom: 2px solid var(--border); padding-bottom: 0.5rem; margin-bottom: 1rem; }
+        
+        .cheat-sheet-list { padding-left: 1.2rem; font-size: 0.9rem; line-height: 1.6; color: var(--text); margin: 0; }
         .cheat-sheet-list li { margin-bottom: 0.5rem; }
 
         .section-heading { font-size: 1.2rem; color: var(--highlight); font-weight: 700; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; border-left: 4px solid #3b82f6; padding-left: 0.75rem; }
 
         .label-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; flex-wrap: wrap; gap: 0.5rem; }
         label { font-weight: 600; color: var(--heading); font-size: 0.95rem; }
-        .insert-sample { color: var(--highlight); text-decoration: none; font-size: 0.85rem; cursor: pointer; font-weight: 600; }
-        .insert-sample:hover { text-decoration: underline; }
+        .insert-sample { color: var(--highlight); text-decoration: none; font-size: 0.85rem; cursor: pointer; font-weight: 600; padding: 0.2rem 0.5rem; background: var(--tool-bg); border-radius: 4px; border: 1px solid var(--input-border); transition: all 0.2s; }
+        .insert-sample:hover { background: var(--accent); color: white; border-color: var(--accent); }
         
-        textarea, select, input[type="number"] { width: 100%; box-sizing: border-box; padding: 0.75rem; border: 1px solid var(--input-border); border-radius: 8px; margin-bottom: 0.75rem; font-family: inherit; font-size: 0.9rem; background: var(--input-bg); color: var(--text); resize: vertical; }
+        textarea, select, input[type="number"] { width: 100%; box-sizing: border-box; padding: 0.75rem; border: 1px solid var(--input-border); border-radius: 8px; margin-bottom: 0.75rem; font-family: inherit; font-size: 0.9rem; background: var(--input-bg); color: var(--text); resize: vertical; transition: background 0.3s, color 0.3s, border 0.3s; }
         textarea:focus, select:focus, input:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2); }
         
         .calc-group { margin-bottom: 0; color: var(--muted); }
         .calc-row { display: flex; gap: 0.5rem; }
-        .calc-result { background: var(--input-bg); padding: 0.75rem; border-radius: 6px; color: var(--highlight); font-weight: bold; text-align: center; margin-top: 0.5rem; border: 1px solid var(--border); font-size: 0.95rem; }
+        .calc-result { background: var(--input-bg); padding: 0.75rem; border-radius: 6px; color: var(--highlight); font-weight: bold; text-align: center; margin-top: 0.5rem; border: 1px solid var(--border); font-size: 0.95rem; transition: background 0.3s, border 0.3s; }
         
         .calc-btn { background: var(--tool-bg); color: var(--highlight); border: 1px solid var(--input-border); padding: 0.6rem 0.5rem; border-radius: 6px; font-size: 0.85rem; font-weight: bold; cursor: pointer; margin-top: 0.5rem; width: 100%; text-align: center; transition: all 0.2s; }
         .calc-btn:hover { background: #3b82f6; color: #fff; }
@@ -131,25 +142,24 @@
         .history-list li { padding: 0.75rem; border-bottom: 1px solid var(--border); cursor: pointer; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: background 0.2s; }
         .history-list li:hover { background: var(--tool-bg); color: var(--highlight); }
 
-        .notification-banner { background: var(--tool-bg); border-left: 4px solid #38bdf8; padding: 1rem; border-radius: 6px; margin-bottom: 1.25rem; font-size: 0.95rem; color: var(--text); display: flex; justify-content: space-between; align-items: center; }
+        .notification-banner { background: var(--tool-bg); border-left: 4px solid #38bdf8; padding: 1rem; border-radius: 6px; margin-bottom: 1.25rem; font-size: 0.95rem; color: var(--text); display: flex; justify-content: space-between; align-items: center; transition: background 0.3s; }
         .notification-banner span { cursor: pointer; color: var(--muted); font-weight: bold; }
         .notification-banner span:hover { color: var(--heading); }
         
-        footer { background: var(--bg); color: var(--muted); text-align: center; padding: 1.5rem 1rem; font-size: 0.85rem; margin-top: auto; border-top: 1px solid var(--border); }
+        footer { background: var(--bg); color: var(--muted); text-align: center; padding: 1.5rem 1rem; font-size: 0.85rem; margin-top: auto; border-top: 1px solid var(--border); transition: background 0.3s; }
     </style>
 </head>
 <body>
 
-    <!-- Navigation Panel is now ABOVE the Header -->
+    <!-- Top Navigation Panel -->
     <div class="top-nav-wrapper">
         <div class="top-nav-panel">
             <div class="nav-tabs">
-                <button class="nav-tab-btn active" onclick="switchTab('scanner-section', this)">⚡ AI TRIAGE</button>
-                <button class="nav-tab-btn" onclick="switchTab('gcs-section', this)">🧠 GCS CALC</button>
-                <button class="nav-tab-btn" onclick="switchTab('bmi-section', this)">⚖️ BMI CALC</button>
-                <button class="nav-tab-btn" onclick="switchTab('map-section', this)">🩸 MAP CALC</button>
-                <button class="nav-tab-btn" onclick="switchTab('fluids-section', this)">💧 FLUIDS CALC</button>
-                <button class="nav-tab-btn" onclick="switchTab('info-section', this)">ℹ️ PROTOCOLS</button>
+                <button class="nav-tab-btn active" onclick="switchTab('scanner-section', this)">⚡ CASE ANALYZER</button>
+                <button class="nav-tab-btn" onclick="switchTab('gcs-section', this)">🧠 GCS</button>
+                <button class="nav-tab-btn" onclick="switchTab('bmi-section', this)">⚖️ BMI</button>
+                <button class="nav-tab-btn" onclick="switchTab('map-section', this)">🩸 MAP</button>
+                <button class="nav-tab-btn" onclick="switchTab('fluids-section', this)">💧 FLUIDS</button>
                 <button class="nav-tab-btn" onclick="switchTab('vault-section', this)">🗄️ ARCHIVE</button>
             </div>
         </div>
@@ -164,19 +174,20 @@
     <main>
         <div id="notificationArea"></div>
 
-        <!-- TAB 1: AI TRIAGE (SCANNER) -->
+        <!-- TAB 1: CASE ANALYZER -->
         <div id="scanner-section" class="tab-content active">
             <div class="section-heading">AI Triage & Clinical Dashboard</div>
+            
             <div id="inputCard" class="card">
                 <div class="label-row">
                     <label for="scenario">Patient Scenario / Ward Data</label>
-                    <a class="insert-sample" onclick="insertSampleTriage()">Insert sample case</a>
+                    <a class="insert-sample" onclick="insertSampleTriage()">Insert sample</a>
                 </div>
                 <textarea id="scenario" rows="6" placeholder="Type scenario, upload up to 10 ward sheet photos, or paste multiple unformatted patient data..."></textarea>
 
                 <div class="input-tools">
                     <input type="file" id="imageInput" accept="image/*" multiple class="hidden" onchange="handleImageUpload(event)">
-                    <button type="button" onclick="document.getElementById('imageInput').click()">📷 Upload Sheets (Max 10)</button>
+                    <button type="button" onclick="document.getElementById('imageInput').click()">📷 Upload Sheets</button>
                     <button type="button" id="voiceBtn" onclick="startVoiceInput()">🎤 Voice Dictation</button>
                 </div>
 
@@ -187,45 +198,77 @@
                     <option value="Dental">Dental</option>
                     <option value="Anaesthesia">Anaesthesia</option>
                     <option value="Pharmacy">Pharmacy</option>
-                    <option value="Medical Laboratory Technology">Medical Laboratory Technology</option>
+                    <option value="Medical Laboratory Technology">Medical Lab Technology</option>
                 </select>
 
-                <button id="submitBtn" onclick="evaluateCase()">Evaluate Clinical Priorities</button>
+                <button id="submitBtn" onclick="evaluateCase()">Analyze Case Priorities</button>
+            </div>
+
+            <div class="tab-layout half-half">
+                <div class="card reference-card">
+                    <h3>🚨 Emergency Protocols</h3>
+                    <ul class="cheat-sheet-list">
+                        <li><strong>Chest Pain:</strong> ECG within 10 min, check O2, Aspirin 325mg, Sublingual Nitroglycerin.</li>
+                        <li><strong>Stroke (CVA):</strong> Fast-track non-contrast CT head within 20 min of arrival.</li>
+                        <li><strong>Anaphylaxis:</strong> Immediate IM Epinephrine (1:1000) 0.5mg into mid-outer thigh.</li>
+                        <li><strong>Seizure/Status:</strong> Secure airway, IV Lorazepam, check blood glucose.</li>
+                    </ul>
+                </div>
+                <div class="card reference-card">
+                    <h3>🩸 ABG & ROME Reference</h3>
+                    <ul class="cheat-sheet-list">
+                        <li><strong>pH:</strong> 7.35 – 7.45</li>
+                        <li><strong>PaCO2:</strong> 35 – 45 mmHg</li>
+                        <li><strong>HCO3:</strong> 22 – 26 mEq/L</li>
+                        <li><strong>ROME:</strong> Respiratory Opposite (pH & PaCO2), Metabolic Equal (pH & HCO3).</li>
+                    </ul>
+                </div>
             </div>
         </div>
 
         <!-- TAB 2: GCS CALCULATOR -->
         <div id="gcs-section" class="tab-content">
             <div class="section-heading">Glasgow Coma Scale (GCS) Calculator</div>
-            <div class="card">
-                <div class="label-row">
-                    <h3>GCS Parameters</h3>
-                    <a class="insert-sample" onclick="insertSampleGCS()">Insert sample</a>
+            <div class="tab-layout two-col">
+                <div class="card">
+                    <div class="label-row">
+                        <h3>GCS Parameters</h3>
+                        <a class="insert-sample" onclick="insertSampleGCS()">Insert sample</a>
+                    </div>
+                    <div class="calc-group">
+                        <select id="gcsEye" onchange="calcGCS()">
+                            <option value="4">Eye: Spontaneous (4)</option>
+                            <option value="3">Eye: To Speech (3)</option>
+                            <option value="2">Eye: To Pain (2)</option>
+                            <option value="1">Eye: None (1)</option>
+                        </select>
+                        <select id="gcsVerbal" onchange="calcGCS()">
+                            <option value="5">Verbal: Oriented (5)</option>
+                            <option value="4">Verbal: Confused (4)</option>
+                            <option value="3">Verbal: Inappropriate Words (3)</option>
+                            <option value="2">Verbal: Incomprehensible Sounds (2)</option>
+                            <option value="1">Verbal: None (1)</option>
+                        </select>
+                        <select id="gcsMotor" onchange="calcGCS()">
+                            <option value="6">Motor: Obeys Commands (6)</option>
+                            <option value="5">Motor: Localizes Pain (5)</option>
+                            <option value="4">Motor: Withdraws from Pain (4)</option>
+                            <option value="3">Motor: Abnormal Flexion (3)</option>
+                            <option value="2">Motor: Abnormal Extension (2)</option>
+                            <option value="1">Motor: None (1)</option>
+                        </select>
+                        <div id="gcsRes" class="calc-result">GCS: 15 (Patient is normal, alert, and oriented.)</div>
+                        <button class="calc-btn" onclick="evaluateCalcResult('Glasgow Coma Scale score of ' + document.getElementById('gcsRes').innerText)">Evaluate Interventions</button>
+                    </div>
                 </div>
-                <div class="calc-group">
-                    <select id="gcsEye" onchange="calcGCS()">
-                        <option value="4">Eye: Spontaneous (4)</option>
-                        <option value="3">Eye: To Speech (3)</option>
-                        <option value="2">Eye: To Pain (2)</option>
-                        <option value="1">Eye: None (1)</option>
-                    </select>
-                    <select id="gcsVerbal" onchange="calcGCS()">
-                        <option value="5">Verbal: Oriented (5)</option>
-                        <option value="4">Verbal: Confused (4)</option>
-                        <option value="3">Verbal: Inappropriate Words (3)</option>
-                        <option value="2">Verbal: Incomprehensible Sounds (2)</option>
-                        <option value="1">Verbal: None (1)</option>
-                    </select>
-                    <select id="gcsMotor" onchange="calcGCS()">
-                        <option value="6">Motor: Obeys Commands (6)</option>
-                        <option value="5">Motor: Localizes Pain (5)</option>
-                        <option value="4">Motor: Withdraws from Pain (4)</option>
-                        <option value="3">Motor: Abnormal Flexion - Decorticate (3)</option>
-                        <option value="2">Motor: Abnormal Extension - Decerebrate (2)</option>
-                        <option value="1">Motor: None (1)</option>
-                    </select>
-                    <div id="gcsRes" class="calc-result">GCS: 15 (Patient is normal, alert, and oriented.)</div>
-                    <button class="calc-btn" onclick="evaluateCalcResult('Glasgow Coma Scale score of ' + document.getElementById('gcsRes').innerText)">Evaluate GCS Interventions</button>
+                <div class="card reference-card">
+                    <h3>🧠 GCS Scoring Guide</h3>
+                    <ul class="cheat-sheet-list">
+                        <li><strong>Severe Brain Injury:</strong> GCS 3 – 8 (Consider intubation)</li>
+                        <li><strong>Moderate Brain Injury:</strong> GCS 9 – 12</li>
+                        <li><strong>Mild Brain Injury:</strong> GCS 13 – 15</li>
+                        <li style="margin-top: 10px;"><em>Note: A drop of 2 or more points is considered a clinical red flag requiring immediate physician notification.</em></li>
+                    </ul>
                 </div>
             </div>
         </div>
@@ -233,23 +276,35 @@
         <!-- TAB 3: BMI CALCULATOR -->
         <div id="bmi-section" class="tab-content">
             <div class="section-heading">Body Mass Index (BMI) Calculator</div>
-            <div class="card">
-                <div class="label-row">
-                    <h3>BMI Parameters</h3>
-                    <a class="insert-sample" onclick="insertSampleBMI()">Insert sample</a>
-                </div>
-                <div class="calc-group">
-                    <input type="number" id="bmiWt" placeholder="Weight (kg)" oninput="calcBMI()">
-                    <select id="bmiUnit" onchange="toggleHeightInputs(); calcBMI();">
-                        <option value="m">Height in Meters (m)</option>
-                        <option value="cm">Height in Centimeters (cm)</option>
-                        <option value="ft">Height in Feet & Inches</option>
-                    </select>
-                    <div id="heightInputContainer">
-                        <input type="number" id="bmiHt" placeholder="Height (e.g. 1.75)" oninput="calcBMI()">
+            <div class="tab-layout two-col">
+                <div class="card">
+                    <div class="label-row">
+                        <h3>BMI Parameters</h3>
+                        <a class="insert-sample" onclick="insertSampleBMI()">Insert sample</a>
                     </div>
-                    <div id="bmiRes" class="calc-result">BMI: --</div>
-                    <button class="calc-btn" onclick="evaluateCalcResult('BMI calculation result: ' + document.getElementById('bmiRes').innerText)">Evaluate BMI Interventions</button>
+                    <div class="calc-group">
+                        <input type="number" id="bmiWt" placeholder="Weight (kg)" oninput="calcBMI()">
+                        <select id="bmiUnit" onchange="toggleHeightInputs(); calcBMI();">
+                            <option value="m">Height in Meters (m)</option>
+                            <option value="cm">Height in Centimeters (cm)</option>
+                            <option value="ft">Height in Feet & Inches</option>
+                        </select>
+                        <div id="heightInputContainer">
+                            <input type="number" id="bmiHt" placeholder="Height (e.g. 1.75)" oninput="calcBMI()">
+                        </div>
+                        <div id="bmiRes" class="calc-result">BMI: --</div>
+                        <button class="calc-btn" onclick="evaluateCalcResult('BMI calculation result: ' + document.getElementById('bmiRes').innerText)">Evaluate Interventions</button>
+                    </div>
+                </div>
+                <div class="card reference-card">
+                    <h3>⚖️ WHO BMI Categories</h3>
+                    <ul class="cheat-sheet-list">
+                        <li><strong>Underweight:</strong> &lt; 18.5 kg/m²</li>
+                        <li><strong>Normal weight:</strong> 18.5 – 24.9 kg/m²</li>
+                        <li><strong>Overweight:</strong> 25.0 – 29.9 kg/m²</li>
+                        <li><strong>Obesity Class I:</strong> 30.0 – 34.9 kg/m²</li>
+                        <li><strong>Obesity Class II/III:</strong> ≥ 35.0 kg/m²</li>
+                    </ul>
                 </div>
             </div>
         </div>
@@ -257,16 +312,27 @@
         <!-- TAB 4: MAP CALCULATOR -->
         <div id="map-section" class="tab-content">
             <div class="section-heading">Mean Arterial Pressure (MAP) Calculator</div>
-            <div class="card">
-                <div class="label-row">
-                    <h3>MAP Parameters</h3>
-                    <a class="insert-sample" onclick="insertSampleMAP()">Insert sample</a>
+            <div class="tab-layout two-col">
+                <div class="card">
+                    <div class="label-row">
+                        <h3>MAP Parameters</h3>
+                        <a class="insert-sample" onclick="insertSampleMAP()">Insert sample</a>
+                    </div>
+                    <div class="calc-group">
+                        <input type="number" id="mapSbp" placeholder="Systolic Blood Pressure (mmHg)" oninput="calcMAP()">
+                        <input type="number" id="mapDbp" placeholder="Diastolic Blood Pressure (mmHg)" oninput="calcMAP()">
+                        <div id="mapRes" class="calc-result">MAP: -- mmHg</div>
+                        <button class="calc-btn" onclick="evaluateCalcResult('Mean Arterial Pressure calculation: ' + document.getElementById('mapRes').innerText)">Evaluate Interventions</button>
+                    </div>
                 </div>
-                <div class="calc-group">
-                    <input type="number" id="mapSbp" placeholder="Systolic Blood Pressure (mmHg)" oninput="calcMAP()">
-                    <input type="number" id="mapDbp" placeholder="Diastolic Blood Pressure (mmHg)" oninput="calcMAP()">
-                    <div id="mapRes" class="calc-result">MAP: -- mmHg</div>
-                    <button class="calc-btn" onclick="evaluateCalcResult('Mean Arterial Pressure calculation: ' + document.getElementById('mapRes').innerText)">Evaluate MAP Interventions</button>
+                <div class="card reference-card">
+                    <h3>🩸 MAP Target Ranges</h3>
+                    <ul class="cheat-sheet-list">
+                        <li><strong>Formula:</strong> (SBP + 2(DBP)) / 3</li>
+                        <li><strong>Normal Range:</strong> 70 – 100 mmHg</li>
+                        <li><strong>Sepsis Target:</strong> ≥ 65 mmHg</li>
+                        <li><strong>Critical Perfusion:</strong> &lt; 65 mmHg (Indicates high risk of ischemia, shock, and organ hypoperfusion).</li>
+                    </ul>
                 </div>
             </div>
         </div>
@@ -274,56 +340,34 @@
         <!-- TAB 5: FLUIDS CALCULATOR -->
         <div id="fluids-section" class="tab-content">
             <div class="section-heading">Maintenance Fluids (4-2-1 Rule) Calculator</div>
-            <div class="card">
-                <div class="label-row">
-                    <h3>Fluids Parameters</h3>
-                    <a class="insert-sample" onclick="insertSampleFluids()">Insert sample</a>
+            <div class="tab-layout two-col">
+                <div class="card">
+                    <div class="label-row">
+                        <h3>Fluids Parameters</h3>
+                        <a class="insert-sample" onclick="insertSampleFluids()">Insert sample</a>
+                    </div>
+                    <div class="calc-group">
+                        <select id="fluidAgeCat" onchange="calcFluids()" style="margin-bottom: 0.75rem;">
+                            <option value="adult">Adult / Child (&gt; 10 kg)</option>
+                            <option value="neonate">Neonate (&lt; 28 days)</option>
+                        </select>
+                        <input type="number" id="fluidWt" placeholder="Weight (kg)" oninput="calcFluids()">
+                        <div id="fluidRes" class="calc-result">Rate: -- mL/hr</div>
+                    </div>
                 </div>
-                <div class="calc-group">
-                    <select id="fluidAgeCat" onchange="calcFluids()" style="margin-bottom: 0.75rem;">
-                        <option value="adult">Adult / Child (&gt; 10 kg)</option>
-                        <option value="neonate">Neonate (&lt; 28 days)</option>
-                    </select>
-                    <input type="number" id="fluidWt" placeholder="Weight (kg)" oninput="calcFluids()">
-                    <div id="fluidRes" class="calc-result">Rate: -- mL/hr</div>
+                <div class="card reference-card">
+                    <h3>💧 4-2-1 Rule Breakdown</h3>
+                    <ul class="cheat-sheet-list">
+                        <li><strong>First 10 kg:</strong> 4 mL/kg/hr</li>
+                        <li><strong>Next 10 kg (11-20kg):</strong> Add 2 mL/kg/hr</li>
+                        <li><strong>Each kg > 20 kg:</strong> Add 1 mL/kg/hr</li>
+                        <li style="margin-top: 10px;"><em>Standard calculation for baseline hourly maintenance IV fluid rates in pediatric and adult patients.</em></li>
+                    </ul>
                 </div>
             </div>
         </div>
 
-        <!-- TAB 6: PROTOCOLS & INFO -->
-        <div id="info-section" class="tab-content">
-            <div class="section-heading">Clinical Protocols & Reference</div>
-            <div class="card">
-                <h3>ABG Normal Values</h3>
-                <ul class="cheat-sheet-list">
-                    <li><strong>pH:</strong> 7.35 – 7.45</li>
-                    <li><strong>PaCO2:</strong> 35 – 45 mmHg</li>
-                    <li><strong>HCO3:</strong> 22 – 26 mEq/L</li>
-                    <li><strong>PaO2:</strong> 80 – 100 mmHg</li>
-                    <li><strong>SaO2:</strong> 95% – 100%</li>
-                </ul>
-            </div>
-            <div class="card">
-                <h3>ABG Interpretation</h3>
-                <ul class="cheat-sheet-list">
-                    <li><strong>ROME Rule:</strong><br><strong>R</strong>espiratory <strong>O</strong>pposite (pH & PaCO2 opposite)<br><strong>M</strong>etabolic <strong>E</strong>qual (pH & HCO3 same)</li>
-                    <li><strong>Acidosis:</strong> pH &lt; 7.35</li>
-                    <li><strong>Alkalosis:</strong> pH &gt; 7.45</li>
-                </ul>
-            </div>
-            <div class="card">
-                <h3>Emergency Protocols</h3>
-                <ul class="cheat-sheet-list">
-                    <li><strong>Chest Pain:</strong> ECG within 10 min, check O2, Aspirin 325mg, Sublingual Nitroglycerin.</li>
-                    <li><strong>Stroke (CVA):</strong> Fast-track non-contrast CT head within 20 min of arrival.</li>
-                    <li><strong>Anaphylaxis:</strong> Immediate IM Epinephrine (1:1000) 0.5mg into mid-outer thigh.</li>
-                    <li><strong>Seizure/Status:</strong> Secure airway, IV Lorazepam/Diazepam, check blood glucose.</li>
-                    <li><strong>Triage Priority:</strong> ABCDE primary survey framework (AHA / ACC Standards).</li>
-                </ul>
-            </div>
-        </div>
-
-        <!-- TAB 7: CLINICAL ARCHIVE -->
+        <!-- TAB 6: CLINICAL ARCHIVE -->
         <div id="vault-section" class="tab-content">
             <div class="section-heading">Clinical History Archive</div>
             <div class="card">
@@ -405,7 +449,7 @@
         function insertSampleTriage() {
             extractedSheets = [];
             document.getElementById('scenario').value = "History: 58-year-old male, smoker (30 pack-years), hypertension (10 yrs), on amlodipine 10mg.\nPresentation: Sudden onset crushing substernal chest pain 1 hour ago, radiating to left arm, diaphoresis, nausea. No shortness of breath currently.\nVitals: BP 160/95, HR 104, RR 20, SpO2 96% on room air, Temp 36.8C, Pain 8/10.";
-            showNotification("AI Triage sample loaded.");
+            showNotification("Case Analyzer sample loaded.");
         }
 
         function insertSampleGCS() {
@@ -952,7 +996,7 @@
         }
 
         function resetForm() {
-            // Force reset back to the AI Triage Tab
+            // Force reset back to the Case Analyzer Tab
             switchTab('scanner-section', document.querySelector('.nav-tab-btn'));
             
             document.getElementById('resultsContainer').classList.add('hidden');
