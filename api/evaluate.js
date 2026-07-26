@@ -5,13 +5,11 @@ export default async function handler(req, res) {
 
     const { rawInput, discipline, tool = "General Tool" } = req.body;
 
-    // 1. Extract Vercel Analytics Headers
     const ip = req.headers['x-forwarded-for'] || 'Unknown IP';
     const city = req.headers['x-vercel-ip-city'] || 'Unknown City';
     const country = req.headers['x-vercel-ip-country'] || 'Unknown Country';
     const location = `${city}, ${country}`.replace(/^,\s/, '');
 
-    // 2. Load API Keys
     const SHEET_WEBHOOK = process.env.GOOGLE_WEBHOOK_URL;
     const GEMINI_KEY = process.env.GEMINI_API_KEY;
     const GROQ_KEY = process.env.GROQ_API_KEY;
@@ -20,14 +18,13 @@ export default async function handler(req, res) {
     let evaluationResult = "";
     let modelUsed = "";
 
-    // 3. Strict Multi-Disciplinary Prompt & Emergency Triage Engine
     const systemPrompt = `
 CRITICAL SYSTEM INSTRUCTIONS: MULTI-DISCIPLINARY CLINICAL DATA ANALYSIS
 TARGET DISCIPLINE: ${discipline}
 
 1. VALIDATION & GUARDRAILS:
 - GUARDRAIL 1 (Irrelevant Data): If the input contains profanity, jokes, video games, or non-clinical text, reply strictly with: "Irrelevant or invalid data provided. Please enter a valid clinical patient scenario."
-- GUARDRAIL 2 (Normal Findings): If findings are completely normal/stable, state: "Values are within normal limits. No acute interventions required. Continue routine monitoring."
+- GUARDRAIL 2 (Normal Findings): If the findings are completely normal/stable, state: "Values are within normal limits. No acute interventions required. Continue routine monitoring."
 
 2. CROSS-DISCIPLINE TRIAGE & SAFETY RULE:
 - If the patient scenario describes a critical medical emergency (e.g., cardiac arrest, acute myocardial infarction, stroke, anaphylaxis, status epilepticus) and the target discipline is secondary (e.g., Dental, Pharmacy, Radiology), YOU MUST START WITH A WARNING: "CRITICAL ALERT: Prioritize emergency medical/nursing intervention and stabilization first. Secondary discipline actions delayed." Then provide safe, scope-limited insights.
@@ -40,17 +37,15 @@ TARGET DISCIPLINE: ${discipline}
 - Medical Laboratory Technology (MLT): Lab value interpretation, abnormal patterns.
 - Dental Sciences: Oral health assessment, dental pathologies.
 
-4. FORMATTING & TONE:
+4. FORMATTING, TONE & MANDATORY REFERENCES:
 - Provide a prioritized, actionable intervention plan using 3 to 4 concise bullet points.
 - Maintain a direct, professional clinical tone.
+- MANDATORY: You must conclude the response with a distinct section titled "### Evidence-Based References" citing 1 to 2 authoritative sources (WHO, CDC, NICE, or peer-reviewed clinical guidelines).
 
 PATIENT DATA:
 ${rawInput}
     `;
 
-    // -- 4-TIER FALLBACK CASCADE FUNCTIONS --
-
-    // Tier 1: Gemini 3.6 Flash
     async function callGemini36() {
         if(!GEMINI_KEY) throw new Error("No Gemini 3.6 Key");
         const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${GEMINI_KEY}`, {
@@ -63,7 +58,6 @@ ${rawInput}
         return data.candidates[0].content.parts[0].text.trim();
     }
 
-    // Tier 2: Gemini 3.5 Flash
     async function callGemini35() {
         if(!GEMINI_KEY) throw new Error("No Gemini 3.5 Key");
         const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${GEMINI_KEY}`, {
@@ -76,7 +70,6 @@ ${rawInput}
         return data.candidates[0].content.parts[0].text.trim();
     }
 
-    // Tier 3: Groq Llama 3.3 70B
     async function callGroq() {
         if(!GROQ_KEY) throw new Error("No Groq Key");
         const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -89,7 +82,6 @@ ${rawInput}
         return data.choices[0].message.content.trim();
     }
 
-    // Tier 4: Hugging Face Mixtral 8x7B
     async function callHuggingFace() {
         if(!HF_KEY) throw new Error("No HF Key");
         const response = await fetch("https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1", {
@@ -102,7 +94,6 @@ ${rawInput}
         return data[0].generated_text.trim();
     }
 
-    // Execute Fallback Cascade
     try {
         evaluationResult = await callGemini36();
         modelUsed = "Gemini 3.6 Flash";
@@ -119,21 +110,20 @@ ${rawInput}
                     evaluationResult = await callHuggingFace();
                     modelUsed = "Hugging Face (Mixtral 8x7B)";
                 } catch (e4) {
-                    return res.status(500).json({ evaluation: "Error: All AI models in the fallback chain failed.", modelUsed: "Failed" });
+                    return res.status(500).json({ evaluation: "Error: All AI models failed.", modelUsed: "Failed" });
                 }
             }
         }
     }
 
-    // 4. Clean evaluation text for Google Sheets (strip markdown and references)
+    // Full evaluationResult containing references is sent to the frontend card.
+    // Clean version for Google Sheets database row:
     let cleanSheetEval = evaluationResult
         .replace(/#{1,6}\s?/g, '')     
         .replace(/\*\*/g, '')          
         .replace(/\*/g, '-')           
-        .split('Evidence-Based References')[0] 
         .trim();
 
-    // 5. Fire Data to Google Sheets Webhook
     if (SHEET_WEBHOOK) {
         try {
             await fetch(SHEET_WEBHOOK, {
