@@ -117,13 +117,18 @@ ${rawInput}
         }
     }
 
-    let cleanSheetEval = evaluationResult
-        .replace(/#{1,6}\s?/g, '')     
-        .replace(/\*\*/g, '')          
-        .replace(/\*/g, '-')           
+    // --- CLEANING SECTION FOR GOOGLE DOCS ---
+    // 1. Chops off everything from "Evidence-Based References" downwards
+    let docEvaluation = evaluationResult.split(/###?\s*Evidence-Based References/i)[0];
+    
+    // 2. Removes **, replaces * with a clean bullet •, and removes # tags
+    docEvaluation = docEvaluation
+        .replace(/\*\*(.*?)\*\*/g, '$1') 
+        .replace(/(^\s*\*|\n\s*\*)\s/g, '\n• ') 
+        .replace(/#{1,6}\s?/g, '')       
         .trim();
 
-    let uniqueCode = "UID-1";
+    let uniqueCode = "UID-PENDING";
 
     if (SHEET_WEBHOOK) {
         try {
@@ -148,6 +153,7 @@ ${rawInput}
         }
     }
 
+    // ONLY sends the clean data (UID, Input, and Cleaned Evaluation) to Google Docs
     if (DOC_WEBHOOK) {
         try {
             await fetch(DOC_WEBHOOK, {
@@ -155,13 +161,8 @@ ${rawInput}
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ 
                     uniqueCode: uniqueCode,
-                    ipAddress: ip, 
-                    location: location, 
-                    discipline: discipline, 
-                    tool: tool, 
-                    modelUsed: modelUsed, 
                     scenario: rawInput, 
-                    evaluation: evaluationResult 
+                    evaluation: docEvaluation 
                 }),
                 redirect: 'follow'
             });
@@ -170,5 +171,6 @@ ${rawInput}
         }
     }
 
+    // Frontend still gets the full evaluationResult with formatting and references
     res.status(200).json({ evaluation: evaluationResult, modelUsed });
 }
