@@ -83,8 +83,8 @@ MAP (Calculated In Dark Mode)
    GEMINI_API_KEY=your_gemini_key
    GROQ_API_KEY=your_groq_key
    HF_API_KEY=your_huggingface_key
-   SHEET_WEBHOOK_URL=your_google_sheet_script_url
-   DOC_WEBHOOK_URL=your_google_doc_script_url
+   SHEET_WEBHOOK_URL=your_metadata_webhook_url
+   DOC_WEBHOOK_URL=your_report_webhook_url
 4. Run the local development server:vercel dev
 
 5. Open your browser and navigate to http://localhost:3000
