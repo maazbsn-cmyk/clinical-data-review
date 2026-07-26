@@ -63,7 +63,7 @@
         }
 
         /* Top Navigation Panel */
-        .top-nav-wrapper { max-width: 1000px; width: 100%; margin: 1rem auto 0 auto; padding: 0 1rem; box-sizing: border-box; }
+        .top-nav-wrapper { max-width: 1300px; width: 100%; margin: 1rem auto 0 auto; padding: 0 1rem; box-sizing: border-box; }
         .top-nav-panel { display: flex; justify-content: center; background: var(--card-bg); border: 1px solid var(--border); padding: 0.8rem 1.25rem; border-radius: 12px; box-shadow: var(--shadow); transition: background 0.3s, border 0.3s; }
         .nav-tabs { display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: center; width: 100%; }
         .nav-tab-btn { flex: 1; min-width: 100px; background: var(--tool-bg); color: var(--text); border: 1px solid var(--input-border); padding: 0.6rem 0.5rem; border-radius: 6px; font-weight: bold; cursor: pointer; transition: all 0.2s; font-size: 0.75rem; text-transform: uppercase; text-align: center; }
@@ -74,16 +74,21 @@
         .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
+        /* Grid Layouts for Internal Sections */
         .tab-layout { display: flex; flex-direction: column; gap: 1.25rem; }
-        @media (min-width: 800px) {
+        .scanner-grid { display: flex; flex-direction: column; gap: 1.25rem; }
+        
+        @media (min-width: 1000px) {
             .tab-layout.two-col { display: grid; grid-template-columns: 3fr 2fr; align-items: start; }
-            .tab-layout.half-half { display: grid; grid-template-columns: 1fr 1fr; align-items: start; }
+            /* 3-Column Grid for AI Triage */
+            .scanner-grid { display: grid; grid-template-columns: 1fr 2.5fr 1fr; align-items: start; }
         }
 
-        main { flex-grow: 1; max-width: 1000px; width: 100%; margin: 1.5rem auto; padding: 0 1rem; box-sizing: border-box; display: block; }
+        /* Main Area */
+        main { flex-grow: 1; max-width: 1300px; width: 100%; margin: 1.5rem auto; padding: 0 1rem; box-sizing: border-box; display: block; }
 
         .card { background: var(--card-bg); padding: 1.5rem; border-radius: 12px; box-shadow: var(--shadow); margin-bottom: 1.25rem; border: 1px solid var(--border); width: 100%; transition: background 0.3s, border 0.3s, box-shadow 0.3s; }
-        .reference-card { background: var(--reference-bg); border: 1px dashed var(--input-border); box-shadow: none; }
+        .reference-card { background: var(--reference-bg); border: 1px dashed var(--input-border); box-shadow: none; height: fit-content; }
         
         .card h3 { margin-top: 0; color: var(--highlight); font-size: 1.05rem; border-bottom: 2px solid var(--border); padding-bottom: 0.5rem; margin-bottom: 1rem; }
         
@@ -178,37 +183,13 @@
     <main>
         <div id="notificationArea"></div>
 
-        <!-- TAB 1: CASE ANALYZER (Swapped reference cards order: ABG first, Emergency protocols second) -->
+        <!-- TAB 1: CASE ANALYZER (3 Columns on Desktop) -->
         <div id="scanner-section" class="tab-content active">
             <div class="section-heading">AI Triage & Clinical Dashboard</div>
             
-            <div id="inputCard" class="card">
-                <div class="label-row">
-                    <label for="scenario">Patient Scenario / Ward Data</label>
-                    <a class="insert-sample" onclick="insertSampleTriage()">Insert sample</a>
-                </div>
-                <textarea id="scenario" rows="6" placeholder="Type scenario, upload up to 10 ward sheet photos, or paste multiple unformatted patient data..."></textarea>
-
-                <div class="input-tools">
-                    <input type="file" id="imageInput" accept="image/*" multiple class="hidden" onchange="handleImageUpload(event)">
-                    <button type="button" onclick="document.getElementById('imageInput').click()">📷 Upload Sheets</button>
-                    <button type="button" id="voiceBtn" onclick="startVoiceInput()">🎤 Voice Dictation</button>
-                </div>
-
-                <label for="discipline" style="display:block; margin-bottom:0.5rem;">Select Professional Discipline</label>
-                <select id="discipline">
-                    <option value="Nursing">Nursing</option>
-                    <option value="Radiology">Radiology</option>
-                    <option value="Dental">Dental</option>
-                    <option value="Anaesthesia">Anaesthesia</option>
-                    <option value="Pharmacy">Pharmacy</option>
-                    <option value="Medical Laboratory Technology">Medical Lab Technology</option>
-                </select>
-
-                <button id="submitBtn" onclick="evaluateCase()">Analyze Case Priorities</button>
-            </div>
-
-            <div class="tab-layout half-half">
+            <div class="scanner-grid">
+                
+                <!-- Left Info Column -->
                 <div class="card reference-card">
                     <h3>🩸 ABG & ROME Reference</h3>
                     <ul class="cheat-sheet-list">
@@ -218,6 +199,35 @@
                         <li><strong>ROME:</strong> Respiratory Opposite (pH & PaCO2), Metabolic Equal (pH & HCO3).</li>
                     </ul>
                 </div>
+
+                <!-- Center Main Column -->
+                <div id="inputCard" class="card" style="margin-bottom: 0;">
+                    <div class="label-row">
+                        <label for="scenario">Patient Scenario / Ward Data</label>
+                        <a class="insert-sample" onclick="insertSampleTriage()">Insert sample</a>
+                    </div>
+                    <textarea id="scenario" rows="6" placeholder="Type scenario, upload up to 10 ward sheet photos, or paste multiple unformatted patient data..."></textarea>
+
+                    <div class="input-tools">
+                        <input type="file" id="imageInput" accept="image/*" multiple class="hidden" onchange="handleImageUpload(event)">
+                        <button type="button" onclick="document.getElementById('imageInput').click()">📷 Upload Sheets</button>
+                        <button type="button" id="voiceBtn" onclick="startVoiceInput()">🎤 Voice Dictation</button>
+                    </div>
+
+                    <label for="discipline" style="display:block; margin-bottom:0.5rem;">Select Professional Discipline</label>
+                    <select id="discipline">
+                        <option value="Nursing">Nursing</option>
+                        <option value="Radiology">Radiology</option>
+                        <option value="Dental">Dental</option>
+                        <option value="Anaesthesia">Anaesthesia</option>
+                        <option value="Pharmacy">Pharmacy</option>
+                        <option value="Medical Laboratory Technology">Medical Lab Technology</option>
+                    </select>
+
+                    <button id="submitBtn" onclick="evaluateCase()">Analyze Case Priorities</button>
+                </div>
+
+                <!-- Right Info Column -->
                 <div class="card reference-card">
                     <h3>🚨 Emergency Protocols</h3>
                     <ul class="cheat-sheet-list">
@@ -227,6 +237,7 @@
                         <li><strong>Seizure/Status:</strong> Secure airway, IV Lorazepam, check blood glucose.</li>
                     </ul>
                 </div>
+
             </div>
         </div>
 
