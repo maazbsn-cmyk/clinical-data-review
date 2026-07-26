@@ -127,8 +127,10 @@
         .result-content ul { padding-left: 1.2rem; margin: 0.5rem 0; }
         .result-content li { margin-bottom: 0.3rem; }
         
-        .action-bar { display: flex; gap: 0.5rem; margin-top: 1.25rem; flex-wrap: wrap; border-top: 1px solid var(--border); padding-top: 1rem; }
-        .action-bar button { flex: 1; font-size: 0.85rem; padding: 0.65rem 0.5rem; }
+        /* New Action Bar styled for the top of the card */
+        .top-action-bar { display: flex; gap: 0.5rem; margin-top: 0.5rem; margin-bottom: 1.25rem; flex-wrap: wrap; border-bottom: 1px solid var(--border); padding-bottom: 1rem; }
+        .top-action-bar button { flex: 1; font-size: 0.85rem; padding: 0.65rem 0.5rem; }
+        
         .btn-secondary { background: var(--tool-bg); color: var(--text); box-shadow: none; border: 1px solid var(--input-border); }
         .btn-secondary:hover { background: var(--input-border); }
         .btn-success { background: linear-gradient(135deg, #059669 0%, #047857 100%); box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3); }
@@ -153,7 +155,7 @@
         .notification-banner span { cursor: pointer; color: var(--muted); font-weight: bold; }
         .notification-banner span:hover { color: var(--heading); }
 
-        /* Floating FAB for Mobile References (Option 2) */
+        /* Floating FAB for Mobile References */
         .mobile-ref-fab {
             display: none;
             position: fixed;
@@ -287,7 +289,7 @@
             </div>
         </div>
 
-        <!-- TAB 2: GCS CALCULATOR (Short General Evaluation) -->
+        <!-- TAB 2: GCS CALCULATOR -->
         <div id="gcs-section" class="tab-content">
             <div class="section-heading">Glasgow Coma Scale (GCS) Calculator</div>
             <div class="tab-layout two-col">
@@ -339,7 +341,7 @@
             </div>
         </div>
 
-        <!-- TAB 3: BMI CALCULATOR (Short General Evaluation) -->
+        <!-- TAB 3: BMI CALCULATOR -->
         <div id="bmi-section" class="tab-content">
             <div class="section-heading">Body Mass Index (BMI) Calculator</div>
             <div class="tab-layout two-col">
@@ -380,7 +382,7 @@
             </div>
         </div>
 
-        <!-- TAB 4: MAP CALCULATOR (Short General Evaluation) -->
+        <!-- TAB 4: MAP CALCULATOR -->
         <div id="map-section" class="tab-content">
             <div class="section-heading">Mean Arterial Pressure (MAP) Calculator</div>
             <div class="tab-layout two-col">
@@ -413,7 +415,7 @@
             </div>
         </div>
 
-        <!-- TAB 5: FLUIDS CALCULATOR (Short General Evaluation) -->
+        <!-- TAB 5: FLUIDS CALCULATOR -->
         <div id="fluids-section" class="tab-content">
             <div class="section-heading">Maintenance Fluids (4-2-1 Rule) Calculator</div>
             <div class="tab-layout two-col">
@@ -431,6 +433,7 @@
                             </select>
                             <input type="number" id="fluidWt" placeholder="Weight (kg)" oninput="calcFluids()">
                             <div id="fluidRes" class="calc-result">Rate: -- mL/hr</div>
+                            <button class="calc-btn" onclick="evaluateCalcResult('Fluid requirement calculation result: ' + document.getElementById('fluidRes').innerText, 'fluids')">Evaluate Interventions</button>
                         </div>
                     </div>
                     <div id="fluidsResultCard" class="hidden"></div>
@@ -466,7 +469,7 @@
         
     </main>
 
-    <!-- Mobile Floating Reference FAB (Option 2) -->
+    <!-- Mobile Floating Reference FAB -->
     <button class="mobile-ref-fab" onclick="openMobileRefModal()">ℹ️ Protocols & Reference</button>
 
     <!-- Mobile Reference Modal Window -->
@@ -526,7 +529,7 @@
             setTimeout(() => { if(area.innerHTML) area.innerHTML = ''; }, 6000);
         }
 
-        /* Mobile Reference Popup Modal Logic (Option 2) */
+        /* Mobile Reference Popup Modal Logic */
         function openMobileRefModal() {
             const activeTab = document.querySelector('.tab-content.active');
             if (!activeTab) return;
@@ -541,7 +544,10 @@
 
             modalBody.innerHTML = "";
             refCards.forEach(card => {
+                // Clone the card, and manually remove the reference-card class 
+                // so the mobile CSS hiding rule does not apply inside the modal.
                 const clone = card.cloneNode(true);
+                clone.classList.remove('reference-card');
                 clone.style.display = "block";
                 clone.style.marginBottom = "1rem";
                 modalBody.appendChild(clone);
@@ -744,19 +750,20 @@
                 saveToLocalStorage();
                 renderHistoryVault();
 
+                // Render Action bar at the TOP
                 resultCard.innerHTML = `
                     <div class="card output-card">
                         <div class="badges-row">
                             <div class="model-badge">Model: ${data.modelUsed || 'AI'}</div>
                             <div class="verified-badge">✓ Verified Guidelines</div>
                         </div>
-                        <h2>${reportObj.title}</h2>
-                        <div class="result-content">${marked.parse(evalText)}</div>
-                        <div class="action-bar">
+                        <div class="top-action-bar">
                             <button class="btn-secondary" onclick="resetTab('scanner')">← Back / Evaluate New Case</button>
                             <button class="btn-success" onclick="copyCardText(this)">Copy</button>
                             <button class="btn-secondary" onclick="downloadCardText(this, 'Case_Report')">Download TXT</button>
                         </div>
+                        <h2>${reportObj.title}</h2>
+                        <div class="result-content">${marked.parse(evalText)}</div>
                     </div>
                 `;
             } catch (error) {
@@ -767,6 +774,12 @@
 
         /* In-Place Short General Evaluation (GCS, BMI, MAP, FLUIDS) */
         async function evaluateCalcResult(calcDataSummary, tabPrefix) {
+            // Guard clause to prevent evaluating empty calculators
+            if (calcDataSummary.includes("--")) {
+                showNotification("Please enter valid parameters before evaluating.");
+                return;
+            }
+
             const inputCard = document.getElementById(`${tabPrefix}InputCard`);
             const resultCard = document.getElementById(`${tabPrefix}ResultCard`);
 
@@ -784,7 +797,7 @@
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ 
-                        scenario: `Provide an extremely short, concise general clinical evaluation (maximum 2 to 3 bullet points) for this assessment: ${calcDataSummary}. Strictly avoid long intros or discipline-specific details.`, 
+                        scenario: `Provide a generalized, universal clinical action plan (max 2 to 3 short bullet points) for this calculation assessment: ${calcDataSummary}. DO NOT mention specific professions or disciplines like 'Nursing', 'Doctor', or 'Medical'. Focus strictly on general, universal clinical steps.`, 
                         discipline: 'General Clinical' 
                     })
                 });
@@ -804,18 +817,19 @@
                 saveToLocalStorage();
                 renderHistoryVault();
 
+                // Render Action bar at the TOP
                 resultCard.innerHTML = `
                     <div class="card output-card">
                         <div class="badges-row">
                             <div class="model-badge">Concise Evaluation</div>
                             <div class="verified-badge">✓ Verified Guidelines</div>
                         </div>
-                        <h2>${reportObj.title}</h2>
-                        <div class="result-content">${marked.parse(evalText)}</div>
-                        <div class="action-bar">
+                        <div class="top-action-bar">
                             <button class="btn-secondary" onclick="resetTab('${tabPrefix}')">← Back / Recalculate</button>
                             <button class="btn-success" onclick="copyCardText(this)">Copy</button>
                         </div>
+                        <h2>${reportObj.title}</h2>
+                        <div class="result-content">${marked.parse(evalText)}</div>
                     </div>
                 `;
             } catch (error) {
@@ -929,12 +943,13 @@
                                 <div class="model-badge">Archived Report</div>
                                 <div class="verified-badge">✓ Verified Guidelines</div>
                             </div>
-                            <h2>${rep.title} (${rep.date})</h2>
-                            <div class="result-content">${marked.parse(rep.content)}</div>
-                            <div class="action-bar">
+                            <div class="top-action-bar">
                                 <button class="btn-secondary" onclick="resetTab('scanner')">← Back to Inputs</button>
                                 <button class="btn-success" onclick="copyCardText(this)">Copy</button>
+                                <button class="btn-secondary" onclick="downloadCardText(this, 'Archived_Report')">Download TXT</button>
                             </div>
+                            <h2>${rep.title} (${rep.date})</h2>
+                            <div class="result-content">${marked.parse(rep.content)}</div>
                         </div>
                     `;
                 };
