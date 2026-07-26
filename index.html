@@ -62,7 +62,6 @@
             .theme-btn { top: 0.5rem; right: 0.5rem; font-size: 0.75rem; padding: 0.35rem 0.6rem; }
         }
 
-        /* Top Navigation Panel Below Header */
         .top-nav-wrapper { max-width: 1300px; width: 100%; margin: 1rem auto 0 auto; padding: 0 1rem; box-sizing: border-box; }
         .top-nav-panel { display: flex; justify-content: center; background: var(--card-bg); border: 1px solid var(--border); padding: 0.8rem 1.25rem; border-radius: 12px; box-shadow: var(--shadow); transition: background 0.3s, border 0.3s; }
         .nav-tabs { display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: center; width: 100%; }
@@ -74,7 +73,6 @@
         .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Grid Layouts for Sections */
         .tab-layout { display: flex; flex-direction: column; gap: 1.25rem; }
         .scanner-grid { display: flex; flex-direction: column; gap: 1.25rem; }
         
@@ -127,7 +125,6 @@
         .result-content ul { padding-left: 1.2rem; margin: 0.5rem 0; }
         .result-content li { margin-bottom: 0.3rem; }
         
-        /* New Action Bar styled for the top of the card */
         .top-action-bar { display: flex; gap: 0.5rem; margin-top: 0.5rem; margin-bottom: 1.25rem; flex-wrap: wrap; border-bottom: 1px solid var(--border); padding-bottom: 1rem; }
         .top-action-bar button { flex: 1; font-size: 0.85rem; padding: 0.65rem 0.5rem; }
         
@@ -151,34 +148,79 @@
         .history-list li { padding: 0.75rem; border-bottom: 1px solid var(--border); cursor: pointer; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: background 0.2s; }
         .history-list li:hover { background: var(--tool-bg); color: var(--highlight); }
 
-        .notification-banner { background: var(--tool-bg); border-left: 4px solid #38bdf8; padding: 1rem; border-radius: 6px; margin-bottom: 1.25rem; font-size: 0.95rem; color: var(--text); display: flex; justify-content: space-between; align-items: center; transition: background 0.3s; }
-        .notification-banner span { cursor: pointer; color: var(--muted); font-weight: bold; }
+        /* Floating Swipe-Away Notification Overlay */
+        #notificationArea {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            pointer-events: none; /* Let clicks pass through empty space */
+        }
+        
+        .notification-banner {
+            pointer-events: auto; /* Re-enable clicks on the banner itself */
+            background: var(--card-bg);
+            border-left: 4px solid var(--highlight);
+            padding: 1rem 1.2rem;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            color: var(--text);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            min-width: 280px;
+            max-width: 90vw;
+            font-size: 0.9rem;
+            font-weight: 600;
+            animation: slideInFade 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards, fadeOutSwipe 0.5s ease 2.5s forwards;
+            border: 1px solid var(--border);
+        }
+        .notification-banner span { margin-left: 15px; cursor: pointer; color: var(--muted); font-size: 1.1rem; }
         .notification-banner span:hover { color: var(--heading); }
 
-        /* Floating FAB for Mobile References */
+        @keyframes slideInFade {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes fadeOutSwipe {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+
+        /* Compact Circular Mobile FAB */
         .mobile-ref-fab {
             display: none;
             position: fixed;
             bottom: 20px;
-            right: 20px;
-            z-index: 99;
+            right: 20px; /* FAB on the right */
+            z-index: 999;
             background: var(--accent-gradient);
             color: white;
             border: none;
-            padding: 12px 18px;
-            border-radius: 50px;
-            font-weight: bold;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
             cursor: pointer;
-            font-size: 0.85rem;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            transition: transform 0.2s;
         }
+        .mobile-ref-fab:hover { transform: scale(1.05); }
 
         @media (max-width: 800px) {
-            .mobile-ref-fab { display: flex; align-items: center; gap: 6px; }
+            .mobile-ref-fab { display: flex; }
             .reference-card { display: none !important; }
+            /* Shift notifications up on mobile so they don't block the FAB */
+            #notificationArea { bottom: 85px; right: 15px; } 
         }
 
-        /* Modal Popup for Mobile References */
+        /* Modal Popup */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: rgba(0,0,0,0.7); z-index: 1000;
@@ -200,14 +242,15 @@
 </head>
 <body>
 
-    <!-- Header at the Very Top -->
+    <!-- Notification Overlay Container -->
+    <div id="notificationArea"></div>
+
     <header>
         <h1>Clinical Decision Support</h1>
         <div class="subtitle">TPIHS (KMU, BSN)</div>
         <button id="themeToggle" onclick="toggleTheme()" class="theme-btn">☀️ Light Mode</button>
     </header>
 
-    <!-- Top Navigation Panel Below Header -->
     <div class="top-nav-wrapper">
         <div class="top-nav-panel">
             <div class="nav-tabs">
@@ -222,15 +265,11 @@
     </div>
 
     <main>
-        <div id="notificationArea"></div>
-
-        <!-- TAB 1: CASE ANALYZER (Department-Wise Comprehensive Evaluation) -->
+        <!-- TAB 1: CASE ANALYZER -->
         <div id="scanner-section" class="tab-content active">
             <div class="section-heading">AI Triage & Clinical Dashboard</div>
             
             <div class="scanner-grid">
-                
-                <!-- Left Reference Card -->
                 <div class="card reference-card">
                     <h3>🩸 ABG & ROME Reference</h3>
                     <ul class="cheat-sheet-list">
@@ -241,10 +280,7 @@
                     </ul>
                 </div>
 
-                <!-- Center Column Slot -->
                 <div id="scanner-center-col">
-                    
-                    <!-- Input Form -->
                     <div id="scannerInputCard" class="card" style="margin-bottom: 0;">
                         <div class="label-row">
                             <label for="scenario">Patient Scenario / Ward Data</label>
@@ -270,12 +306,9 @@
 
                         <button id="submitBtn" onclick="evaluateCase()">Analyze Case Priorities</button>
                     </div>
-
-                    <!-- In-Place Results Rendered Here -->
                     <div id="scannerResultCard" class="hidden"></div>
                 </div>
 
-                <!-- Right Reference Card -->
                 <div class="card reference-card">
                     <h3>🚨 Emergency Protocols</h3>
                     <ul class="cheat-sheet-list">
@@ -285,7 +318,6 @@
                         <li><strong>Seizure/Status:</strong> Secure airway, IV Lorazepam, check blood glucose.</li>
                     </ul>
                 </div>
-
             </div>
         </div>
 
@@ -293,7 +325,6 @@
         <div id="gcs-section" class="tab-content">
             <div class="section-heading">Glasgow Coma Scale (GCS) Calculator</div>
             <div class="tab-layout two-col">
-                
                 <div id="gcs-center-col">
                     <div id="gcsInputCard" class="card">
                         <div class="label-row">
@@ -345,7 +376,6 @@
         <div id="bmi-section" class="tab-content">
             <div class="section-heading">Body Mass Index (BMI) Calculator</div>
             <div class="tab-layout two-col">
-                
                 <div id="bmi-center-col">
                     <div id="bmiInputCard" class="card">
                         <div class="label-row">
@@ -386,7 +416,6 @@
         <div id="map-section" class="tab-content">
             <div class="section-heading">Mean Arterial Pressure (MAP) Calculator</div>
             <div class="tab-layout two-col">
-                
                 <div id="map-center-col">
                     <div id="mapInputCard" class="card">
                         <div class="label-row">
@@ -419,7 +448,6 @@
         <div id="fluids-section" class="tab-content">
             <div class="section-heading">Maintenance Fluids (4-2-1 Rule) Calculator</div>
             <div class="tab-layout two-col">
-                
                 <div id="fluids-center-col">
                     <div id="fluidsInputCard" class="card">
                         <div class="label-row">
@@ -469,8 +497,8 @@
         
     </main>
 
-    <!-- Mobile Floating Reference FAB -->
-    <button class="mobile-ref-fab" onclick="openMobileRefModal()">ℹ️ Protocols & Reference</button>
+    <!-- Small Circular Mobile FAB -->
+    <button class="mobile-ref-fab" onclick="openMobileRefModal()" title="View Protocols">ℹ️</button>
 
     <!-- Mobile Reference Modal Window -->
     <div id="mobileRefModal" class="modal-overlay hidden" onclick="closeMobileRefModal()">
@@ -518,15 +546,23 @@
             }
         });
 
+        // Fixed Swiping Notification Overlay
         function showNotification(message) {
             const area = document.getElementById('notificationArea');
-            area.innerHTML = `
-                <div class="notification-banner">
-                    <div>${message}</div>
-                    <span onclick="this.parentElement.remove()">✕</span>
-                </div>
+            const notif = document.createElement('div');
+            notif.className = 'notification-banner';
+            notif.innerHTML = `
+                <div>${message}</div>
+                <span onclick="this.parentElement.remove()">✕</span>
             `;
-            setTimeout(() => { if(area.innerHTML) area.innerHTML = ''; }, 6000);
+            area.appendChild(notif);
+            
+            // Auto-remove the notification after 3.5 seconds (gives time for animations)
+            setTimeout(() => {
+                if (notif.parentElement) {
+                    notif.remove();
+                }
+            }, 3500);
         }
 
         /* Mobile Reference Popup Modal Logic */
@@ -544,10 +580,9 @@
 
             modalBody.innerHTML = "";
             refCards.forEach(card => {
-                // Clone the card, and manually remove the reference-card class 
-                // so the mobile CSS hiding rule does not apply inside the modal.
                 const clone = card.cloneNode(true);
-                clone.classList.remove('reference-card');
+                // Fix for the blank popup bug: Remove the class that hides it on mobile
+                clone.classList.remove('reference-card'); 
                 clone.style.display = "block";
                 clone.style.marginBottom = "1rem";
                 modalBody.appendChild(clone);
@@ -572,7 +607,7 @@
             document.getElementById('gcsVerbal').value = "4";
             document.getElementById('gcsMotor').value = "5";
             calcGCS();
-            showNotification("GCS sample loaded (Moderate impairment).");
+            showNotification("GCS sample loaded.");
         }
 
         function insertSampleBMI() {
@@ -588,14 +623,14 @@
             document.getElementById('mapSbp').value = "165";
             document.getElementById('mapDbp').value = "95";
             calcMAP();
-            showNotification("MAP sample loaded (Hypertensive).");
+            showNotification("MAP sample loaded.");
         }
 
         function insertSampleFluids() {
             document.getElementById('fluidAgeCat').value = "adult";
             document.getElementById('fluidWt').value = "28";
             calcFluids();
-            showNotification("Fluids sample loaded (Child - 28kg).");
+            showNotification("Fluids sample loaded.");
         }
 
         /* Calculation Functions */
@@ -710,7 +745,6 @@
         async function evaluateCase() {
             const discipline = document.getElementById('discipline').value;
             const rawText = document.getElementById('scenario').value.trim();
-            const btn = document.getElementById('submitBtn');
             const inputCard = document.getElementById('scannerInputCard');
             const resultCard = document.getElementById('scannerResultCard');
 
@@ -750,7 +784,6 @@
                 saveToLocalStorage();
                 renderHistoryVault();
 
-                // Render Action bar at the TOP
                 resultCard.innerHTML = `
                     <div class="card output-card">
                         <div class="badges-row">
@@ -774,9 +807,10 @@
 
         /* In-Place Short General Evaluation (GCS, BMI, MAP, FLUIDS) */
         async function evaluateCalcResult(calcDataSummary, tabPrefix) {
-            // Guard clause to prevent evaluating empty calculators
+            
+            // Empty Value Block: Prevent evaluation if the user hasn't typed anything
             if (calcDataSummary.includes("--")) {
-                showNotification("Please enter valid parameters before evaluating.");
+                showNotification("⚠️ Please enter numbers to calculate the result before evaluating.");
                 return;
             }
 
@@ -796,8 +830,9 @@
                 const response = await fetch('/api/evaluate', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
+                    // Strictly commanding the AI to be generalized and avoid nursing/medical specific jargon
                     body: JSON.stringify({ 
-                        scenario: `Provide a generalized, universal clinical action plan (max 2 to 3 short bullet points) for this calculation assessment: ${calcDataSummary}. DO NOT mention specific professions or disciplines like 'Nursing', 'Doctor', or 'Medical'. Focus strictly on general, universal clinical steps.`, 
+                        scenario: `Provide a universal, generalized clinical action plan (maximum 2 to 3 short bullet points) for this calculation assessment: ${calcDataSummary}. You are strictly forbidden from mentioning specific professions, titles, or disciplines (Do not use the words 'Nursing', 'Nurse', 'Doctor', 'Medical', or 'Physician'). Focus strictly on the general, universal clinical steps that any provider should take.`, 
                         discipline: 'General Clinical' 
                     })
                 });
@@ -817,7 +852,6 @@
                 saveToLocalStorage();
                 renderHistoryVault();
 
-                // Render Action bar at the TOP
                 resultCard.innerHTML = `
                     <div class="card output-card">
                         <div class="badges-row">
