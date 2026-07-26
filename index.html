@@ -61,9 +61,17 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            position: relative;
         }
         .header-left { flex: 1; display: flex; justify-content: flex-start; align-items: center; }
-        .header-center { display: flex; flex-direction: column; align-items: center; text-align: center; }
+    .header-center {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center; }
         .header-right { flex: 1; display: flex; justify-content: flex-end; align-items: center; }
 
         h1 { margin: 0; font-size: 1.6rem; letter-spacing: -0.5px; background: linear-gradient(90deg, #60a5fa, #38bdf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
