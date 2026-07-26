@@ -1,9 +1,9 @@
-# Clinical Decision Support System (CDSS) - TPIHS
+# Clinical Decision Support System (CDSS)
 
 ## A. Project Overview
 **App Name:** Clinical Decision Support System (CDSS)
 **Developer:** Maaz Ahmad
-**Institution:** The Professional Institute of Health Sciences Mardan (affiliated with KMU Peshawar)
+**Institution:** Khyber Medical University (KMU)
 
 **The Problem:** During ward rotations and clinical emergencies, healthcare students and junior professionals face information overload. Processing messy, unformatted patient data, extracting text from handwritten ward sheets, and calculating critical scores (like GCS or MAP) under pressure can lead to delayed triage. Accessing verified, guideline-backed interventions instantly is difficult when cross-referencing physical books or generic search engines.
 
@@ -88,3 +88,8 @@ The frontend dynamically injects strict prompts based on the tool being used to 
    HF_API_KEY=your_huggingface_key
    SHEET_WEBHOOK_URL=your_google_sheet_script_url
    DOC_WEBHOOK_URL=your_google_doc_script_url
+4. Run the local development server:vercel dev
+
+5. Open your browser and navigate to http://localhost:3000
+
+Disclaimer: This application is designed strictly for educational and academic use. It does not replace professional medical judgment, diagnosis, or treatment. Always correlate AI-generated insights with established clinical protocols and attending physician orders.
