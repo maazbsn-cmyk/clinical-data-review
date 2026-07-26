@@ -11,7 +11,6 @@
             --primary: #0f172a; 
             --accent: #2563eb; 
             --accent-gradient: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-            /* Dark Theme Colors */
             --bg: #070a12; 
             --card-bg: #0f172a; 
             --border: #1e293b;
@@ -30,7 +29,6 @@
         }
         
         body.light-theme {
-            /* Light Theme Colors */
             --bg: #f1f5f9; 
             --card-bg: #ffffff; 
             --border: #cbd5e1;
@@ -131,15 +129,9 @@
         .btn-secondary { background: var(--tool-bg); color: var(--text); box-shadow: none; border: 1px solid var(--input-border); }
         .btn-secondary:hover { background: var(--input-border); }
         .btn-success { background: linear-gradient(135deg, #059669 0%, #047857 100%); box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3); }
-        .btn-danger { background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3); }
         
-        .progress-container { width: 100%; background: var(--border); border-radius: 9999px; height: 10px; margin: 0.75rem 0; overflow: hidden; border: 1px solid var(--input-border); }
-        .progress-bar { width: 0%; height: 100%; background: var(--accent-gradient); transition: width 0.3s ease; }
-
         .badges-row { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.75rem; }
-        .model-badge, .verified-badge { padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 700; }
-        .model-badge { background: rgba(59, 130, 246, 0.1); color: #3b82f6; border: 1px solid #3b82f6; }
-        .verified-badge { background: rgba(16, 185, 129, 0.1); color: #10b981; border: 1px solid #10b981; }
+        .verified-badge { padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 700; background: rgba(16, 185, 129, 0.1); color: #10b981; border: 1px solid #10b981; }
         
         .loader { border: 4px solid var(--border); border-top: 4px solid #3b82f6; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 1rem auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
@@ -148,20 +140,20 @@
         .history-list li { padding: 0.75rem; border-bottom: 1px solid var(--border); cursor: pointer; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: background 0.2s; }
         .history-list li:hover { background: var(--tool-bg); color: var(--highlight); }
 
-        /* Floating Swipe-Away Notification Overlay */
+        /* FIXED: Floating Swipe-Away Notification Overlay */
         #notificationArea {
             position: fixed;
-            bottom: 20px;
-            right: 20px;
+            bottom: 25px;
+            right: 25px;
             z-index: 9999;
             display: flex;
             flex-direction: column;
             gap: 10px;
-            pointer-events: none; /* Let clicks pass through empty space */
+            pointer-events: none; 
         }
         
         .notification-banner {
-            pointer-events: auto; /* Re-enable clicks on the banner itself */
+            pointer-events: auto;
             background: var(--card-bg);
             border-left: 4px solid var(--highlight);
             padding: 1rem 1.2rem;
@@ -175,7 +167,8 @@
             max-width: 90vw;
             font-size: 0.9rem;
             font-weight: 600;
-            animation: slideInFade 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards, fadeOutSwipe 0.5s ease 2.5s forwards;
+            /* Animation stays visible for 3 seconds before fading */
+            animation: slideInFade 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards, fadeOutSwipe 0.5s ease 3s forwards;
             border: 1px solid var(--border);
         }
         .notification-banner span { margin-left: 15px; cursor: pointer; color: var(--muted); font-size: 1.1rem; }
@@ -187,24 +180,24 @@
         }
         @keyframes fadeOutSwipe {
             from { transform: translateX(0); opacity: 1; }
-            to { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(120%); opacity: 0; }
         }
 
-        /* Compact Circular Mobile FAB */
+        /* FIXED: Compact Circular Mobile FAB */
         .mobile-ref-fab {
             display: none;
             position: fixed;
-            bottom: 20px;
-            right: 20px; /* FAB on the right */
+            bottom: 25px;
+            right: 25px;
             z-index: 999;
             background: var(--accent-gradient);
             color: white;
             border: none;
-            width: 52px;
-            height: 52px;
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
-            font-size: 1.5rem;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+            font-size: 1.4rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
             cursor: pointer;
             align-items: center;
             justify-content: center;
@@ -217,7 +210,7 @@
             .mobile-ref-fab { display: flex; }
             .reference-card { display: none !important; }
             /* Shift notifications up on mobile so they don't block the FAB */
-            #notificationArea { bottom: 85px; right: 15px; } 
+            #notificationArea { bottom: 90px; right: 20px; } 
         }
 
         /* Modal Popup */
@@ -242,7 +235,6 @@
 </head>
 <body>
 
-    <!-- Notification Overlay Container -->
     <div id="notificationArea"></div>
 
     <header>
@@ -497,7 +489,7 @@
         
     </main>
 
-    <!-- Small Circular Mobile FAB -->
+    <!-- FIXED Circular Mobile FAB -->
     <button class="mobile-ref-fab" onclick="openMobileRefModal()" title="View Protocols">ℹ️</button>
 
     <!-- Mobile Reference Modal Window -->
@@ -546,7 +538,7 @@
             }
         });
 
-        // Fixed Swiping Notification Overlay
+        // Fixed Auto-clearing Notifications
         function showNotification(message) {
             const area = document.getElementById('notificationArea');
             const notif = document.createElement('div');
@@ -557,15 +549,14 @@
             `;
             area.appendChild(notif);
             
-            // Auto-remove the notification after 3.5 seconds (gives time for animations)
+            // Remove from DOM automatically after 3.8s (accounts for CSS animation time)
             setTimeout(() => {
                 if (notif.parentElement) {
                     notif.remove();
                 }
-            }, 3500);
+            }, 3800);
         }
 
-        /* Mobile Reference Popup Modal Logic */
         function openMobileRefModal() {
             const activeTab = document.querySelector('.tab-content.active');
             if (!activeTab) return;
@@ -581,7 +572,6 @@
             modalBody.innerHTML = "";
             refCards.forEach(card => {
                 const clone = card.cloneNode(true);
-                // Fix for the blank popup bug: Remove the class that hides it on mobile
                 clone.classList.remove('reference-card'); 
                 clone.style.display = "block";
                 clone.style.marginBottom = "1rem";
@@ -595,7 +585,6 @@
             document.getElementById('mobileRefModal').classList.add('hidden');
         }
 
-        /* Samples Insertion */
         function insertSampleTriage() {
             extractedSheets = [];
             document.getElementById('scenario').value = "History: 58-year-old male, smoker (30 pack-years), hypertension (10 yrs), on amlodipine 10mg.\nPresentation: Sudden onset crushing substernal chest pain 1 hour ago, radiating to left arm, diaphoresis, nausea. No shortness of breath currently.\nVitals: BP 160/95, HR 104, RR 20, SpO2 96% on room air, Temp 36.8C, Pain 8/10.";
@@ -633,7 +622,6 @@
             showNotification("Fluids sample loaded.");
         }
 
-        /* Calculation Functions */
         function calcGCS() {
             const eye = parseInt(document.getElementById('gcsEye').value) || 0;
             const verbal = parseInt(document.getElementById('gcsVerbal').value) || 0;
@@ -741,7 +729,7 @@
             }
         }
 
-        /* In-Place Department-Wise Evaluation (Case Analyzer) */
+        /* FIXED: Strong AI Guardrails for Case Analyzer */
         async function evaluateCase() {
             const discipline = document.getElementById('discipline').value;
             const rawText = document.getElementById('scenario').value.trim();
@@ -749,7 +737,7 @@
             const resultCard = document.getElementById('scannerResultCard');
 
             if (!rawText) { 
-                showNotification("Please enter or upload a patient scenario."); 
+                showNotification("⚠️ Please enter or upload a patient scenario."); 
                 return; 
             }
 
@@ -762,16 +750,28 @@
                 </div>
             `;
 
+            // STRICT AI PROMPT GUARDRAILS
+            const strictPrompt = `
+CRITICAL SYSTEM INSTRUCTIONS:
+1. Analyze the following data for the ${discipline} discipline.
+2. GUARDRAIL 1: If the input contains profanity, jokes, video games (e.g. GTA 5), or completely non-clinical/irrelevant text, YOU MUST SOLELY REPLY WITH: "Irrelevant or invalid data provided. Please enter a valid clinical patient scenario." Do not hallucinate treatments for non-medical inputs.
+3. GUARDRAIL 2: If the clinical data provided is completely normal/healthy, state clearly that no acute interventions are needed and to continue routine care.
+4. Provide Evidence-Based References.
+
+PATIENT DATA:
+${rawText}
+            `;
+
             try {
                 const response = await fetch('/api/evaluate', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ scenario: rawText, discipline })
+                    body: JSON.stringify({ scenario: strictPrompt, discipline })
                 });
 
                 const text = await response.text();
                 let data;
-                try { data = JSON.parse(text); } catch (e) { data = { evaluation: text, modelUsed: 'AI' }; }
+                try { data = JSON.parse(text); } catch (e) { data = { evaluation: text }; }
 
                 let evalText = data.evaluation || JSON.stringify(data, null, 2);
 
@@ -784,10 +784,10 @@
                 saveToLocalStorage();
                 renderHistoryVault();
 
+                // Render Action bar at the TOP, Removed Model Badge
                 resultCard.innerHTML = `
                     <div class="card output-card">
                         <div class="badges-row">
-                            <div class="model-badge">Model: ${data.modelUsed || 'AI'}</div>
                             <div class="verified-badge">✓ Verified Guidelines</div>
                         </div>
                         <div class="top-action-bar">
@@ -805,10 +805,9 @@
             }
         }
 
-        /* In-Place Short General Evaluation (GCS, BMI, MAP, FLUIDS) */
+        /* FIXED: Strong AI Guardrails & Empty Checks for Calculators */
         async function evaluateCalcResult(calcDataSummary, tabPrefix) {
-            
-            // Empty Value Block: Prevent evaluation if the user hasn't typed anything
+            // Guard clause to prevent evaluating empty calculators
             if (calcDataSummary.includes("--")) {
                 showNotification("⚠️ Please enter numbers to calculate the result before evaluating.");
                 return;
@@ -826,20 +825,26 @@
                 </div>
             `;
 
+            // STRICT AI PROMPT GUARDRAILS
+            const strictPrompt = `
+CRITICAL SYSTEM INSTRUCTIONS:
+1. Review the following calculation result: ${calcDataSummary}
+2. HEALTHY/NORMAL RULE: If the value represents a healthy, normal clinical state (e.g. GCS 15, normal BMI, MAP 70-100), YOU MUST strictly respond with: "Values are within normal limits. No acute clinical interventions required. Continue routine care." Do not suggest IVs, emergency prep, or intense vital monitoring for normal healthy values.
+3. ABNORMAL RULE: If the value is genuinely abnormal, provide a maximum of 2 to 3 short, general clinical action steps.
+4. UNIVERSAL LANGUAGE RULE: DO NOT use discipline-specific terms like 'Nursing', 'Nurse', 'Doctor', or 'Medical'. Use universal clinical language.
+5. Provide Evidence-Based References.
+            `;
+
             try {
                 const response = await fetch('/api/evaluate', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    // Strictly commanding the AI to be generalized and avoid nursing/medical specific jargon
-                    body: JSON.stringify({ 
-                        scenario: `Provide a universal, generalized clinical action plan (maximum 2 to 3 short bullet points) for this calculation assessment: ${calcDataSummary}. You are strictly forbidden from mentioning specific professions, titles, or disciplines (Do not use the words 'Nursing', 'Nurse', 'Doctor', 'Medical', or 'Physician'). Focus strictly on the general, universal clinical steps that any provider should take.`, 
-                        discipline: 'General Clinical' 
-                    })
+                    body: JSON.stringify({ scenario: strictPrompt, discipline: 'General Clinical' })
                 });
 
                 const text = await response.text();
                 let data;
-                try { data = JSON.parse(text); } catch (e) { data = { evaluation: text, modelUsed: 'AI' }; }
+                try { data = JSON.parse(text); } catch (e) { data = { evaluation: text }; }
 
                 let evalText = data.evaluation || JSON.stringify(data, null, 2);
 
@@ -852,10 +857,10 @@
                 saveToLocalStorage();
                 renderHistoryVault();
 
+                // Render Action bar at the TOP, Removed Model Badge
                 resultCard.innerHTML = `
                     <div class="card output-card">
                         <div class="badges-row">
-                            <div class="model-badge">Concise Evaluation</div>
                             <div class="verified-badge">✓ Verified Guidelines</div>
                         </div>
                         <div class="top-action-bar">
@@ -974,7 +979,6 @@
                     resultCard.innerHTML = `
                         <div class="card output-card">
                             <div class="badges-row">
-                                <div class="model-badge">Archived Report</div>
                                 <div class="verified-badge">✓ Verified Guidelines</div>
                             </div>
                             <div class="top-action-bar">
