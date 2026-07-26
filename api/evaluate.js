@@ -3,7 +3,8 @@ export default async function handler(req, res) {
         return res.status(405).send('Method Not Allowed');
     }
 
-    const { rawInput, discipline, tool = "General Tool" } = req.body;
+    // Added fastMode parameter
+    const { rawInput, discipline, tool = "General Tool", fastMode = false } = req.body;
 
     const ip = req.headers['x-forwarded-for'] || 'Unknown IP';
     const city = req.headers['x-vercel-ip-city'] || 'Unknown City';
@@ -95,33 +96,44 @@ ${rawInput}
         return data[0].generated_text.trim();
     }
 
-    try {
-        evaluationResult = await callGemini36();
-        modelUsed = "Gemini 3.6 Flash";
-    } catch (e1) {
+    // AI ROUTING LOGIC (Fast Mode vs Normal Mode)
+    if (fastMode) {
         try {
-            evaluationResult = await callGemini35();
-            modelUsed = "Gemini 3.5 Flash";
-        } catch (e2) {
+            evaluationResult = await callGroq();
+            modelUsed = "Groq (Llama 3.3 70B)";
+        } catch (e1) {
             try {
-                evaluationResult = await callGroq();
-                modelUsed = "Groq (Llama 3.3 70B)";
-            } catch (e3) {
+                evaluationResult = await callGemini36();
+                modelUsed = "Gemini 3.6 Flash";
+            } catch (e2) {
+                return res.status(500).json({ evaluation: "Error: Fast AI models failed.", modelUsed: "Failed" });
+            }
+        }
+    } else {
+        try {
+            evaluationResult = await callGemini36();
+            modelUsed = "Gemini 3.6 Flash";
+        } catch (e1) {
+            try {
+                evaluationResult = await callGemini35();
+                modelUsed = "Gemini 3.5 Flash";
+            } catch (e2) {
                 try {
-                    evaluationResult = await callHuggingFace();
-                    modelUsed = "Hugging Face (Mixtral 8x7B)";
-                } catch (e4) {
-                    return res.status(500).json({ evaluation: "Error: All AI models failed.", modelUsed: "Failed" });
+                    evaluationResult = await callGroq();
+                    modelUsed = "Groq (Llama 3.3 70B)";
+                } catch (e3) {
+                    try {
+                        evaluationResult = await callHuggingFace();
+                        modelUsed = "Hugging Face (Mixtral 8x7B)";
+                    } catch (e4) {
+                        return res.status(500).json({ evaluation: "Error: All AI models failed.", modelUsed: "Failed" });
+                    }
                 }
             }
         }
     }
 
-    // --- CLEANING SECTION FOR GOOGLE DOCS ---
-    // 1. Chops off everything from "Evidence-Based References" downwards
     let docEvaluation = evaluationResult.split(/###?\s*Evidence-Based References/i)[0];
-    
-    // 2. Removes **, replaces * with a clean bullet •, and removes # tags
     docEvaluation = docEvaluation
         .replace(/\*\*(.*?)\*\*/g, '$1') 
         .replace(/(^\s*\*|\n\s*\*)\s/g, '\n• ') 
@@ -153,7 +165,6 @@ ${rawInput}
         }
     }
 
-    // ONLY sends the clean data (UID, Input, and Cleaned Evaluation) to Google Docs
     if (DOC_WEBHOOK) {
         try {
             await fetch(DOC_WEBHOOK, {
@@ -171,6 +182,5 @@ ${rawInput}
         }
     }
 
-    // Frontend still gets the full evaluationResult with formatting and references
     res.status(200).json({ evaluation: evaluationResult, modelUsed });
 }
