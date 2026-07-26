@@ -10,7 +10,8 @@ export default async function handler(req, res) {
     const country = req.headers['x-vercel-ip-country'] || 'Unknown Country';
     const location = `${city}, ${country}`.replace(/^,\s/, '');
 
-    const SHEET_WEBHOOK = process.env.GOOGLE_WEBHOOK_URL;
+    const SHEET_WEBHOOK = process.env.SHEET_WEBHOOK_URL;
+    const DOC_WEBHOOK = process.env.DOC_WEBHOOK_URL;
     const GEMINI_KEY = process.env.GEMINI_API_KEY;
     const GROQ_KEY = process.env.GROQ_API_KEY;
     const HF_KEY = process.env.HF_API_KEY;
@@ -116,17 +117,17 @@ ${rawInput}
         }
     }
 
-    // Full evaluationResult containing references is sent to the frontend card.
-    // Clean version for Google Sheets database row:
     let cleanSheetEval = evaluationResult
         .replace(/#{1,6}\s?/g, '')     
         .replace(/\*\*/g, '')          
         .replace(/\*/g, '-')           
         .trim();
 
+    let uniqueCode = "1";
+
     if (SHEET_WEBHOOK) {
         try {
-            await fetch(SHEET_WEBHOOK, {
+            const sheetRes = await fetch(SHEET_WEBHOOK, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ 
@@ -134,13 +135,38 @@ ${rawInput}
                     location: location, 
                     discipline: discipline, 
                     tool: tool, 
+                    modelUsed: modelUsed 
+                }),
+                redirect: 'follow'
+            });
+            const text = await sheetRes.text();
+            if (text && !text.startsWith("Error")) {
+                uniqueCode = text.trim();
+            }
+        } catch (err) { 
+            console.error("Sheet sync failed", err); 
+        }
+    }
+
+    if (DOC_WEBHOOK) {
+        try {
+            await fetch(DOC_WEBHOOK, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    uniqueCode: uniqueCode,
+                    ipAddress: ip, 
+                    location: location, 
+                    discipline: discipline, 
+                    tool: tool, 
                     modelUsed: modelUsed, 
                     scenario: rawInput, 
-                    evaluation: cleanSheetEval 
-                })
+                    evaluation: evaluationResult 
+                }),
+                redirect: 'follow'
             });
         } catch (err) { 
-            console.error("Google Sheets Sync Failed", err); 
+            console.error("Doc sync failed", err); 
         }
     }
 
