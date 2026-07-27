@@ -147,7 +147,10 @@
         
         .cheat-sheet-list { padding-left: 1.2rem; font-size: 0.9rem; line-height: 1.6; color: var(--text); margin: 0; }
         .cheat-sheet-list li { margin-bottom: 0.5rem; }
-        .section-heading { font-size: 1.2rem; color: var(--highlight); font-weight: 700; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; border-left: 4px solid #3b82f6; padding-left: 0.75rem; }
+        
+        /* Updated Section Heading for Top Info Button */
+        .section-heading { font-size: 1.2rem; color: var(--highlight); font-weight: 700; margin-bottom: 1rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; border-left: 4px solid #3b82f6; padding-left: 0.75rem; }
+        .section-heading span { flex: 1; }
 
         .label-row { 
             display: flex; 
@@ -314,30 +317,28 @@
             to { transform: translateX(120%); opacity: 0; }
         }
 
-        .mobile-ref-fab {
+        /* New Inline Top Button Styling */
+        .mobile-ref-btn {
             display: none;
-            position: fixed;
-            bottom: 25px;
-            right: 25px;
-            z-index: 999;
-            background: var(--accent-gradient);
-            color: white;
-            border: none;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            font-size: 1.4rem;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            background: var(--tool-bg);
+            color: var(--highlight);
+            border: 1px solid var(--input-border);
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            font-size: 1.1rem;
             cursor: pointer;
             align-items: center;
             justify-content: center;
             padding: 0;
-            transition: transform 0.2s;
+            transition: all 0.2s;
+            box-shadow: none;
+            flex-shrink: 0;
         }
-        .mobile-ref-fab:hover { transform: scale(1.05); }
+        .mobile-ref-btn:hover { border-color: var(--highlight); background: rgba(59, 130, 246, 0.1); }
 
         @media (max-width: 800px) {
-            .mobile-ref-fab { display: flex; }
+            .mobile-ref-btn { display: flex; }
             .reference-card { display: none !important; }
             #notificationArea { top: 20px; right: 15px; } 
         }
@@ -402,7 +403,10 @@
     <main>
         <!-- TAB 1: CASE ANALYZER -->
         <div id="scanner-section" class="tab-content active">
-            <div class="section-heading">AI Triage & Clinical Dashboard</div>
+            <div class="section-heading">
+                <span>AI Triage & Clinical Dashboard</span>
+                <button class="mobile-ref-btn" onclick="openMobileRefModal()" title="View Protocols">ℹ️</button>
+            </div>
             
             <div class="scanner-grid">
                 <div class="card reference-card">
@@ -458,7 +462,10 @@
 
         <!-- TAB 2: GCS CALCULATOR -->
         <div id="gcs-section" class="tab-content">
-            <div class="section-heading">Glasgow Coma Scale (GCS) Calculator</div>
+            <div class="section-heading">
+                <span>Glasgow Coma Scale (GCS) Calculator</span>
+                <button class="mobile-ref-btn" onclick="openMobileRefModal()" title="View Protocols">ℹ️</button>
+            </div>
             <div class="tab-layout two-col">
                 <div id="gcs-center-col">
                     <div id="gcsInputCard" class="card">
@@ -509,7 +516,10 @@
 
         <!-- TAB 3: BMI CALCULATOR -->
         <div id="bmi-section" class="tab-content">
-            <div class="section-heading">Body Mass Index (BMI) Calculator</div>
+            <div class="section-heading">
+                <span>Body Mass Index (BMI) Calculator</span>
+                <button class="mobile-ref-btn" onclick="openMobileRefModal()" title="View Protocols">ℹ️</button>
+            </div>
             <div class="tab-layout two-col">
                 <div id="bmi-center-col">
                     <div id="bmiInputCard" class="card">
@@ -549,7 +559,10 @@
 
         <!-- TAB 4: MAP CALCULATOR -->
         <div id="map-section" class="tab-content">
-            <div class="section-heading">Mean Arterial Pressure (MAP) Calculator</div>
+            <div class="section-heading">
+                <span>Mean Arterial Pressure (MAP) Calculator</span>
+                <button class="mobile-ref-btn" onclick="openMobileRefModal()" title="View Protocols">ℹ️</button>
+            </div>
             <div class="tab-layout two-col">
                 <div id="map-center-col">
                     <div id="mapInputCard" class="card">
@@ -581,7 +594,10 @@
 
         <!-- TAB 5: FLUIDS CALCULATOR -->
         <div id="fluids-section" class="tab-content">
-            <div class="section-heading">Maintenance Fluids (4-2-1 Rule) Calculator</div>
+            <div class="section-heading">
+                <span>Maintenance Fluids (4-2-1 Rule) Calculator</span>
+                <button class="mobile-ref-btn" onclick="openMobileRefModal()" title="View Protocols">ℹ️</button>
+            </div>
             <div class="tab-layout two-col">
                 <div id="fluids-center-col">
                     <div id="fluidsInputCard" class="card">
@@ -616,7 +632,10 @@
 
         <!-- TAB 6: IV DRIP RATE CALCULATOR -->
         <div id="iv-section" class="tab-content">
-            <div class="section-heading">IV Drip Rate Calculator</div>
+            <div class="section-heading">
+                <span>IV Drip Rate Calculator</span>
+                <button class="mobile-ref-btn" onclick="openMobileRefModal()" title="View Protocols">ℹ️</button>
+            </div>
             <div class="tab-layout two-col">
                 <div id="iv-center-col">
                     <div id="ivInputCard" class="card">
@@ -654,7 +673,9 @@
 
         <!-- TAB 7: CLINICAL ARCHIVE -->
         <div id="vault-section" class="tab-content">
-            <div class="section-heading">Clinical History Archive</div>
+            <div class="section-heading">
+                <span>Clinical History Archive</span>
+            </div>
             <div class="card">
                 <h3>Archived Patient Reports</h3>
                 <p style="font-size: 0.85rem; color: var(--muted); margin-top: 0; margin-bottom: 1rem;">Recent evaluated clinical reports are securely saved locally on your device.</p>
@@ -669,8 +690,6 @@
         </div>
         
     </main>
-
-    <button class="mobile-ref-fab" onclick="openMobileRefModal()" title="View Protocols">ℹ️</button>
 
     <div id="mobileRefModal" class="modal-overlay hidden" onclick="closeMobileRefModal()">
         <div class="modal-content" onclick="event.stopPropagation()">
