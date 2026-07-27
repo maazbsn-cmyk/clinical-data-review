@@ -92,9 +92,11 @@ MAP (Calculated In Dark Mode)
 
 ## H. Clinical Governance & Compliance
 **The Role of the Disclaimer Modal**
+
 In real-world healthcare software deployment, patient safety and medical-legal liability are primary concerns. The mandatory "Clinical Use Disclaimer" integrated into this application serves three critical real-world functions:
 1. **Mitigating Automation Bias:** It acts as a psychological pause, forcing junior clinicians to acknowledge that the AI is a decision-support tool, not an absolute diagnostic authority.
 2. **Defining Scope of Practice:** It explicitly states that the application does not supersede or replace attending physician orders. 
 3. **Legal Risk Management:** It establishes a base Terms of Service, protecting the institution and the developer from liability by requiring users to independently verify all AI-generated protocols against established hospital guidelines prior to clinical application.
 
-Disclaimer: This application is designed strictly for educational and academic use. It does not replace professional medical judgment, diagnosis, or treatment. Always correlate AI-generated insights with established clinical protocols and attending physician orders.
+---
+*Disclaimer: This application is designed strictly for educational and academic use. It does not replace professional medical judgment, diagnosis, or treatment. Always correlate AI-generated insights with established clinical protocols and attending physician orders.*
