@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚕️</text></svg>">
+<meta name="theme-color" content="#0f172a">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Clinical Decision Support</title>
@@ -44,6 +46,11 @@
             --header-bg: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
             --header-text: #0f172a;
             --header-sub: #475569;
+            @media print {
+    header, .top-nav-wrapper, .input-tools, button, .top-action-bar, .mobile-ref-btn { display: none !important; }
+    body { background: white !important; color: black !important; }
+    .card { box-shadow: none !important; border: 1px solid #ccc !important; break-inside: avoid; }
+    .result-content { font-size: 12pt; }
         }
 
         * { box-sizing: border-box; word-break: break-word; overflow-wrap: break-word; }
