@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚕️</text></svg>">
-<meta name="theme-color" content="#0f172a">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#0f172a">
     <title>Clinical Decision Support</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚕️</text></svg>">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
     <style>
@@ -46,11 +46,6 @@
             --header-bg: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
             --header-text: #0f172a;
             --header-sub: #475569;
-            @media print {
-    header, .top-nav-wrapper, .input-tools, button, .top-action-bar, .mobile-ref-btn { display: none !important; }
-    body { background: white !important; color: black !important; }
-    .card { box-shadow: none !important; border: 1px solid #ccc !important; break-inside: avoid; }
-    .result-content { font-size: 12pt; }
         }
 
         * { box-sizing: border-box; word-break: break-word; overflow-wrap: break-word; }
@@ -367,9 +362,36 @@
         .close-modal { cursor: pointer; font-weight: bold; font-size: 1.2rem; color: var(--muted); }
         
         footer { background: var(--bg); color: var(--muted); text-align: center; padding: 1.5rem 1rem; font-size: 0.85rem; margin-top: auto; border-top: 1px solid var(--border); transition: background 0.3s; }
+
+        /* Print CSS for Clean Academic Output */
+        @media print {
+            header, .top-nav-wrapper, .input-tools, button, .top-action-bar, .mobile-ref-btn { display: none !important; }
+            body { background: white !important; color: black !important; }
+            .card { box-shadow: none !important; border: 1px solid #ccc !important; break-inside: avoid; }
+            .result-content { font-size: 12pt; }
+        }
     </style>
 </head>
 <body>
+
+    <!-- CLINICAL DISCLAIMER MODAL -->
+    <div id="disclaimerModal" class="modal-overlay hidden" style="z-index: 3000; backdrop-filter: blur(8px);">
+        <div class="modal-content" style="max-width: 600px; border-top: 4px solid #dc2626;">
+            <div class="modal-header" style="border-bottom: none; margin-bottom: 0;">
+                <h3 style="color: #dc2626; font-size: 1.3rem;">⚠️ Clinical Use Disclaimer</h3>
+            </div>
+            <div style="font-size: 0.95rem; line-height: 1.6; color: var(--text);">
+                <p>Welcome to the <strong>Clinical Decision Support System (CDSS)</strong>.</p>
+                <p>By proceeding to use this tool, you strictly acknowledge and agree to the following:</p>
+                <ul class="cheat-sheet-list" style="margin-bottom: 1.5rem; background: var(--tool-bg); padding: 1rem 1rem 1rem 2.5rem; border-radius: 8px; border: 1px solid var(--border);">
+                    <li>This application is an experimental academic tool designed for educational purposes.</li>
+                    <li>It does <strong>not</strong> replace professional medical judgment, clinical diagnosis, or attending physician orders.</li>
+                    <li>All AI-generated triage protocols, interventions, and calculator outputs must be independently verified against established hospital protocols and peer-reviewed literature prior to clinical application.</li>
+                </ul>
+                <button class="btn-success" style="width: 100%; font-size: 1.05rem; padding: 1rem;" onclick="acceptDisclaimer()">I Understand & Accept</button>
+            </div>
+        </div>
+    </div>
 
     <div id="notificationArea"></div>
     <div id="mobileMenuOverlay" onclick="toggleMobileMenu()"></div>
@@ -381,7 +403,7 @@
             </button>
         </div>
         
-<div class="header-center" style="cursor: pointer;" onclick="window.location.reload();" title="Return to Home">
+        <div class="header-center" style="cursor: pointer;" onclick="window.location.reload();" title="Return to Home">
             <h1>Clinical Decision Support</h1>
             <div class="subtitle">AI Triage & Evaluation Tool</div>
         </div>
@@ -760,6 +782,7 @@
         }
 
         window.addEventListener('DOMContentLoaded', () => {
+            // Theme Loader
             const isLight = localStorage.getItem('cdss_theme') === 'light';
             if (isLight) {
                 document.body.classList.add('light-theme');
@@ -767,7 +790,20 @@
             } else {
                 document.getElementById('themeToggle').innerHTML = '<span class="theme-icon">💡</span><span class="theme-text"> Light Mode</span>';
             }
+
+            // Disclaimer Loader
+            if (!localStorage.getItem('cdss_disclaimer_accepted')) {
+                document.getElementById('disclaimerModal').classList.remove('hidden');
+                document.body.style.overflow = 'hidden'; 
+            }
         });
+
+        // Disclaimer Accept Function
+        function acceptDisclaimer() {
+            localStorage.setItem('cdss_disclaimer_accepted', 'true');
+            document.getElementById('disclaimerModal').classList.add('hidden');
+            document.body.style.overflow = 'auto'; 
+        }
 
         function showNotification(message) {
             const area = document.getElementById('notificationArea');
