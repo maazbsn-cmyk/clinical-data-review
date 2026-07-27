@@ -64,10 +64,6 @@ MAP (Calculated In Dark Mode)
 
 
 
-
-**Mobile Screenshots**
-
-
 ## G. How to Run the Project Locally
 
 1. Clone the repository: 
