@@ -150,7 +150,6 @@
         .cheat-sheet-list { padding-left: 1.2rem; font-size: 0.9rem; line-height: 1.6; color: var(--text); margin: 0; }
         .cheat-sheet-list li { margin-bottom: 0.5rem; }
         
-        /* Updated Section Heading for Top Info Button */
         .section-heading { font-size: 1.2rem; color: var(--highlight); font-weight: 700; margin-bottom: 1rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; border-left: 4px solid #3b82f6; padding-left: 0.75rem; }
         .section-heading span { flex: 1; }
 
@@ -319,7 +318,6 @@
             to { transform: translateX(120%); opacity: 0; }
         }
 
-        /* New Inline Top Button Styling */
         .mobile-ref-btn {
             display: none;
             background: var(--tool-bg);
@@ -353,17 +351,13 @@
         }
         .modal-content {
             background: var(--card-bg); border: 1px solid var(--border);
-            border-radius: 12px; width: 100%; max-width: 500px;
-            max-height: 80vh; overflow-y: auto; padding: 1.25rem;
+            border-radius: 12px; width: 100%; max-width: 600px;
+            max-height: 90vh; overflow-y: auto; padding: 1.5rem;
             box-shadow: var(--shadow); color: var(--text);
         }
-        .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; margin-bottom: 1rem; }
-        .modal-header h3 { margin: 0; color: var(--highlight); font-size: 1.1rem; }
-        .close-modal { cursor: pointer; font-weight: bold; font-size: 1.2rem; color: var(--muted); }
         
         footer { background: var(--bg); color: var(--muted); text-align: center; padding: 1.5rem 1rem; font-size: 0.85rem; margin-top: auto; border-top: 1px solid var(--border); transition: background 0.3s; }
 
-        /* Print CSS for Clean Academic Output */
         @media print {
             header, .top-nav-wrapper, .input-tools, button, .top-action-bar, .mobile-ref-btn { display: none !important; }
             body { background: white !important; color: black !important; }
@@ -374,20 +368,32 @@
 </head>
 <body>
 
-    <!-- CLINICAL DISCLAIMER MODAL -->
+    <!-- WELCOME & DISCLAIMER MODAL -->
     <div id="disclaimerModal" class="modal-overlay hidden" style="z-index: 3000; backdrop-filter: blur(8px);">
-        <div class="modal-content" style="max-width: 600px; border-top: 4px solid #dc2626;">
-            <div class="modal-header" style="border-bottom: none; margin-bottom: 0;">
-                <h3 style="color: #dc2626; font-size: 1.3rem;">⚠️ Clinical Use Disclaimer</h3>
+        <div class="modal-content" style="border-top: 4px solid #3b82f6;">
+            <div style="border-bottom: 1px solid var(--border); padding-bottom: 1rem; margin-bottom: 1rem;">
+                <h3 style="color: var(--highlight); font-size: 1.4rem; margin: 0;">Welcome to CDSS</h3>
             </div>
+            
             <div style="font-size: 0.95rem; line-height: 1.6; color: var(--text);">
-                <p>Welcome to the <strong>Clinical Decision Support System (CDSS)</strong>.</p>
-                <p>By proceeding to use this tool, you strictly acknowledge and agree to the following:</p>
-                <ul class="cheat-sheet-list" style="margin-bottom: 1.5rem; background: var(--tool-bg); padding: 1rem 1rem 1rem 2.5rem; border-radius: 8px; border: 1px solid var(--border);">
-                    <li>This application is an experimental academic tool designed for educational purposes.</li>
-                    <li>It does <strong>not</strong> replace professional medical judgment, clinical diagnosis, or attending physician orders.</li>
-                    <li>All AI-generated triage protocols, interventions, and calculator outputs must be independently verified against established hospital protocols and peer-reviewed literature prior to clinical application.</li>
+                <p style="margin-top: 0;"><strong>What is this tool?</strong></p>
+                <p>The Clinical Decision Support System is an academic triage and evaluation tool designed to assist with:</p>
+                
+                <ul class="cheat-sheet-list" style="margin-bottom: 1.5rem;">
+                    <li><strong>AI Case Analysis:</strong> Extracting key findings and prioritizing evidence-based interventions from raw patient data or ward sheets.</li>
+                    <li><strong>Clinical Calculators:</strong> Real-time assessment of GCS, BMI, MAP, Maintenance Fluids, and IV Drip rates with instant guideline generation.</li>
                 </ul>
+
+                <div style="background: rgba(220, 38, 38, 0.05); border: 1px solid rgba(220, 38, 38, 0.3); border-radius: 8px; padding: 1.2rem; margin-bottom: 1.5rem;">
+                    <p style="margin-top: 0; color: #dc2626; font-weight: bold; font-size: 1.05rem;">⚠️ Clinical Use Disclaimer</p>
+                    <p style="font-size: 0.9rem; margin-bottom: 0.75rem;">By proceeding, you strictly acknowledge and agree to the following:</p>
+                    <ul class="cheat-sheet-list" style="margin-bottom: 0;">
+                        <li>This application is an experimental academic tool designed for educational purposes.</li>
+                        <li>It does <strong>not</strong> replace professional medical judgment, clinical diagnosis, or attending physician orders.</li>
+                        <li>All AI-generated triage protocols and calculator outputs must be independently verified against established hospital protocols prior to clinical application.</li>
+                    </ul>
+                </div>
+                
                 <button class="btn-success" style="width: 100%; font-size: 1.05rem; padding: 1rem;" onclick="acceptDisclaimer()">I Understand & Accept</button>
             </div>
         </div>
@@ -791,7 +797,7 @@
                 document.getElementById('themeToggle').innerHTML = '<span class="theme-icon">💡</span><span class="theme-text"> Light Mode</span>';
             }
 
-            // Disclaimer Loader
+            // Welcome & Disclaimer Loader
             if (!localStorage.getItem('cdss_disclaimer_accepted')) {
                 document.getElementById('disclaimerModal').classList.remove('hidden');
                 document.body.style.overflow = 'hidden'; 
