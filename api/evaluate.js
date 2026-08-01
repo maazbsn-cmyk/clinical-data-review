@@ -70,7 +70,10 @@ export default async function handler(req, res) {
         if(!GEMINI_KEY) throw new Error("No Gemini 3.6 Key");
         const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${GEMINI_KEY}`, {
             method: "POST", headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ contents: [{ parts: [{ text: systemPrompt }] }] })
+            body: JSON.stringify({ 
+                contents: [{ parts: [{ text: systemPrompt }] }],
+                generationConfig: { maxOutputTokens: 4000 }
+            })
         });
         if (!response.ok) throw new Error("Gemini 3.6 Flash failed");
         const data = await response.json();
@@ -81,7 +84,10 @@ export default async function handler(req, res) {
         if(!GEMINI_KEY) throw new Error("No Gemini 3.5 Key");
         const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${GEMINI_KEY}`, {
             method: "POST", headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ contents: [{ parts: [{ text: systemPrompt }] }] })
+            body: JSON.stringify({ 
+                contents: [{ parts: [{ text: systemPrompt }] }],
+                generationConfig: { maxOutputTokens: 4000 }
+            })
         });
         if (!response.ok) throw new Error("Gemini 3.5 Flash failed");
         const data = await response.json();
@@ -93,7 +99,11 @@ export default async function handler(req, res) {
         const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
             method: "POST", 
             headers: { "Authorization": `Bearer ${GROQ_KEY}`, "Content-Type": "application/json" },
-            body: JSON.stringify({ model: model, messages: [{ role: "user", content: systemPrompt }] })
+            body: JSON.stringify({ 
+                model: model, 
+                messages: [{ role: "user", content: systemPrompt }],
+                max_tokens: 4000
+            })
         });
         if (!response.ok) throw new Error(`Groq (${model}) failed`);
         const data = await response.json();
@@ -123,7 +133,7 @@ export default async function handler(req, res) {
         if(!HF_KEY) throw new Error("No HF Key");
         const response = await fetch("https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1", {
             method: "POST", headers: { "Authorization": `Bearer ${HF_KEY}`, "Content-Type": "application/json" },
-            body: JSON.stringify({ inputs: systemPrompt, parameters: { max_new_tokens: 800, return_full_text: false } })
+            body: JSON.stringify({ inputs: systemPrompt, parameters: { max_new_tokens: 4000, return_full_text: false } })
         });
         if (!response.ok) throw new Error("Hugging Face failed");
         const data = await response.json();
