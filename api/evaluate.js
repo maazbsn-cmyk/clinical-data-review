@@ -72,7 +72,7 @@ export default async function handler(req, res) {
             method: "POST", headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ 
                 contents: [{ parts: [{ text: systemPrompt }] }],
-                generationConfig: { maxOutputTokens: 4000 }
+                generationConfig: { maxOutputTokens: 8192 }
             })
         });
         if (!response.ok) throw new Error("Gemini 3.6 Flash failed");
@@ -86,7 +86,7 @@ export default async function handler(req, res) {
             method: "POST", headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ 
                 contents: [{ parts: [{ text: systemPrompt }] }],
-                generationConfig: { maxOutputTokens: 4000 }
+                generationConfig: { maxOutputTokens: 8192 }
             })
         });
         if (!response.ok) throw new Error("Gemini 3.5 Flash failed");
@@ -102,7 +102,7 @@ export default async function handler(req, res) {
             body: JSON.stringify({ 
                 model: model, 
                 messages: [{ role: "user", content: systemPrompt }],
-                max_tokens: 4000
+                max_tokens: 8000
             })
         });
         if (!response.ok) throw new Error(`Groq (${model}) failed`);
