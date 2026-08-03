@@ -233,7 +233,7 @@
         
         .result-content { line-height: 1.6; font-size: 0.95rem; color: var(--text); }
         .result-content h3 { color: var(--highlight); margin-top: 1rem; font-size: 1.05rem; }
-        .result-content ul { padding-left: 1.2rem; margin: 0.5rem 0; }
+        .result-content ul, .result-content ol { padding-left: 1.2rem; margin: 0.5rem 0; }
         .result-content li { margin-bottom: 0.3rem; }
         
         .top-action-bar { display: flex; gap: 0.5rem; margin-top: 0.5rem; margin-bottom: 1.25rem; flex-wrap: wrap; border-bottom: 1px solid var(--border); padding-bottom: 1rem; }
@@ -1076,18 +1076,20 @@ You must act strictly as a ${discipline} professional. If a medical emergency re
 - Medical Laboratory Technology (MLT): Focus on lab draws, abnormal patterns, and blood/fluid analysis. NEGATIVE: DO NOT suggest imaging, medication administration, or bedside care.
 - Dental: Focus on oral assessment, maxillofacial pathology, and dental interventions. NEGATIVE: DO NOT manage systemic hemodynamics or systemic medical emergencies.
 
-3. CONCISE FORMATTING & BULLET POINT MANDATE (STRICT NEWLINE RULE):
+3. CONCISE FORMATTING & LIST MANDATE (STRICT NO-PARAGRAPH RULE):
+- YOU ARE STRICTLY FORBIDDEN FROM WRITING PARAGRAPHS.
+- YOU ARE STRICTLY FORBIDDEN FROM USING THE '•' CHARACTER.
 - Key Findings: Exactly 1 single concise sentence.
 - Nursing Diagnosis: (MANDATORY ONLY IF DISCIPLINE IS NURSING. Write a 1-sentence NANDA-style nursing diagnosis. IF DISCIPLINE IS NOT NURSING, DO NOT INCLUDE THIS LINE).
 - Acute Red Flags: Exactly 1 single concise sentence.
-- Intervention Plan: YOU MUST START A NEW LINE AFTER "Intervention Plan:". Output each intervention on its OWN NEW LINE starting with a standard Markdown asterisk (*). DO NOT put multiple bullet points on the same line. DO NOT use literal bullet symbols like '•'.
+- Intervention Plan: YOU MUST USE A NUMBERED LIST. You must start a NEW LINE for every single step. Maximum 3 steps.
 
 4. FORMAL CITATION MANDATE (STRICT NO-PARAGRAPH RULE):
 - At the end of the entire response, create a single section titled "### Evidence-Based References".
-- STRICT NEGATIVE RULE: DO NOT write summary paragraphs, explanations, or prose descriptions.
-- YOU MUST OUTPUT 1 TO 2 NUMBERED ACADEMIC/CLINICAL CITATIONS in formal publication format:
-  1. [Organization/Author] ([Year]). [Document/Guideline Title]. [Journal/Source Name].
-  2. [Organization/Author] ([Year]). [Document/Guideline Title]. [Journal/Source Name].
+- STRICT NEGATIVE RULE: DO NOT write summary paragraphs, explanations, or prose descriptions. ZERO EXCEPTIONS.
+- YOU MUST OUTPUT EXACTLY 1 TO 2 NUMBERED CITATIONS in formal publication format:
+  1. [Organization/Author]. ([Year]). [Document/Guideline Title]. [Journal/Source].
+  2. [Organization/Author]. ([Year]). [Document/Guideline Title]. [Journal/Source].
 
 5. FEW-SHOT EXAMPLES (FOLLOW THIS EXACT STRUCTURAL PATTERN):
 
@@ -1098,13 +1100,13 @@ Output:
 - **Nursing Diagnosis:** Deficient fluid volume related to active fluid volume loss as evidenced by clinical dehydration and difficult vascular access.
 - **Acute Red Flags:** High risk of hypovolemic shock and electrolyte imbalance secondary to delayed fluid resuscitation.
 - **Intervention Plan:**
-  * Initiate oral rehydration therapy (ORT) with small, frequent sips if patient is conscious and maintaining airway.
-  * Maintain continuous vital sign monitoring, checking capillary refill, mental status, and urine output closely.
-  * Escalate to senior medical staff for intraosseous (IO) or ultrasound-guided access; refer to appropriate discipline for acute management.
+  1. Initiate oral rehydration therapy (ORT) with small, frequent sips if patient is conscious and maintaining airway.
+  2. Maintain continuous vital sign monitoring, checking capillary refill, mental status, and urine output closely.
+  3. Escalate to senior medical staff for intraosseous (IO) or ultrasound-guided access; refer to appropriate discipline for acute management.
 
 ### Evidence-Based References
-1. American Academy of Pediatrics (AAP). (2020). Management of Pediatric Dehydration and Vascular Access Protocols. Pediatrics.
-2. Emergency Nurses Association (ENA). (2021). Emergency Nursing Core Curriculum: Pediatric Fluid Management. Elsevier.
+1. American Academy of Pediatrics (AAP). (2020). Management of Pediatric Dehydration. Pediatrics.
+2. Emergency Nurses Association (ENA). (2021). Emergency Nursing Core Curriculum. Elsevier.
 
 PATIENT DATA(S) TO EVALUATE:
 ${rawText}
@@ -1185,9 +1187,9 @@ ${rawText}
 CRITICAL SYSTEM INSTRUCTIONS:
 1. Review the following calculation result: ${calcDataSummary}
 2. HEALTHY/NORMAL RULE: If the value represents a healthy, normal clinical state, YOU MUST strictly respond with: "Values are within normal limits. No acute clinical interventions required. Continue routine care."
-3. ABNORMAL RULE: If abnormal, provide a maximum of 2 to 3 short, general clinical action steps.
+3. ABNORMAL RULE: If abnormal, provide a maximum of 2 to 3 short, general clinical action steps formatted strictly as a NUMBERED LIST. DO NOT USE PARAGRAPHS. DO NOT USE THE '•' CHARACTER.
 4. UNIVERSAL LANGUAGE RULE: DO NOT use discipline-specific terms like 'Nursing', 'Nurse', 'Doctor', or 'Medical'. Use universal clinical language.
-5. EVIDENCE-BASED REQUIREMENT: You MUST conclude the response with a distinct section titled "### Evidence-Based References" citing 1 to 2 authoritative clinical sources (WHO, CDC, NICE, etc.).
+5. EVIDENCE-BASED REQUIREMENT: You MUST conclude the response with a distinct section titled "### Evidence-Based References". DO NOT WRITE PARAGRAPHS HERE. Provide exactly 1 to 2 NUMBERED CITATIONS (e.g., 1. WHO. (2021). Guideline Title.).
             `;
 
             try {
