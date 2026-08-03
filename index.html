@@ -770,28 +770,18 @@
                         
                         <label style="display:block; margin-bottom:0.5rem; font-weight:600; color:var(--text);">Feedback Category</label>
                         <select id="fbCategory" onchange="toggleFeedbackSubCategory()">
-                            <option value="" disabled selected>Select an area...</option>
-                            <option value="Case Analyzer - Nursing">Case Analyzer - Nursing</option>
-                            <option value="Case Analyzer - Radiology">Case Analyzer - Radiology</option>
-                            <option value="Case Analyzer - Dental">Case Analyzer - Dental</option>
-                            <option value="Case Analyzer - Anaesthesia">Case Analyzer - Anaesthesia</option>
-                            <option value="Case Analyzer - Pharmacy">Case Analyzer - Pharmacy</option>
-                            <option value="Case Analyzer - Medical Lab Technology">Case Analyzer - Medical Lab Technology</option>
+                            <option value="" disabled selected>Select a category...</option>
+                            <option value="Case Analyzer">Case Analyzer</option>
                             <option value="Clinical Calculators">Clinical Calculators</option>
                             <option value="Website Design & Usability">Website Design & Usability</option>
                             <option value="Other / General">Other / General</option>
                         </select>
 
-                        <!-- Dynamic Dropdown for Calculators -->
+                        <!-- Dynamic Dropdown for Sub-Category -->
                         <div id="fbSubCategoryContainer" style="display:none; margin-top:0.75rem;">
-                            <label style="display:block; margin-bottom:0.5rem; font-weight:600; color:var(--text);">Which Calculator?</label>
+                            <label id="fbSubCategoryLabel" style="display:block; margin-bottom:0.5rem; font-weight:600; color:var(--text);">Specific Area</label>
                             <select id="fbSubCategory">
-                                <option value="" disabled selected>Select calculator...</option>
-                                <option value="GCS">GCS (Glasgow Coma Scale)</option>
-                                <option value="BMI">BMI Calculator</option>
-                                <option value="MAP">MAP Calculator</option>
-                                <option value="Maintenance Fluids">Maintenance Fluids</option>
-                                <option value="IV Drip Rate">IV Drip Rate</option>
+                                <!-- Populated dynamically by JS -->
                             </select>
                         </div>
                         
@@ -1489,11 +1479,29 @@ CRITICAL SYSTEM INSTRUCTIONS:
         function toggleFeedbackSubCategory() {
             const category = document.getElementById('fbCategory').value;
             const subCatContainer = document.getElementById('fbSubCategoryContainer');
-            if (category === 'Clinical Calculators') {
+            const subCatLabel = document.getElementById('fbSubCategoryLabel');
+            const subCatSelect = document.getElementById('fbSubCategory');
+            
+            // Clear existing options
+            subCatSelect.innerHTML = '<option value="" disabled selected>Select an option...</option>';
+
+            if (category === 'Case Analyzer') {
                 subCatContainer.style.display = 'block';
+                subCatLabel.innerText = 'Which Department?';
+                const options = ['Nursing', 'Radiology', 'Dental', 'Anaesthesia', 'Pharmacy', 'Medical Lab Technology'];
+                options.forEach(opt => {
+                    subCatSelect.innerHTML += `<option value="${opt}">${opt}</option>`;
+                });
+            } else if (category === 'Clinical Calculators') {
+                subCatContainer.style.display = 'block';
+                subCatLabel.innerText = 'Which Calculator?';
+                const options = ['GCS (Glasgow Coma Scale)', 'BMI Calculator', 'MAP Calculator', 'Maintenance Fluids', 'IV Drip Rate'];
+                options.forEach(opt => {
+                    subCatSelect.innerHTML += `<option value="${opt}">${opt}</option>`;
+                });
             } else {
                 subCatContainer.style.display = 'none';
-                document.getElementById('fbSubCategory').value = ''; // Reset sub category
+                subCatSelect.value = ''; // Reset sub category
             }
         }
 
@@ -1511,13 +1519,13 @@ CRITICAL SYSTEM INSTRUCTIONS:
                 return;
             }
 
-            // Append specific calculator if selected
-            if (category === 'Clinical Calculators') {
+            // Append specific sub-category if needed
+            if (category === 'Case Analyzer' || category === 'Clinical Calculators') {
                 if (!subCategory) {
-                    showNotification("⚠️ Please specify which calculator.");
+                    showNotification(`⚠️ Please specify which ${category === 'Case Analyzer' ? 'department' : 'calculator'}.`);
                     return;
                 }
-                category = "Clinical Calculators - " + subCategory;
+                category = category + " - " + subCategory;
             }
 
             statusEl.style.display = 'block';
