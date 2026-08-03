@@ -140,6 +140,7 @@
         @media (min-width: 1000px) {
             .tab-layout.two-col { display: grid; grid-template-columns: 3fr 2fr; align-items: start; }
             .scanner-grid { display: grid; grid-template-columns: 1fr 2.5fr 1fr; align-items: start; }
+            .feedback-layout { width: 50%; margin: 0 auto; }
         }
 
         main { flex-grow: 1; max-width: 1300px; width: 100%; margin: 1.5rem auto; padding: 0 1rem; box-sizing: border-box; display: block; }
@@ -209,7 +210,7 @@
         }
         select:hover { border-color: var(--highlight); }
         
-        textarea, input[type="number"] { width: 100%; box-sizing: border-box; padding: 0.85rem 1rem; border: 1px solid var(--input-border); border-radius: 8px; margin-bottom: 0.75rem; font-family: inherit; font-size: 0.95rem; background: var(--input-bg); color: var(--text); resize: vertical; transition: background 0.3s, color 0.3s, border 0.3s; font-weight: 500; }
+        textarea, input[type="text"], input[type="number"] { width: 100%; box-sizing: border-box; padding: 0.85rem 1rem; border: 1px solid var(--input-border); border-radius: 8px; margin-bottom: 0.75rem; font-family: inherit; font-size: 0.95rem; background: var(--input-bg); color: var(--text); resize: vertical; transition: background 0.3s, color 0.3s, border 0.3s; font-weight: 500; }
         textarea:focus, select:focus, input:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2); }
         
         .calc-group { margin-bottom: 0; color: var(--muted); }
@@ -431,6 +432,7 @@
                 <button class="nav-tab-btn" onclick="switchTab('fluids-section', this)">💧 FLUIDS</button>
                 <button class="nav-tab-btn" onclick="switchTab('iv-section', this)">⏱️ IV DRIPS</button>
                 <button class="nav-tab-btn" onclick="switchTab('vault-section', this)">🗄️ ARCHIVE</button>
+                <button class="nav-tab-btn" onclick="switchTab('feedback-section', this)" style="border-left: 2px solid var(--input-border); padding-left: 1rem;">💬 FEEDBACK</button>
             </div>
         </div>
     </div>
@@ -720,6 +722,42 @@
                 <div class="input-tools" style="margin-top: 1.5rem; margin-bottom: 0;">
                     <button class="btn-secondary" onclick="clearHistory()">🗑️ Clear Archive</button>
                     <button class="btn-success" onclick="exportBatchPDF()">📄 Export Master TXT</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 8: FEEDBACK -->
+        <div id="feedback-section" class="tab-content">
+            <div class="section-heading">
+                <span>Submit Feedback</span>
+            </div>
+            <div class="feedback-layout">
+                <div class="card">
+                    <div class="calc-group">
+                        <label style="display:block; margin-bottom:0.5rem; font-weight:600; color:var(--text);">Full Name</label>
+                        <input type="text" id="fbName" placeholder="E.g., Maaz Ahmad">
+                        
+                        <label style="display:block; margin-bottom:0.5rem; font-weight:600; color:var(--text);">Department / Semester</label>
+                        <input type="text" id="fbDept" placeholder="E.g., BSN 8th Semester">
+                        
+                        <label style="display:block; margin-bottom:0.5rem; font-weight:600; color:var(--text);">Feedback Category</label>
+                        <select id="fbCategory">
+                            <option value="" disabled selected>Select an area...</option>
+                            <option value="Case Analyzer - Nursing">Case Analyzer - Nursing</option>
+                            <option value="Case Analyzer - Radiology">Case Analyzer - Radiology</option>
+                            <option value="Case Analyzer - Pharmacy">Case Analyzer - Pharmacy</option>
+                            <option value="Case Analyzer - Other Discipline">Case Analyzer - Other Discipline</option>
+                            <option value="Calculators (GCS, BMI, etc.)">Clinical Calculators</option>
+                            <option value="UI/Website Design">Website Design & Usability</option>
+                            <option value="Other">Other / General</option>
+                        </select>
+                        
+                        <label style="display:block; margin-bottom:0.5rem; font-weight:600; color:var(--text);">Your Feedback</label>
+                        <textarea id="fbText" rows="5" placeholder="Describe the bug, feature request, or general feedback here..."></textarea>
+                        
+                        <button class="btn-success" id="fbSubmitBtn" onclick="submitFeedback()" style="margin-top: 0.5rem;">Submit Feedback</button>
+                        <p id="fbStatus" style="text-align:center; font-weight:bold; margin-top:1rem; display:none;"></p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1400,6 +1438,64 @@ CRITICAL SYSTEM INSTRUCTIONS:
             a.download = `${filename}_report.txt`;
             a.click();
             URL.revokeObjectURL(url);
+        }
+
+        // ==========================================
+        // FEEDBACK FUNCTIONALITY
+        // ==========================================
+        async function submitFeedback() {
+            const name = document.getElementById('fbName').value.trim();
+            const dept = document.getElementById('fbDept').value.trim();
+            const category = document.getElementById('fbCategory').value;
+            const feedbackText = document.getElementById('fbText').value.trim();
+            const statusEl = document.getElementById('fbStatus');
+            const submitBtn = document.getElementById('fbSubmitBtn');
+
+            if (!name || !dept || !category || !feedbackText) {
+                showNotification("⚠️ Please fill out all fields before submitting.");
+                return;
+            }
+
+            statusEl.style.display = 'block';
+            statusEl.style.color = 'var(--highlight)';
+            statusEl.innerText = 'Submitting feedback...';
+            submitBtn.disabled = true;
+
+            try {
+                const response = await fetch('/api/evaluate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: "feedback",
+                        name: name,
+                        department: dept,
+                        category: category,
+                        feedback: feedbackText
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    statusEl.style.color = '#10b981'; // Success Green
+                    statusEl.innerText = '✅ Thank you! Your feedback has been recorded.';
+                    
+                    // Clear form
+                    document.getElementById('fbName').value = '';
+                    document.getElementById('fbDept').value = '';
+                    document.getElementById('fbCategory').value = '';
+                    document.getElementById('fbText').value = '';
+                } else {
+                    throw new Error(result.error || "Unknown error");
+                }
+            } catch (error) {
+                statusEl.style.color = '#dc2626'; // Error Red
+                statusEl.innerText = '❌ Failed to submit feedback. Please ensure the Webhook URL is set in Vercel.';
+                console.error(error);
+            } finally {
+                submitBtn.disabled = false;
+                setTimeout(() => { statusEl.style.display = 'none'; }, 5000);
+            }
         }
 
         loadFromLocalStorage();
