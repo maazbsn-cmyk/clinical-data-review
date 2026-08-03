@@ -741,18 +741,33 @@
                         <input type="text" id="fbDept" placeholder="E.g., BSN 8th Semester">
                         
                         <label style="display:block; margin-bottom:0.5rem; font-weight:600; color:var(--text);">Feedback Category</label>
-                        <select id="fbCategory">
+                        <select id="fbCategory" onchange="toggleFeedbackSubCategory()">
                             <option value="" disabled selected>Select an area...</option>
                             <option value="Case Analyzer - Nursing">Case Analyzer - Nursing</option>
                             <option value="Case Analyzer - Radiology">Case Analyzer - Radiology</option>
+                            <option value="Case Analyzer - Dental">Case Analyzer - Dental</option>
+                            <option value="Case Analyzer - Anaesthesia">Case Analyzer - Anaesthesia</option>
                             <option value="Case Analyzer - Pharmacy">Case Analyzer - Pharmacy</option>
-                            <option value="Case Analyzer - Other Discipline">Case Analyzer - Other Discipline</option>
-                            <option value="Calculators (GCS, BMI, etc.)">Clinical Calculators</option>
-                            <option value="UI/Website Design">Website Design & Usability</option>
-                            <option value="Other">Other / General</option>
+                            <option value="Case Analyzer - Medical Lab Technology">Case Analyzer - Medical Lab Technology</option>
+                            <option value="Clinical Calculators">Clinical Calculators</option>
+                            <option value="Website Design & Usability">Website Design & Usability</option>
+                            <option value="Other / General">Other / General</option>
                         </select>
+
+                        <!-- Dynamic Dropdown for Calculators -->
+                        <div id="fbSubCategoryContainer" style="display:none; margin-top:0.75rem;">
+                            <label style="display:block; margin-bottom:0.5rem; font-weight:600; color:var(--text);">Which Calculator?</label>
+                            <select id="fbSubCategory">
+                                <option value="" disabled selected>Select calculator...</option>
+                                <option value="GCS">GCS (Glasgow Coma Scale)</option>
+                                <option value="BMI">BMI Calculator</option>
+                                <option value="MAP">MAP Calculator</option>
+                                <option value="Maintenance Fluids">Maintenance Fluids</option>
+                                <option value="IV Drip Rate">IV Drip Rate</option>
+                            </select>
+                        </div>
                         
-                        <label style="display:block; margin-bottom:0.5rem; font-weight:600; color:var(--text);">Your Feedback</label>
+                        <label style="display:block; margin-bottom:0.5rem; margin-top:0.75rem; font-weight:600; color:var(--text);">Your Feedback</label>
                         <textarea id="fbText" rows="5" placeholder="Describe the bug, feature request, or general feedback here..."></textarea>
                         
                         <button class="btn-success" id="fbSubmitBtn" onclick="submitFeedback()" style="margin-top: 0.5rem;">Submit Feedback</button>
@@ -1443,10 +1458,22 @@ CRITICAL SYSTEM INSTRUCTIONS:
         // ==========================================
         // FEEDBACK FUNCTIONALITY
         // ==========================================
+        function toggleFeedbackSubCategory() {
+            const category = document.getElementById('fbCategory').value;
+            const subCatContainer = document.getElementById('fbSubCategoryContainer');
+            if (category === 'Clinical Calculators') {
+                subCatContainer.style.display = 'block';
+            } else {
+                subCatContainer.style.display = 'none';
+                document.getElementById('fbSubCategory').value = ''; // Reset sub category
+            }
+        }
+
         async function submitFeedback() {
             const name = document.getElementById('fbName').value.trim();
             const dept = document.getElementById('fbDept').value.trim();
-            const category = document.getElementById('fbCategory').value;
+            let category = document.getElementById('fbCategory').value;
+            const subCategory = document.getElementById('fbSubCategory').value;
             const feedbackText = document.getElementById('fbText').value.trim();
             const statusEl = document.getElementById('fbStatus');
             const submitBtn = document.getElementById('fbSubmitBtn');
@@ -1454,6 +1481,15 @@ CRITICAL SYSTEM INSTRUCTIONS:
             if (!name || !dept || !category || !feedbackText) {
                 showNotification("⚠️ Please fill out all fields before submitting.");
                 return;
+            }
+
+            // Append specific calculator if selected
+            if (category === 'Clinical Calculators') {
+                if (!subCategory) {
+                    showNotification("⚠️ Please specify which calculator.");
+                    return;
+                }
+                category = "Clinical Calculators - " + subCategory;
             }
 
             statusEl.style.display = 'block';
@@ -1484,6 +1520,8 @@ CRITICAL SYSTEM INSTRUCTIONS:
                     document.getElementById('fbName').value = '';
                     document.getElementById('fbDept').value = '';
                     document.getElementById('fbCategory').value = '';
+                    document.getElementById('fbSubCategory').value = '';
+                    document.getElementById('fbSubCategoryContainer').style.display = 'none';
                     document.getElementById('fbText').value = '';
                 } else {
                     throw new Error(result.error || "Unknown error");
