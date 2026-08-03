@@ -3,7 +3,8 @@ export default async function handler(req, res) {
         return res.status(405).send('Method Not Allowed');
     }
 
-    const { action = "evaluate", scenario = "", rawInput = "", discipline = "Nursing", tool = "General Tool", fastMode = false, evaluation = "", modelUsed = "Unknown Model" } = req.body;
+    // Extracted feedback variables added
+    const { action = "evaluate", scenario = "", rawInput = "", discipline = "Nursing", tool = "General Tool", fastMode = false, evaluation = "", modelUsed = "Unknown Model", name = "", department = "", category = "", feedback = "" } = req.body;
 
     const ip = req.headers['x-forwarded-for'] || 'Unknown IP';
     const city = req.headers['x-vercel-ip-city'] || 'Unknown City';
@@ -53,6 +54,28 @@ export default async function handler(req, res) {
         }
 
         return res.status(200).json({ success: true, uniqueCode });
+    }
+
+    // ==========================================
+    // ACTION 1.5: FEEDBACK ROUTING (NO AI)
+    // ==========================================
+    if (action === "feedback") {
+        const FEEDBACK_WEBHOOK = process.env.FEEDBACK_WEBHOOK_URL;
+        if (!FEEDBACK_WEBHOOK) {
+            return res.status(500).json({ success: false, error: "Feedback Webhook URL not configured in Vercel." });
+        }
+
+        try {
+            await fetch(FEEDBACK_WEBHOOK, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, department, category, feedback })
+            });
+            return res.status(200).json({ success: true });
+        } catch (err) {
+            console.error("Feedback sync failed", err);
+            return res.status(500).json({ success: false, error: "Failed to send feedback to Google Docs." });
+        }
     }
 
     // ==========================================
