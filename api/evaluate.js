@@ -56,7 +56,7 @@ export default async function handler(req, res) {
     }
 
     // ==========================================
-    // ACTION 1.5: FEEDBACK ROUTING (NO AI)
+    // ACTION 1.5: FEEDBACK ROUTING
     // ==========================================
     if (action === "feedback") {
         const FEEDBACK_WEBHOOK = process.env.FEEDBACK_WEBHOOK_URL;
@@ -88,9 +88,10 @@ export default async function handler(req, res) {
     let currentModel = "";
     const systemPrompt = scenario || rawInput; 
 
-    async function callGemini36() {
-        if(!GEMINI_KEY) throw new Error("No Gemini 3.6 Key");
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${GEMINI_KEY}`, {
+    // Dynamic Gemini Caller
+    async function callGemini(modelName, displayName) {
+        if(!GEMINI_KEY) throw new Error("No Gemini Key");
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${GEMINI_KEY}`, {
             method: "POST", headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ 
                 contents: [{ parts: [{ text: systemPrompt }] }],
@@ -99,27 +100,10 @@ export default async function handler(req, res) {
         });
         if (!response.ok) {
             const errData = await response.text();
-            throw new Error(`Gemini 3.6 API Error: ${errData}`);
+            throw new Error(`Gemini ${modelName} API Error: ${errData}`);
         }
         const data = await response.json();
-        return data.candidates[0].content.parts[0].text.trim();
-    }
-
-    async function callGemini35() {
-        if(!GEMINI_KEY) throw new Error("No Gemini 3.5 Key");
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${GEMINI_KEY}`, {
-            method: "POST", headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ 
-                contents: [{ parts: [{ text: systemPrompt }] }],
-                generationConfig: { maxOutputTokens: 8192 }
-            })
-        });
-        if (!response.ok) {
-            const errData = await response.text();
-            throw new Error(`Gemini 3.5 API Error: ${errData}`);
-        }
-        const data = await response.json();
-        return data.candidates[0].content.parts[0].text.trim();
+        return { text: data.candidates[0].content.parts[0].text.trim(), modelUsed: displayName };
     }
 
     async function callGroqModel(model) {
@@ -167,45 +151,48 @@ export default async function handler(req, res) {
         return data[0].generated_text.trim();
     }
 
-    // Advanced Fallback Chain with Error Logging
     if (fastMode) {
+        // Fast Mode prioritizes Groq for speed
         try {
             const groqRes = await callGroqWithFallbacks();
             evaluationResult = groqRes.text;
             currentModel = groqRes.modelUsed;
         } catch (e1) {
-            console.error("Groq Fast Mode Error:", e1);
             try {
-                evaluationResult = await callGemini36();
-                currentModel = "Gemini 3.6 Flash";
+                const gemRes = await callGemini('gemini-1.5-flash', 'Gemini 1.5 Flash');
+                evaluationResult = gemRes.text;
+                currentModel = gemRes.modelUsed;
             } catch (e2) {
-                console.error("Gemini Fallback Error:", e2);
                 return res.status(500).json({ evaluation: "Error: Fast AI models failed.", modelUsed: "Failed" });
             }
         }
     } else {
+        // Standard Mode prioritizes Google Gemini cascade
         try {
-            evaluationResult = await callGemini36();
-            currentModel = "Gemini 3.6 Flash";
+            const gemRes = await callGemini('gemini-3.6-flash', 'Gemini 3.6 Flash');
+            evaluationResult = gemRes.text;
+            currentModel = gemRes.modelUsed;
         } catch (e1) {
-            console.error("Gemini 3.6 Error:", e1);
+            console.error(e1);
             try {
-                evaluationResult = await callGemini35();
-                currentModel = "Gemini 3.5 Flash";
+                const gemRes2 = await callGemini('gemini-3.5-flash', 'Gemini 3.5 Flash');
+                evaluationResult = gemRes2.text;
+                currentModel = gemRes2.modelUsed;
             } catch (e2) {
-                console.error("Gemini 3.5 Error:", e2);
+                console.error(e2);
                 try {
-                    const groqRes = await callGroqWithFallbacks();
-                    evaluationResult = groqRes.text;
-                    currentModel = groqRes.modelUsed;
+                    const gemRes3 = await callGemini('gemini-1.5-flash', 'Gemini 1.5 Flash');
+                    evaluationResult = gemRes3.text;
+                    currentModel = gemRes3.modelUsed;
                 } catch (e3) {
-                    console.error("Groq Fallback Error:", e3);
+                    console.error(e3);
                     try {
-                        evaluationResult = await callHuggingFace();
-                        currentModel = "Hugging Face (Mixtral 8x7B)";
+                        const groqRes = await callGroqWithFallbacks();
+                        evaluationResult = groqRes.text;
+                        currentModel = groqRes.modelUsed;
                     } catch (e4) {
-                        console.error("Hugging Face Error:", e4);
-                        return res.status(500).json({ evaluation: "Error: All AI models failed. Check API keys.", modelUsed: "Failed" });
+                        console.error(e4);
+                        return res.status(500).json({ evaluation: "Error: All AI models failed. Verify API keys and network.", modelUsed: "Failed" });
                     }
                 }
             }
