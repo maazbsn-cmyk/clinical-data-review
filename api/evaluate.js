@@ -78,36 +78,42 @@ export default async function handler(req, res) {
     }
 
     // ==========================================
-    // ACTION 2: AI EVALUATION
+    // ACTION 2: AI EVALUATION (WITH ERROR BUBBLING)
     // ==========================================
     const GEMINI_KEY = process.env.GEMINI_API_KEY;
     const GROQ_KEY = process.env.GROQ_API_KEY;
-    const HF_KEY = process.env.HF_API_KEY;
 
     let evaluationResult = "";
     let currentModel = "";
+    let lastErrorMessage = "Unknown API Error";
     const systemPrompt = scenario || rawInput; 
 
-    // Dynamic Gemini Caller
+    // Advanced Gemini Caller with direct Google Error extraction
     async function callGemini(modelName, displayName) {
-        if(!GEMINI_KEY) throw new Error("No Gemini Key");
+        if(!GEMINI_KEY) throw new Error(`Vercel is missing GEMINI_API_KEY for ${displayName}. Did you Redeploy?`);
+        
         const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${GEMINI_KEY}`, {
-            method: "POST", headers: { "Content-Type": "application/json" },
+            method: "POST", 
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ 
                 contents: [{ parts: [{ text: systemPrompt }] }],
                 generationConfig: { maxOutputTokens: 8192 }
             })
         });
+        
         if (!response.ok) {
-            const errData = await response.text();
-            throw new Error(`Gemini ${modelName} API Error: ${errData}`);
+            const errData = await response.json();
+            throw new Error(`Google API Rejected ${modelName}: ${errData.error?.message || response.statusText}`);
         }
+        
         const data = await response.json();
         return { text: data.candidates[0].content.parts[0].text.trim(), modelUsed: displayName };
     }
 
+    // Advanced Groq Caller with direct Error extraction
     async function callGroqModel(model) {
-        if(!GROQ_KEY) throw new Error("No Groq Key");
+        if(!GROQ_KEY) throw new Error("Vercel is missing GROQ_API_KEY. Did you Redeploy?");
+        
         const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
             method: "POST", 
             headers: { "Authorization": `Bearer ${GROQ_KEY}`, "Content-Type": "application/json" },
@@ -117,7 +123,12 @@ export default async function handler(req, res) {
                 max_tokens: 8000
             })
         });
-        if (!response.ok) throw new Error(`Groq (${model}) failed`);
+        
+        if (!response.ok) {
+            const errData = await response.json();
+            throw new Error(`Groq API Rejected ${model}: ${errData.error?.message || response.statusText}`);
+        }
+        
         const data = await response.json();
         return data.choices[0].message.content.trim();
     }
@@ -125,74 +136,69 @@ export default async function handler(req, res) {
     async function callGroqWithFallbacks() {
         const groqModels = [
             { id: "llama-3.3-70b-versatile", label: "Groq (Llama 3.3 70B)" },
-            { id: "qwen/qwen3-32b", label: "Groq (Qwen 3 32B)" },
-            { id: "openai/gpt-oss-120b", label: "Groq (GPT-OSS 120B)" }
+            { id: "qwen/qwen3-32b", label: "Groq (Qwen 3 32B)" }
         ];
 
+        let groqError = "";
         for (const m of groqModels) {
             try {
                 const text = await callGroqModel(m.id);
                 return { text, modelUsed: m.label };
             } catch (err) {
-                console.warn(`${m.label} failed. Trying next Groq model...`);
+                groqError = err.message;
+                console.warn(`${m.label} failed: ${err.message}`);
             }
         }
-        throw new Error("All Groq models failed");
+        throw new Error(groqError);
     }
 
-    async function callHuggingFace() {
-        if(!HF_KEY) throw new Error("No HF Key");
-        const response = await fetch("https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1", {
-            method: "POST", headers: { "Authorization": `Bearer ${HF_KEY}`, "Content-Type": "application/json" },
-            body: JSON.stringify({ inputs: systemPrompt, parameters: { max_new_tokens: 4000, return_full_text: false } })
-        });
-        if (!response.ok) throw new Error("Hugging Face failed");
-        const data = await response.json();
-        return data[0].generated_text.trim();
-    }
-
+    // Main Execution Chain
     if (fastMode) {
-        // Fast Mode prioritizes Groq for speed
         try {
             const groqRes = await callGroqWithFallbacks();
             evaluationResult = groqRes.text;
             currentModel = groqRes.modelUsed;
         } catch (e1) {
+            lastErrorMessage = e1.message;
             try {
+                // Safest stable Google endpoint
                 const gemRes = await callGemini('gemini-1.5-flash', 'Gemini 1.5 Flash');
                 evaluationResult = gemRes.text;
                 currentModel = gemRes.modelUsed;
             } catch (e2) {
-                return res.status(500).json({ evaluation: "Error: Fast AI models failed.", modelUsed: "Failed" });
+                lastErrorMessage = e2.message;
+                return res.status(500).json({ evaluation: `**SYSTEM DIAGNOSTIC ERROR**\n\nAll AI fallbacks failed. The final rejection reason from the API was:\n\n*${lastErrorMessage}*\n\nPlease check Vercel Environment Variables and Redeploy.`, modelUsed: "Failed" });
             }
         }
     } else {
-        // Standard Mode prioritizes Google Gemini cascade
         try {
+            // Attempt user preferred 3.6 model
             const gemRes = await callGemini('gemini-3.6-flash', 'Gemini 3.6 Flash');
             evaluationResult = gemRes.text;
             currentModel = gemRes.modelUsed;
         } catch (e1) {
-            console.error(e1);
+            lastErrorMessage = e1.message;
             try {
+                // Attempt user preferred 3.5 model
                 const gemRes2 = await callGemini('gemini-3.5-flash', 'Gemini 3.5 Flash');
                 evaluationResult = gemRes2.text;
                 currentModel = gemRes2.modelUsed;
             } catch (e2) {
-                console.error(e2);
+                lastErrorMessage = e2.message;
                 try {
+                    // Fallback to globally stable 1.5 model if 3.6/3.5 endpoints don't exist
                     const gemRes3 = await callGemini('gemini-1.5-flash', 'Gemini 1.5 Flash');
                     evaluationResult = gemRes3.text;
                     currentModel = gemRes3.modelUsed;
                 } catch (e3) {
-                    console.error(e3);
+                    lastErrorMessage = e3.message;
                     try {
                         const groqRes = await callGroqWithFallbacks();
                         evaluationResult = groqRes.text;
                         currentModel = groqRes.modelUsed;
                     } catch (e4) {
-                        console.error(e4);
-                        return res.status(500).json({ evaluation: "Error: All AI models failed. Verify API keys and network.", modelUsed: "Failed" });
+                        lastErrorMessage = e4.message;
+                        return res.status(500).json({ evaluation: `**SYSTEM DIAGNOSTIC ERROR**\n\nAll AI fallbacks failed. The final rejection reason from the API was:\n\n*${lastErrorMessage}*\n\nPlease check Vercel Environment Variables and Redeploy.`, modelUsed: "Failed" });
                     }
                 }
             }
