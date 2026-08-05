@@ -3,7 +3,6 @@ export default async function handler(req, res) {
         return res.status(405).send('Method Not Allowed');
     }
 
-    // Extracted feedback variables added
     const { action = "evaluate", scenario = "", rawInput = "", discipline = "Nursing", tool = "General Tool", fastMode = false, evaluation = "", modelUsed = "Unknown Model", name = "", department = "", category = "", feedback = "" } = req.body;
 
     const ip = req.headers['x-forwarded-for'] || 'Unknown IP';
@@ -98,7 +97,10 @@ export default async function handler(req, res) {
                 generationConfig: { maxOutputTokens: 8192 }
             })
         });
-        if (!response.ok) throw new Error("Gemini 3.6 Flash failed");
+        if (!response.ok) {
+            const errData = await response.text();
+            throw new Error(`Gemini 3.6 API Error: ${errData}`);
+        }
         const data = await response.json();
         return data.candidates[0].content.parts[0].text.trim();
     }
@@ -112,7 +114,10 @@ export default async function handler(req, res) {
                 generationConfig: { maxOutputTokens: 8192 }
             })
         });
-        if (!response.ok) throw new Error("Gemini 3.5 Flash failed");
+        if (!response.ok) {
+            const errData = await response.text();
+            throw new Error(`Gemini 3.5 API Error: ${errData}`);
+        }
         const data = await response.json();
         return data.candidates[0].content.parts[0].text.trim();
     }
@@ -133,7 +138,6 @@ export default async function handler(req, res) {
         return data.choices[0].message.content.trim();
     }
 
-    // Sequential Groq model fallback execution
     async function callGroqWithFallbacks() {
         const groqModels = [
             { id: "llama-3.3-70b-versatile", label: "Groq (Llama 3.3 70B)" },
@@ -163,16 +167,19 @@ export default async function handler(req, res) {
         return data[0].generated_text.trim();
     }
 
+    // Advanced Fallback Chain with Error Logging
     if (fastMode) {
         try {
             const groqRes = await callGroqWithFallbacks();
             evaluationResult = groqRes.text;
             currentModel = groqRes.modelUsed;
         } catch (e1) {
+            console.error("Groq Fast Mode Error:", e1);
             try {
                 evaluationResult = await callGemini36();
                 currentModel = "Gemini 3.6 Flash";
             } catch (e2) {
+                console.error("Gemini Fallback Error:", e2);
                 return res.status(500).json({ evaluation: "Error: Fast AI models failed.", modelUsed: "Failed" });
             }
         }
@@ -181,20 +188,24 @@ export default async function handler(req, res) {
             evaluationResult = await callGemini36();
             currentModel = "Gemini 3.6 Flash";
         } catch (e1) {
+            console.error("Gemini 3.6 Error:", e1);
             try {
                 evaluationResult = await callGemini35();
                 currentModel = "Gemini 3.5 Flash";
             } catch (e2) {
+                console.error("Gemini 3.5 Error:", e2);
                 try {
                     const groqRes = await callGroqWithFallbacks();
                     evaluationResult = groqRes.text;
                     currentModel = groqRes.modelUsed;
                 } catch (e3) {
+                    console.error("Groq Fallback Error:", e3);
                     try {
                         evaluationResult = await callHuggingFace();
                         currentModel = "Hugging Face (Mixtral 8x7B)";
                     } catch (e4) {
-                        return res.status(500).json({ evaluation: "Error: All AI models failed.", modelUsed: "Failed" });
+                        console.error("Hugging Face Error:", e4);
+                        return res.status(500).json({ evaluation: "Error: All AI models failed. Check API keys.", modelUsed: "Failed" });
                     }
                 }
             }
