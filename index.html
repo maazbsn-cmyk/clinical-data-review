@@ -1125,6 +1125,7 @@
                 <div class="card" style="text-align:center; padding: 2rem; display: flex; flex-direction: column; align-items: center;">
                     <div class="loader"></div>
                     <p style="font-weight:600; color:var(--highlight); margin-bottom: 0;">Analyzing case for ${discipline}...</p>
+                    <p style="font-size: 0.8rem; color: var(--muted); margin-top: 0.5rem;">(Typically takes 20-30 seconds)</p>
                     ${!isFastMode ? `<button class="fast-btn" onclick="evaluateCase(true)">⚡ Answer Now</button>` : `<p style="color: #f59e0b; font-size: 0.85rem; font-weight: bold; margin-top: 1rem;">⚡ Fast Mode Activated</p>`}
                 </div>
             `;
@@ -1155,12 +1156,13 @@ You must act strictly as a ${discipline} professional. If a medical emergency re
 - Acute Red Flags: Exactly 1 single concise sentence.
 - Intervention Plan: YOU MUST USE A NUMBERED LIST. You must start a NEW LINE for every single step. Maximum 3 steps.
 
-4. FORMAL CITATION MANDATE (STRICT NO-PARAGRAPH RULE):
+4. FORMAL CITATION MANDATE (STRICT ANTI-HALLUCINATION RULE):
 - At the end of the entire response, create a single section titled "### Evidence-Based References".
 - STRICT NEGATIVE RULE: DO NOT write summary paragraphs, explanations, or prose descriptions. ZERO EXCEPTIONS.
-- YOU MUST OUTPUT EXACTLY 1 TO 2 NUMBERED CITATIONS in formal publication format:
-  1. [Organization/Author]. ([Year]). [Document/Guideline Title]. [Journal/Source].
-  2. [Organization/Author]. ([Year]). [Document/Guideline Title]. [Journal/Source].
+- STRICT NEGATIVE RULE: DO NOT invent, fabricate, or hallucinate specific journal articles, volume numbers, or page numbers.
+- You MUST ONLY cite universally established, real clinical cornerstone guidelines (e.g., AHA, WHO, AAP, ENA).
+- YOU MUST OUTPUT EXACTLY 1 TO 2 NUMBERED CITATIONS in this format:
+  1. [Major Clinical Organization]. ([Recent Year]). [Name of Standard Core Clinical Guideline].
 
 5. FEW-SHOT EXAMPLES (FOLLOW THIS EXACT STRUCTURAL PATTERN):
 
@@ -1176,8 +1178,8 @@ Output:
   3. Escalate to senior medical staff for intraosseous (IO) or ultrasound-guided access; refer to appropriate discipline for acute management.
 
 ### Evidence-Based References
-1. American Academy of Pediatrics (AAP). (2020). Management of Pediatric Dehydration. Pediatrics.
-2. Emergency Nurses Association (ENA). (2021). Emergency Nursing Core Curriculum. Elsevier.
+1. American Academy of Pediatrics (AAP). (2020). Management of Pediatric Dehydration Guidelines.
+2. Emergency Nurses Association (ENA). (2021). Emergency Nursing Core Curriculum: Fluid Resuscitation.
 
 PATIENT DATA(S) TO EVALUATE:
 ${rawText}
@@ -1250,6 +1252,7 @@ ${rawText}
                 <div class="card" style="text-align:center; padding: 2rem; display: flex; flex-direction: column; align-items: center;">
                     <div class="loader"></div>
                     <p style="font-weight:600; color:var(--highlight); margin-bottom: 0;">Evaluating concise interventions...</p>
+                    <p style="font-size: 0.8rem; color: var(--muted); margin-top: 0.5rem;">(Typically takes 15-20 seconds)</p>
                     ${!isFastMode ? `<button class="fast-btn" onclick="evaluateCalcResult('${tabPrefix}', '${toolName}', true)">⚡ Answer Now</button>` : `<p style="color: #f59e0b; font-size: 0.85rem; font-weight: bold; margin-top: 1rem;">⚡ Fast Mode Activated</p>`}
                 </div>
             `;
@@ -1260,7 +1263,7 @@ CRITICAL SYSTEM INSTRUCTIONS:
 2. HEALTHY/NORMAL RULE: If the value represents a healthy, normal clinical state, YOU MUST strictly respond with: "Values are within normal limits. No acute clinical interventions required. Continue routine care."
 3. ABNORMAL RULE: If abnormal, provide a maximum of 2 to 3 short, general clinical action steps formatted strictly as a NUMBERED LIST. DO NOT USE PARAGRAPHS. DO NOT USE THE '•' CHARACTER.
 4. UNIVERSAL LANGUAGE RULE: DO NOT use discipline-specific terms like 'Nursing', 'Nurse', 'Doctor', or 'Medical'. Use universal clinical language.
-5. EVIDENCE-BASED REQUIREMENT: You MUST conclude the response with a distinct section titled "### Evidence-Based References". DO NOT WRITE PARAGRAPHS HERE. Provide exactly 1 to 2 NUMBERED CITATIONS (e.g., 1. WHO. (2021). Guideline Title.).
+5. EVIDENCE-BASED REQUIREMENT: You MUST conclude the response with a distinct section titled "### Evidence-Based References". DO NOT WRITE PARAGRAPHS. Provide exactly 1 to 2 NUMBERED CITATIONS. STRICT RULE: DO NOT invent or hallucinate specific journal articles or page numbers. You MUST ONLY cite universally established organizational guidelines (e.g., 1. World Health Organization (WHO). (2021). Clinical Guideline Title.).
             `;
 
             try {
