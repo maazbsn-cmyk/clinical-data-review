@@ -1161,20 +1161,84 @@ TARGET DISCIPLINE: ${discipline}
 
 5. FEW-SHOT EXAMPLES (FOLLOW THIS EXACT STRUCTURAL PATTERN):
 
-[FEW-SHOT EXAMPLE A - SINGLE SCENARIO INPUT (NURSING)]
-Input: "10yo dehydrated child, unable to establish IV line"
+[NURSING EXAMPLE]
+Input: "22yo female, asthma, severe SOB, wheezing, using accessory muscles, SpO2 88%"
 Output:
-- **Key Findings:** A 10-year-old pediatric patient presents with acute dehydration and failed peripheral intravenous access attempts.
-- **Nursing Diagnosis:** Deficient fluid volume related to active fluid volume loss as evidenced by clinical dehydration and difficult vascular access.
-- **Acute Red Flags:** High risk of hypovolemic shock and electrolyte imbalance secondary to delayed fluid resuscitation.
+- **Key Findings:** A 22-year-old female presents with an acute asthma exacerbation characterized by severe shortness of breath, wheezing, accessory muscle use, and hypoxemia.
+- **Nursing Diagnosis:** Ineffective airway clearance related to bronchospasm as evidenced by severe dyspnea, wheezing, and an oxygen saturation of 88%.
+- **Acute Red Flags:** High risk of imminent respiratory failure and respiratory arrest secondary to severe bronchoconstriction and hypoxia.
 - **Intervention Plan:**
-  1. Initiate oral rehydration therapy (ORT) with small, frequent sips if patient is conscious and maintaining airway.
-  2. Maintain continuous vital sign monitoring, checking capillary refill, mental status, and urine output closely.
-  3. Escalate to the Vascular Access Team or Emergency Physician for intraosseous (IO) or ultrasound-guided placement.
+  1. Position the patient in a high-Fowler's position and immediately initiate high-flow oxygen therapy to maintain SpO2 above 92%.
+  2. Administer physician-ordered short-acting bronchodilators via nebulizer and establish peripheral intravenous access.
+  3. Notify the Respiratory Therapy team and the Attending Physician immediately for further medical management and potential advanced airway support.
 
 ### Evidence-Based References
-1. American Academy of Pediatrics (AAP). (2020). Management of Pediatric Dehydration Guidelines.
-2. Emergency Nurses Association (ENA). (2021). Emergency Nursing Core Curriculum: Fluid Resuscitation.
+1. World Health Organization (WHO). (2023). Clinical Management of Severe Acute Respiratory Infection.
+
+[RADIOLOGY EXAMPLE]
+Input: "72yo male, sudden right sided weakness and slurred speech started 30 mins ago. BP 190/100"
+Output:
+- **Key Findings:** A 72-year-old male presents with acute onset right-sided weakness, slurred speech, and severe hypertension within a 30-minute window, strongly indicating an acute cerebrovascular accident.
+- **Acute Red Flags:** Critical time-sensitive window for acute ischemic stroke and high risk of intracranial hemorrhage secondary to severe hypertension.
+- **Intervention Plan:**
+  1. Expedite a non-contrast CT scan of the head immediately to differentiate between ischemic and hemorrhagic stroke.
+  2. Ensure the patient is positioned securely on the imaging table with continuous vital sign monitoring, particularly blood pressure.
+  3. Escalate the imaging results immediately to the Stroke Neurology Team and the Emergency Physician to evaluate for thrombolytic therapy.
+
+### Evidence-Based References
+1. American Heart Association (AHA). (2022). Guidelines for the Early Management of Patients with Acute Ischemic Stroke.
+
+[PHARMACY EXAMPLE]
+Input: "65yo on warfarin. INR is 8.5. Has bleeding gums and bruising."
+Output:
+- **Key Findings:** A 65-year-old patient on warfarin therapy presents with a critically supratherapeutic INR of 8.5 accompanied by active mucosal bleeding and ecchymosis.
+- **Acute Red Flags:** High risk of life-threatening major bleeding, including intracranial hemorrhage, secondary to severe anticoagulant toxicity.
+- **Intervention Plan:**
+  1. Recommend the immediate cessation of all further warfarin doses.
+  2. Advise the administration of Vitamin K (phytonadione) and Four-Factor Prothrombin Complex Concentrate (4F-PCC) per institutional reversal protocols.
+  3. Notify the Attending Physician immediately to execute the reversal orders and coordinate serial INR monitoring.
+
+### Evidence-Based References
+1. American College of Cardiology (ACC). (2021). Expert Consensus Decision Pathway on Management of Bleeding in Patients on Oral Anticoagulants.
+
+[ANAESTHESIA EXAMPLE]
+Input: "40yo male, BMI 45, Mallampati IV, scheduled for urgent lap chole. Ate a full meal 2 hours ago."
+Output:
+- **Key Findings:** A 40-year-old morbidly obese male with a predicted difficult airway requires urgent surgery but has violated NPO guidelines by eating 2 hours prior.
+- **Acute Red Flags:** Extreme risk of fatal pulmonary aspiration of gastric contents combined with a high likelihood of failed intubation.
+- **Intervention Plan:**
+  1. Delay the surgical procedure if clinically feasible until NPO guidelines are met to allow for complete gastric emptying.
+  2. Prepare for a Rapid Sequence Induction (RSI) with cricoid pressure and immediately ready the difficult airway cart, including a video laryngoscope and flexible bronchoscope.
+  3. Escalate the airway strategy to a second Attending Anaesthesiologist and alert the Surgical Team regarding the high-risk induction plan.
+
+### Evidence-Based References
+1. American Society of Anesthesiologists (ASA). (2023). Practice Guidelines for Management of the Difficult Airway.
+
+[MEDICAL LABORATORY TECHNOLOGY EXAMPLE]
+Input: "Stat potassium drawn from ED patient is 7.2 mmol/L. Sample is mildly hemolyzed."
+Output:
+- **Key Findings:** A stat serum potassium level from an emergency department patient resulted in a critically high value of 7.2 mmol/L from a mildly hemolyzed specimen.
+- **Acute Red Flags:** Severe hyperkalemia poses an immediate risk of lethal cardiac dysrhythmias or sudden cardiac arrest.
+- **Intervention Plan:**
+  1. Immediately report the critical potassium value of 7.2 mmol/L directly to the ordering Emergency Department Physician via phone.
+  2. Note the presence of mild hemolysis in the official laboratory report, as it may falsely elevate the potassium reading.
+  3. Request a fresh, non-hemolyzed blood specimen from the clinical team to verify the critical result without delaying immediate emergency treatment.
+
+### Evidence-Based References
+1. Clinical and Laboratory Standards Institute (CLSI). (2022). Management of Critical Laboratory Results.
+
+[DENTAL EXAMPLE]
+Input: "19yo with severe swelling under jaw and neck, drooling, cant open mouth well, fever 102F. Tooth 30 is decayed."
+Output:
+- **Key Findings:** A 19-year-old patient presents with severe submandibular swelling, trismus, drooling, and high fever secondary to a decayed lower right molar, highly indicative of Ludwig's Angina.
+- **Acute Red Flags:** Imminent life-threatening airway compromise and systemic sepsis due to rapidly spreading bilateral fascial space infection.
+- **Intervention Plan:**
+  1. Immediately secure the patient in an upright position and initiate supplemental oxygen to support respiratory function.
+  2. Defer routine dental extraction and avoid administering central nervous system depressants or sedatives that could further compromise the airway.
+  3. Escalate immediately to the Oral and Maxillofacial Surgery (OMFS) team and the Emergency Department for urgent surgical airway management and intravenous antibiotic therapy.
+
+### Evidence-Based References
+1. American Association of Oral and Maxillofacial Surgeons (AAOMS). (2021). Parameters of Care: Management of Odontogenic Infections.
 
 PATIENT DATA(S) TO EVALUATE:
 ${rawText}
