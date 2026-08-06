@@ -1131,128 +1131,61 @@
             `;
 
             const examples = {
-                "Nursing": `[NURSING EXAMPLE 1: In-Scope - Sepsis]
-Input: "65yo male, fever 102, HR 125, BP 85/50, UTI symptoms."
+                "Nursing": `[NURSING EXAMPLE 1: In-Scope - Asthma]
+Input: "22yo female, asthma, severe SOB, wheezing, using accessory muscles, SpO2 88%"
 Output:
-- **Key Findings:** A 65-year-old male presents with high fever, tachycardia, hypotension, and urinary symptoms indicative of septic shock.
-- **Nursing Diagnosis:** Ineffective tissue perfusion related to systemic infection as evidenced by severe hypotension and tachycardia.
-- **Acute Red Flags:** High risk of multi-organ failure and cardiovascular collapse secondary to severe sepsis.
+- **Key Findings:** A 22-year-old female presents with an acute asthma exacerbation characterized by severe shortness of breath, wheezing, and hypoxemia.
+- **Nursing Diagnosis:** Ineffective airway clearance related to bronchospasm as evidenced by severe dyspnea and SpO2 of 88%.
+- **Acute Red Flags:** High risk of imminent respiratory failure secondary to severe hypoxia.
 - **Intervention Plan:**
-  1. Establish two large-bore peripheral IV lines and initiate continuous hemodynamic and vital sign monitoring.
-  2. Draw ordered blood cultures immediately and administer broad-spectrum IV antibiotics and fluid boluses as prescribed.
-  3. Insert an indwelling urinary catheter to strictly monitor hourly urine output.
+  1. Position the patient in a high-Fowler's position and immediately initiate high-flow oxygen therapy.
+  2. Administer physician-ordered short-acting bronchodilators via nebulizer and establish peripheral IV access.
+  3. Continuously monitor SpO2 and respiratory rate to assess response to therapy.
 
 ### Evidence-Based References
-1. Surviving Sepsis Campaign (SSC). (2021). International Guidelines for Management of Sepsis and Septic Shock.
+1. Global Initiative for Asthma (GINA). (2022). Global Strategy for Asthma Management and Prevention.
 
-[NURSING EXAMPLE 2: In-Scope - Hypoglycemia]
-Input: "Diabetic patient found unresponsive, sweating, blood sugar 35."
-Output:
-- **Key Findings:** A diabetic patient is found unresponsive and diaphoretic with a critically low point-of-care blood glucose of 35 mg/dL.
-- **Nursing Diagnosis:** Risk for unstable blood glucose level related to insulin excess or inadequate intake as evidenced by severe hypoglycemia and unresponsiveness.
-- **Acute Red Flags:** Immediate threat of anoxic brain injury or hypoglycemic coma.
-- **Intervention Plan:**
-  1. Maintain airway patency, position the patient in the lateral recovery position, and withhold all oral intake.
-  2. Administer 50% Dextrose (D50) IV push or intramuscular Glucagon per standing hypoglycemia protocols.
-  3. Recheck capillary blood glucose every 15 minutes until stabilized above 70 mg/dL and consciousness returns.
-
-### Evidence-Based References
-1. American Diabetes Association (ADA). (2023). Standards of Care in Diabetes: Hypoglycemia Management.
-
-[NURSING EXAMPLE 3: Out-of-Scope - Needs Surgery]
+[NURSING EXAMPLE 2: Out-of-Scope - Needs Surgery]
 Input: "Patient with rigid board-like abdomen, extreme RLQ pain, CT shows ruptured appendix."
 Output:
 - **Key Findings:** A patient presents with acute right lower quadrant pain and a rigid abdomen with confirmed appendiceal rupture.
 - **Nursing Diagnosis:** Acute pain related to peritoneal inflammation as evidenced by a rigid abdomen and severe guarding.
 - **Acute Red Flags:** Imminent risk of widespread peritonitis and fatal septic shock requiring immediate surgical source control.
 - **Intervention Plan:**
-  1. Enforce strict NPO status, establish peripheral IV access, and administer prescribed isotonic fluids and broad-spectrum antibiotics.
+  1. Enforce strict NPO status, establish peripheral IV access, and administer prescribed isotonic fluids.
   2. Provide baseline bedside stabilization and withhold oral analgesics that may mask advancing peritoneal signs.
-  3. Escalate immediately to the General Surgery Team and Operating Room charge nurse for emergent surgical appendectomy.
+  3. Refer immediately to General Surgery so they can perform an emergent surgical appendectomy.
 
 ### Evidence-Based References
-1. World Society of Emergency Surgery (WSES). (2020). Guidelines for Acute Appendicitis.
-
-[NURSING EXAMPLE 4: Out-of-Scope - Needs Pharmacy]
-Input: "Patient on 5 different blood pressure meds, heart rate dropped to 35, very dizzy."
-Output:
-- **Key Findings:** A patient on polypharmacy for hypertension presents with severe symptomatic bradycardia and dizziness.
-- **Nursing Diagnosis:** Decreased cardiac output related to adverse medication interaction as evidenced by a heart rate of 35 bpm and dizziness.
-- **Acute Red Flags:** Critical risk of cardiogenic syncope or complete heart block secondary to polypharmacy toxicity.
-- **Intervention Plan:**
-  1. Place the patient in a supine position, apply continuous cardiac telemetry, and prepare transcutaneous pacing pads at the bedside.
-  2. Withhold all scheduled antihypertensive and rate-controlling medications immediately.
-  3. Escalate to the Clinical Pharmacy Team for urgent medication reconciliation and the Emergency Physician for chronotropic intervention orders.
-
-### Evidence-Based References
-1. American Heart Association (AHA). (2018). Guideline on the Evaluation and Management of Patients With Bradycardia.`,
+1. World Society of Emergency Surgery (WSES). (2020). Guidelines for Acute Appendicitis.`,
 
                 "Radiology": `[RADIOLOGY EXAMPLE 1: In-Scope - Stroke]
 Input: "72yo male, sudden right sided weakness and slurred speech started 30 mins ago. BP 190/100"
 Output:
-- **Key Findings:** A 72-year-old male presents with acute onset right-sided weakness, slurred speech, and severe hypertension within a 30-minute window, strongly indicating an acute cerebrovascular accident.
-- **Acute Red Flags:** Critical time-sensitive window for acute ischemic stroke and high risk of intracranial hemorrhage secondary to severe hypertension.
+- **Key Findings:** A 72-year-old male presents with acute onset right-sided weakness and slurred speech indicating an acute cerebrovascular accident.
+- **Acute Red Flags:** Critical time-sensitive window for acute ischemic stroke requiring immediate imaging.
 - **Intervention Plan:**
   1. Expedite a non-contrast CT scan of the head immediately to differentiate between ischemic and hemorrhagic stroke.
   2. Ensure the patient is positioned securely on the imaging table with continuous vital sign monitoring.
-  3. Escalate the imaging results immediately to the Stroke Neurology Team to evaluate for thrombolytic therapy.
+  3. Provide the rapid imaging results directly to the Stroke Neurology Team for interpretation.
 
 ### Evidence-Based References
 1. American Heart Association (AHA). (2022). Guidelines for the Early Management of Patients with Acute Ischemic Stroke.
 
-[RADIOLOGY EXAMPLE 2: In-Scope - Spinal Trauma]
-Input: "Motorcycle crash victim, neck pain, tingling in fingers."
-Output:
-- **Key Findings:** A trauma patient involved in a motorcycle collision presents with neck pain and distal paresthesia highly suspicious for cervical spine injury.
-- **Acute Red Flags:** High risk of irreversible spinal cord transaction and permanent paralysis if the cervical spine is mobilized.
-- **Intervention Plan:**
-  1. Ensure rigid cervical collar immobilization remains strictly in place during all transfers to the imaging table.
-  2. Execute a stat CT of the cervical spine without contrast to evaluate for acute fractures or dislocations.
-  3. Immediately flag abnormal bony findings to the Trauma Surgery and Neurosurgery teams.
-
-### Evidence-Based References
-1. American College of Radiology (ACR). (2022). Appropriateness Criteria: Suspected Spine Trauma.
-
-[RADIOLOGY EXAMPLE 3: Out-of-Scope - Vomiting / Needs Nursing]
+[RADIOLOGY EXAMPLE 2: Out-of-Scope - Vomiting / Needs Nursing]
 Input: "Patient drank barium contrast and is now actively vomiting non-stop, looks severely dehydrated."
 Output:
 - **Key Findings:** A patient has developed acute, intractable vomiting and signs of severe dehydration following the ingestion of oral barium contrast.
 - **Acute Red Flags:** High risk of pulmonary aspiration of contrast material and rapid hemodynamic collapse from volume depletion.
 - **Intervention Plan:**
-  1. Immediately halt the imaging procedure and position the patient in a lateral decubitus position to secure the airway and prevent aspiration.
-  2. Provide an emesis basin and assess basic responsiveness and airway patency.
-  3. Escalate immediately to the Emergency Nursing or Rapid Response Team for urgent IV fluid resuscitation and administration of antiemetics.
+  1. Immediately halt the imaging procedure and position the patient in a lateral decubitus position to secure the airway.
+  2. Provide an emesis basin and assess basic responsiveness.
+  3. Refer immediately to Nursing and Pharmacy so they can establish an IV line, administer normal saline for dehydration, and provide IV antiemetics like ondansetron.
 
 ### Evidence-Based References
-1. American College of Radiology (ACR). (2023). Manual on Contrast Media and Adverse Event Management.
+1. American College of Radiology (ACR). (2023). Manual on Contrast Media and Adverse Event Management.`,
 
-[RADIOLOGY EXAMPLE 4: Out-of-Scope - Cardiac Arrest in Scanner]
-Input: "Patient in the MRI tube suddenly stops breathing and loses pulse."
-Output:
-- **Key Findings:** A patient has suffered sudden respiratory and cardiac arrest while actively inside the MRI scanner.
-- **Acute Red Flags:** Imminent clinical death requiring immediate physical resuscitation in a highly restrictive, magnet-active environment.
-- **Intervention Plan:**
-  1. Immediately pull the patient out of the MRI bore and clear them completely from Zone IV (the active magnet room) to a safe staging area.
-  2. Initiate high-quality chest compressions and basic life support airway management once clear of the magnetic field.
-  3. Activate the hospital Code Blue system to summon the Emergency Resuscitation Team and defibrillator equipment.
-
-### Evidence-Based References
-1. American Heart Association (AHA). (2020). Basic Life Support (BLS) Guidelines.`,
-
-                "Dental": `[DENTAL EXAMPLE 1: In-Scope - Ludwig's Angina]
-Input: "19yo with severe swelling under jaw and neck, drooling, cant open mouth well, fever 102F. Tooth 30 is decayed."
-Output:
-- **Key Findings:** A 19-year-old patient presents with severe submandibular swelling, trismus, drooling, and high fever secondary to a decayed lower right molar, highly indicative of Ludwig's Angina.
-- **Acute Red Flags:** Imminent life-threatening airway compromise and systemic sepsis due to rapidly spreading bilateral fascial space infection.
-- **Intervention Plan:**
-  1. Immediately secure the patient in an upright position and initiate supplemental oxygen to support respiratory function.
-  2. Defer routine dental extraction and avoid administering central nervous system depressants or sedatives that could further compromise the airway.
-  3. Escalate immediately to the Oral and Maxillofacial Surgery (OMFS) team and the Emergency Department for urgent surgical airway management and intravenous antibiotic therapy.
-
-### Evidence-Based References
-1. American Association of Oral and Maxillofacial Surgeons (AAOMS). (2021). Parameters of Care: Management of Odontogenic Infections.
-
-[DENTAL EXAMPLE 2: In-Scope - Avulsed Tooth]
+                "Dental": `[DENTAL EXAMPLE 1: In-Scope - Tooth Avulsion]
 Input: "12yo boy fell off bike 20 minutes ago, knocked out his front permanent tooth, holding it in a tissue."
 Output:
 - **Key Findings:** A 12-year-old male presents with an acute traumatic avulsion of a permanent maxillary incisor occurring within a critical 30-minute window.
@@ -1260,33 +1193,20 @@ Output:
 - **Intervention Plan:**
   1. Handle the avulsed tooth strictly by the crown, avoiding touching the root to preserve viable periodontal ligament cells.
   2. Gently rinse the tooth with cold saline or milk if visibly soiled, and attempt immediate reimplantation into the alveolar socket.
-  3. Apply a flexible dental splint to adjacent stable teeth for 2 weeks and prescribe appropriate prophylactic antibiotics.
+  3. Apply a flexible dental splint to adjacent stable teeth and prescribe appropriate prophylactic antibiotics.
 
 ### Evidence-Based References
 1. International Association of Dental Traumatology (IADT). (2020). Guidelines for the Evaluation and Management of Traumatic Dental Injuries.
 
-[DENTAL EXAMPLE 3: Out-of-Scope - Heart Attack]
+[DENTAL EXAMPLE 2: Out-of-Scope - Heart Attack]
 Input: "55yo male in dental chair suddenly grabs chest, immense crushing pain, sweating heavily, pale."
 Output:
 - **Key Findings:** A 55-year-old male patient experiences sudden crushing chest pain, diaphoresis, and pallor while in the dental chair, highly suspicious for an acute myocardial infarction.
-- **Acute Red Flags:** Imminent threat of lethal ventricular arrhythmias, cardiogenic shock, and sudden cardiac death requiring advanced life support.
+- **Acute Red Flags:** Imminent threat of lethal ventricular arrhythmias, cardiogenic shock, and sudden cardiac death.
 - **Intervention Plan:**
-  1. Immediately halt all dental procedures, position the patient comfortably (upright or semi-reclined), and administer supplemental oxygen.
-  2. Retrieve the clinical emergency kit to provide chewed Aspirin (324mg) if no allergy exists, and monitor basic vital signs.
-  3. Activate Emergency Medical Services (EMS) via 911 immediately for urgent cardiac transport and advanced medical intervention.
-
-### Evidence-Based References
-1. American Dental Association (ADA). (2022). Medical Emergencies in the Dental Office.
-
-[DENTAL EXAMPLE 4: Out-of-Scope - Active Seizure]
-Input: "Patient getting a cavity filled starts having a full body grand mal seizure in the chair."
-Output:
-- **Key Findings:** A patient experiences a sudden, generalized tonic-clonic seizure while actively undergoing a restorative dental procedure.
-- **Acute Red Flags:** High risk of airway obstruction, aspiration of dental materials, and physical trauma from surrounding clinical equipment.
-- **Intervention Plan:**
-  1. Immediately remove all dental instruments, suction devices, and materials from the oral cavity to prevent aspiration or mechanical injury.
-  2. Lower the dental chair to a supine position, protect the patient's head, and roll them gently to their side to maintain airway patency.
-  3. Do not attempt to restrain the patient; escalate to Emergency Medical Services (EMS) if the seizure lasts longer than 5 minutes or repeats.
+  1. Immediately halt all dental procedures, position the patient comfortably upright, and monitor basic vital signs.
+  2. Refer immediately to Emergency Medical Services (EMS) and Cardiology so they can establish IV access, administer sublingual nitroglycerin, and provide acute cardiac care.
+  3. Do not attempt to independently manage systemic medical emergencies or administer cardiac drugs beyond basic life support while awaiting EMS.
 
 ### Evidence-Based References
 1. American Dental Association (ADA). (2022). Medical Emergencies in the Dental Office.`,
@@ -1298,50 +1218,24 @@ Output:
 - **Acute Red Flags:** Extreme risk of fatal pulmonary aspiration of gastric contents combined with a high likelihood of failed intubation.
 - **Intervention Plan:**
   1. Delay the surgical procedure if clinically feasible until NPO guidelines are met to allow for complete gastric emptying.
-  2. Prepare for a Rapid Sequence Induction (RSI) with cricoid pressure and immediately ready the difficult airway cart, including a video laryngoscope and flexible bronchoscope.
-  3. Escalate the airway strategy to a second Attending Anaesthesiologist and alert the Surgical Team regarding the high-risk induction plan.
+  2. Prepare for a Rapid Sequence Induction (RSI) with cricoid pressure and immediately ready the difficult airway cart, including a video laryngoscope.
+  3. Escalate the airway strategy to a second Attending Anaesthesiologist to assist with the high-risk induction.
 
 ### Evidence-Based References
 1. American Society of Anesthesiologists (ASA). (2023). Practice Guidelines for Management of the Difficult Airway.
 
-[ANAESTHESIA EXAMPLE 2: In-Scope - Malignant Hyperthermia]
-Input: "15 mins into surgery with sevoflurane, patient's ETCO2 spikes to 85, HR 140, temp rapidly rising, muscles rigid."
-Output:
-- **Key Findings:** A patient under general anesthesia with sevoflurane develops sudden hypercarbia, tachycardia, muscle rigidity, and rapid hyperthermia indicative of an acute Malignant Hyperthermia crisis.
-- **Acute Red Flags:** Imminent cardiovascular collapse, severe metabolic acidosis, and fatal hypermetabolic state triggered by volatile anesthetics.
-- **Intervention Plan:**
-  1. Immediately discontinue all volatile anesthetics and succinylcholine, and hyperventilate the patient with 100% oxygen via a clean circuit.
-  2. Alert the surgical team to halt the procedure and aggressively mix and administer rapid IV Dantrolene.
-  3. Initiate active core cooling measures and coordinate with the Critical Care Team for immediate post-operative ICU transfer.
-
-### Evidence-Based References
-1. Malignant Hyperthermia Association of the United States (MHAUS). (2021). Emergency Therapy for Malignant Hyperthermia.
-
-[ANAESTHESIA EXAMPLE 3: Out-of-Scope - Ward Wound Infection]
+[ANAESTHESIA EXAMPLE 2: Out-of-Scope - Ward Wound Infection]
 Input: "Patient is 3 days post-op on the surgical floor, surgical incision is oozing green pus, fever 101."
 Output:
 - **Key Findings:** A patient on postoperative day three develops a fever and purulent drainage from the surgical site, indicating an acute surgical site infection.
-- **Acute Red Flags:** High risk of systemic sepsis, delayed wound healing, and fascial dehiscence requiring immediate local wound management.
+- **Acute Red Flags:** High risk of systemic sepsis, delayed wound healing, and fascial dehiscence.
 - **Intervention Plan:**
   1. Note the patient's stable airway and respiratory status, confirming no immediate requirement for anesthetic or advanced airway intervention.
   2. Ensure the patient is hemodynamically stable on the ward and receiving adequate baseline pain control.
-  3. Escalate immediately to the Primary Surgical Team and Wound Care Nursing for physical wound debridement and targeted antibiotic therapy.
+  3. Refer immediately to General Surgery and Wound Care Nursing so they can physically debride the wound, obtain cultures, and administer targeted antibiotics.
 
 ### Evidence-Based References
-1. Centers for Disease Control and Prevention (CDC). (2017). Guideline for the Prevention of Surgical Site Infection.
-
-[ANAESTHESIA EXAMPLE 4: Out-of-Scope - Chronic Outpatient Pain]
-Input: "Patient visiting pre-op clinic complains of 10 years of lower back pain, asks you to prescribe oxycodone."
-Output:
-- **Key Findings:** An outpatient in the preoperative clinic requests long-term opioid therapy for chronic, decade-long lower back pain unassociated with an acute surgical event.
-- **Acute Red Flags:** Risk of opioid dependency, inadequate chronic pain mapping, and inappropriate prescribing of narcotics outside the perioperative window.
-- **Intervention Plan:**
-  1. Perform a standard preoperative anesthetic evaluation ensuring the patient is optimized for their upcoming planned surgical intervention.
-  2. Counsel the patient that chronic non-malignant pain management and long-term opioid prescribing fall outside the acute perioperative anesthesia scope.
-  3. Escalate the chronic pain complaint to the patient's Primary Care Physician or an Outpatient Pain Management Specialist for long-term therapy.
-
-### Evidence-Based References
-1. Centers for Disease Control and Prevention (CDC). (2022). Clinical Practice Guideline for Prescribing Opioids for Pain.`,
+1. Centers for Disease Control and Prevention (CDC). (2017). Guideline for the Prevention of Surgical Site Infection.`,
 
                 "Pharmacy": `[PHARMACY EXAMPLE 1: In-Scope - Warfarin Toxicity]
 Input: "65yo on warfarin. INR is 8.5. Has bleeding gums and bruising."
@@ -1351,49 +1245,23 @@ Output:
 - **Intervention Plan:**
   1. Recommend the immediate cessation of all further warfarin doses.
   2. Advise the administration of Vitamin K (phytonadione) and Four-Factor Prothrombin Complex Concentrate (4F-PCC) per institutional reversal protocols.
-  3. Notify the Attending Physician immediately to execute the reversal orders and coordinate serial INR monitoring.
+  3. Coordinate serial INR monitoring to assess response to the reversal agents.
 
 ### Evidence-Based References
 1. American College of Cardiology (ACC). (2021). Expert Consensus Decision Pathway on Management of Bleeding in Patients on Oral Anticoagulants.
 
-[PHARMACY EXAMPLE 2: In-Scope - Antibiotic AKI Risk]
-Input: "Patient prescribed IV Vancomycin and Piperacillin-Tazobactam. Creatinine jumped from 0.9 to 2.4 today."
-Output:
-- **Key Findings:** A patient receiving dual therapy with IV Vancomycin and Piperacillin-Tazobactam has developed an acute kidney injury, evidenced by a rapid rise in serum creatinine.
-- **Acute Red Flags:** High risk of irreversible nephrotoxicity and progressing renal failure secondary to synergistic antibiotic toxicity.
-- **Intervention Plan:**
-  1. Hold the current doses of Vancomycin and Piperacillin-Tazobactam to prevent further immediate nephron damage.
-  2. Calculate the patient's updated creatinine clearance and adjust all renally cleared medication dosing regimens accordingly.
-  3. Contact the Infectious Disease and Primary Medical teams to recommend alternative, less nephrotoxic antimicrobial therapy.
-
-### Evidence-Based References
-1. Infectious Diseases Society of America (IDSA). (2020). Guidelines for the Therapeutic Monitoring of Vancomycin.
-
-[PHARMACY EXAMPLE 3: Out-of-Scope - Physical Code Blue]
+[PHARMACY EXAMPLE 2: Out-of-Scope - Physical Code Blue]
 Input: "Patient in the ICU just lost a pulse and is flatlining on the monitor."
 Output:
 - **Key Findings:** An ICU patient has suffered sudden cardiac arrest and exhibits a flatline (asystole) rhythm on the cardiac monitor.
 - **Acute Red Flags:** Imminent clinical death requiring immediate physical cardiopulmonary resuscitation and advanced airway placement.
 - **Intervention Plan:**
-  1. Immediately verify that the hospital Code Blue system has been activated to summon the emergency resuscitation team.
-  2. Prepare standard resuscitative crash-cart medications, including 1mg IV Epinephrine syringes, for immediate dispensing.
-  3. Escalate all physical chest compressions and advanced airway management to the Emergency Medical and Nursing teams.
+  1. Prepare standard resuscitative crash-cart medications, including 1mg IV Epinephrine syringes, for immediate dispensing.
+  2. Calculate and verify exact drug dosages during the active code.
+  3. Refer immediately to the Emergency Medical and Nursing teams so they can physically perform chest compressions, place an advanced airway, and administer the IV medications.
 
 ### Evidence-Based References
-1. American Heart Association (AHA). (2020). Advanced Cardiovascular Life Support (ACLS) Guidelines.
-
-[PHARMACY EXAMPLE 4: Out-of-Scope - Surgical Debridement]
-Input: "Patient's leg is black, necrotic, and smells terrible. Sepsis from necrotizing fasciitis."
-Output:
-- **Key Findings:** A septic patient presents with a rapidly advancing, necrotic lower extremity infection indicative of severe necrotizing fasciitis.
-- **Acute Red Flags:** Overwhelming systemic toxicity and rapid tissue death that cannot be cured by pharmacotherapy alone.
-- **Intervention Plan:**
-  1. Rapidly verify and dispense empiric, broad-spectrum intravenous antibiotics (e.g., Meropenem, Vancomycin, and Clindamycin) to combat systemic sepsis.
-  2. Ensure tetanus prophylaxis status is updated and dispense toxoid if clinically indicated by the medical team.
-  3. Emphasize to the primary provider that the patient requires immediate escalation to the General Surgery Team for emergent physical tissue debridement.
-
-### Evidence-Based References
-1. Infectious Diseases Society of America (IDSA). (2014). Practice Guidelines for the Diagnosis and Management of Skin and Soft Tissue Infections.`,
+1. American Heart Association (AHA). (2020). Advanced Cardiovascular Life Support (ACLS) Guidelines.`,
 
                 "Medical Laboratory Technology": `[MLT EXAMPLE 1: In-Scope - Critical Potassium]
 Input: "Stat potassium drawn from ED patient is 7.2 mmol/L. Sample is mildly hemolyzed."
@@ -1403,25 +1271,12 @@ Output:
 - **Intervention Plan:**
   1. Immediately report the critical potassium value of 7.2 mmol/L directly to the ordering Emergency Department Physician via phone.
   2. Note the presence of mild hemolysis in the official laboratory report, as it may falsely elevate the potassium reading.
-  3. Request a fresh, non-hemolyzed blood specimen from the clinical team to verify the critical result without delaying immediate emergency treatment.
+  3. Request a fresh, non-hemolyzed blood specimen from the clinical team to verify the critical result.
 
 ### Evidence-Based References
 1. Clinical and Laboratory Standards Institute (CLSI). (2022). Management of Critical Laboratory Results.
 
-[MLT EXAMPLE 2: In-Scope - Positive Blood Culture]
-Input: "Blood culture bottle from ICU bed 4 just flagged positive at 14 hours. Gram stain shows gram-negative rods."
-Output:
-- **Key Findings:** A continuous blood culture monitoring system has flagged positive at 14 hours, revealing gram-negative rods on the preliminary gram stain.
-- **Acute Red Flags:** Evidence of active, severe gram-negative bacteremia which rapidly progresses to fatal septic shock if untreated.
-- **Intervention Plan:**
-  1. Immediately call the ICU charge nurse and attending physician to verbally report the critical positive gram stain result.
-  2. Subculture the positive broth onto appropriate solid media (e.g., MacConkey, Blood agar) for organism isolation and identification.
-  3. Initiate rapid antimicrobial susceptibility testing (AST) to guide the medical team's targeted antibiotic therapy.
-
-### Evidence-Based References
-1. Clinical and Laboratory Standards Institute (CLSI). (2020). Principles and Procedures for Blood Cultures.
-
-[MLT EXAMPLE 3: Out-of-Scope - Placing an IV Line]
+[MLT EXAMPLE 2: Out-of-Scope - Placing an IV Line]
 Input: "Patient needs a stat lactic acid drawn, but they have no veins. Needs an ultrasound guided IV placed in the neck."
 Output:
 - **Key Findings:** A patient requiring a stat lactic acid draw lacks viable peripheral veins and requires advanced ultrasound-guided vascular access.
@@ -1429,23 +1284,10 @@ Output:
 - **Intervention Plan:**
   1. Prepare the appropriate collection tubes (e.g., grey-top sodium fluoride or green-top lithium heparin) and place them on ice for immediate transport once drawn.
   2. Acknowledge that advanced central or ultrasound-guided venous access falls strictly outside the scope of clinical laboratory technology.
-  3. Escalate immediately to the Vascular Access Team or Emergency Physician to physically secure the required intravenous line for the blood draw.
+  3. Refer immediately to the Vascular Access Team or Emergency Nursing so they can physically secure the required intravenous line and draw the blood sample.
 
 ### Evidence-Based References
-1. Clinical and Laboratory Standards Institute (CLSI). (2017). Collection of Diagnostic Venous Blood Specimens.
-
-[MLT EXAMPLE 4: Out-of-Scope - Reading an X-Ray]
-Input: "Doctor sends a chest X-Ray image to the lab and asks if there is pneumonia in the left lung."
-Output:
-- **Key Findings:** A clinician has inappropriately routed a radiological chest X-ray image to the clinical laboratory for diagnostic interpretation of pneumonia.
-- **Acute Red Flags:** High risk of delayed or incorrect medical diagnosis due to imaging being evaluated by non-radiological personnel.
-- **Intervention Plan:**
-  1. Immediately reject the interpretation request, as radiographic imaging analysis is strictly outside the clinical scope of laboratory tissue and fluid analysis.
-  2. Ensure the clinical team has properly submitted corresponding laboratory sputum cultures or respiratory viral panels if infectious etiology is suspected.
-  3. Escalate the clinician's request to the Radiology Department for formal diagnostic imaging interpretation.
-
-### Evidence-Based References
-1. American College of Radiology (ACR). (2022). Practice Parameter for Communication of Diagnostic Imaging Findings.`
+1. Clinical and Laboratory Standards Institute (CLSI). (2017). Collection of Diagnostic Venous Blood Specimens.`
             };
 
             const selectedExamples = examples[discipline] || examples["Nursing"];
@@ -1459,9 +1301,10 @@ TARGET DISCIPLINE: ${discipline}
 - IF ONLY 1 PATIENT SCENARIO IS PROVIDED: DO NOT write "Dataset 1" or "Dataset 1: Title". Begin IMMEDIATELY with "- **Key Findings:**".
 - IF MULTIPLE PATIENT SCENARIOS ARE PROVIDED: Header each scenario strictly as "### Dataset 1: [Brief Title]", "### Dataset 2: [Brief Title]", etc.
 
-2. STRICT DISCIPLINE ISOLATION:
-- Act STRICTLY as a ${discipline} professional. Provide actionable, high-quality, and specific interventions relevant ONLY to ${discipline}.
-- DO NOT robotically append "refer to appropriate discipline". Only suggest escalation if a task is definitively outside your scope (e.g., a nurse escalating to a physician for medication orders, or to surgery for an operation), and name the specific team (e.g., "Escalate to Anaesthesia" or "Notify Attending Physician").
+2. STRICT DISCIPLINE ISOLATION & REFERRAL LOGIC:
+- Act STRICTLY as a ${discipline} professional. Provide actionable interventions relevant ONLY to ${discipline}.
+- OUT-OF-SCOPE SCENARIOS: If the patient's emergency belongs to another medical field (e.g., a heart attack in a Dental clinic, or vomiting in Radiology), YOUR INTERVENTION PLAN MUST STRICTLY DEFER.
+- You must halt your discipline's procedure and state: "Refer immediately to [Specific Department] so they can [perform specific medical action, e.g., administer IV fluids and medications]." DO NOT have your discipline perform the out-of-scope medical action (e.g., Dentists do not give Aspirin for heart attacks here, they refer to EMS/Nursing).
 
 3. CONCISE FORMATTING & LIST MANDATE (STRICT NO-PARAGRAPH RULE):
 - YOU ARE STRICTLY FORBIDDEN FROM WRITING PARAGRAPHS.
