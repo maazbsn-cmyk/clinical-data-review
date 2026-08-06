@@ -1,3 +1,5 @@
+export const maxDuration = 60; // Forces Vercel to allow up to 60 seconds of execution
+
 export default async function handler(req, res) {
     if (req.method !== 'POST') {
         return res.status(405).send('Method Not Allowed');
@@ -56,7 +58,7 @@ export default async function handler(req, res) {
     }
 
     // ==========================================
-    // ACTION 1.5: FEEDBACK ROUTING
+    // ACTION 1.5: FEEDBACK ROUTING (NO AI)
     // ==========================================
     if (action === "feedback") {
         const FEEDBACK_WEBHOOK = process.env.FEEDBACK_WEBHOOK_URL;
@@ -78,7 +80,7 @@ export default async function handler(req, res) {
     }
 
     // ==========================================
-    // ACTION 2: AI EVALUATION (WITH ERROR BUBBLING)
+    // ACTION 2: AI EVALUATION (WITH 45-SEC TIMEOUTS & NEW FALLBACKS)
     // ==========================================
     const GEMINI_KEY = process.env.GEMINI_API_KEY;
     const GROQ_KEY = process.env.GROQ_API_KEY;
@@ -88,55 +90,75 @@ export default async function handler(req, res) {
     let lastErrorMessage = "Unknown API Error";
     const systemPrompt = scenario || rawInput; 
 
-    // Advanced Gemini Caller with direct Google Error extraction
+    // Advanced Gemini Caller with Strict 45-Second Timeout
     async function callGemini(modelName, displayName) {
-        if(!GEMINI_KEY) throw new Error(`Vercel is missing GEMINI_API_KEY for ${displayName}. Did you Redeploy?`);
+        if(!GEMINI_KEY) throw new Error(`Vercel is missing GEMINI_API_KEY for ${displayName}.`);
         
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${GEMINI_KEY}`, {
-            method: "POST", 
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ 
-                contents: [{ parts: [{ text: systemPrompt }] }],
-                generationConfig: { maxOutputTokens: 8192 }
-            })
-        });
-        
-        if (!response.ok) {
-            const errData = await response.json();
-            throw new Error(`Google API Rejected ${modelName}: ${errData.error?.message || response.statusText}`);
+        try {
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${GEMINI_KEY}`, {
+                method: "POST", 
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ 
+                    contents: [{ parts: [{ text: systemPrompt }] }],
+                    generationConfig: { maxOutputTokens: 8192 }
+                }),
+                signal: AbortSignal.timeout(45000) // 45 SECOND TIMEOUT
+            });
+            
+            if (!response.ok) {
+                const errData = await response.json();
+                throw new Error(`Google API Rejected ${modelName}: ${errData.error?.message || response.statusText}`);
+            }
+            
+            const data = await response.json();
+            return { text: data.candidates[0].content.parts[0].text.trim(), modelUsed: displayName };
+        } catch (error) {
+            if (error.name === 'TimeoutError' || error.name === 'AbortError') {
+                throw new Error(`${displayName} timed out after 45 seconds.`);
+            }
+            throw error;
         }
-        
-        const data = await response.json();
-        return { text: data.candidates[0].content.parts[0].text.trim(), modelUsed: displayName };
     }
 
-    // Advanced Groq Caller with direct Error extraction
+    // Advanced Groq Caller with Strict 45-Second Timeout
     async function callGroqModel(model) {
-        if(!GROQ_KEY) throw new Error("Vercel is missing GROQ_API_KEY. Did you Redeploy?");
+        if(!GROQ_KEY) throw new Error("Vercel is missing GROQ_API_KEY.");
         
-        const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-            method: "POST", 
-            headers: { "Authorization": `Bearer ${GROQ_KEY}`, "Content-Type": "application/json" },
-            body: JSON.stringify({ 
-                model: model, 
-                messages: [{ role: "user", content: systemPrompt }],
-                max_tokens: 8000
-            })
-        });
-        
-        if (!response.ok) {
-            const errData = await response.json();
-            throw new Error(`Groq API Rejected ${model}: ${errData.error?.message || response.statusText}`);
+        try {
+            const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+                method: "POST", 
+                headers: { "Authorization": `Bearer ${GROQ_KEY}`, "Content-Type": "application/json" },
+                body: JSON.stringify({ 
+                    model: model, 
+                    messages: [{ role: "user", content: systemPrompt }],
+                    max_tokens: 8000
+                }),
+                signal: AbortSignal.timeout(45000) // 45 SECOND TIMEOUT
+            });
+            
+            if (!response.ok) {
+                const errData = await response.json();
+                throw new Error(`Groq API Rejected ${model}: ${errData.error?.message || response.statusText}`);
+            }
+            
+            const data = await response.json();
+            return data.choices[0].message.content.trim();
+        } catch (error) {
+            if (error.name === 'TimeoutError' || error.name === 'AbortError') {
+                throw new Error(`Groq (${model}) timed out after 45 seconds.`);
+            }
+            throw error;
         }
-        
-        const data = await response.json();
-        return data.choices[0].message.content.trim();
     }
 
+    // New Bulletproof Groq Fallback Chain
     async function callGroqWithFallbacks() {
         const groqModels = [
             { id: "llama-3.3-70b-versatile", label: "Groq (Llama 3.3 70B)" },
-            { id: "qwen/qwen3-32b", label: "Groq (Qwen 3 32B)" }
+            { id: "openai/gpt-oss-120b", label: "Groq (GPT-OSS 120B)" },
+            { id: "qwen/qwen3.6-27b", label: "Groq (Qwen 3.6 27B)" },
+            { id: "groq/compound", label: "Groq (Compound)" },
+            { id: "llama-3.1-8b-instant", label: "Groq (Llama 3.1 8B)" }
         ];
 
         let groqError = "";
@@ -161,8 +183,7 @@ export default async function handler(req, res) {
         } catch (e1) {
             lastErrorMessage = e1.message;
             try {
-                // Safest stable Google endpoint
-                const gemRes = await callGemini('gemini-1.5-flash', 'Gemini 1.5 Flash');
+                const gemRes = await callGemini('gemini-3.6-flash', 'Gemini 3.6 Flash');
                 evaluationResult = gemRes.text;
                 currentModel = gemRes.modelUsed;
             } catch (e2) {
@@ -172,34 +193,27 @@ export default async function handler(req, res) {
         }
     } else {
         try {
-            // Attempt user preferred 3.6 model
+            // Priority 1: User's chosen 3.6 Flash
             const gemRes = await callGemini('gemini-3.6-flash', 'Gemini 3.6 Flash');
             evaluationResult = gemRes.text;
             currentModel = gemRes.modelUsed;
         } catch (e1) {
             lastErrorMessage = e1.message;
             try {
-                // Attempt user preferred 3.5 model
+                // Priority 2: Safe drop to 3.5 Flash
                 const gemRes2 = await callGemini('gemini-3.5-flash', 'Gemini 3.5 Flash');
                 evaluationResult = gemRes2.text;
                 currentModel = gemRes2.modelUsed;
             } catch (e2) {
                 lastErrorMessage = e2.message;
                 try {
-                    // Fallback to globally stable 1.5 model if 3.6/3.5 endpoints don't exist
-                    const gemRes3 = await callGemini('gemini-1.5-flash', 'Gemini 1.5 Flash');
-                    evaluationResult = gemRes3.text;
-                    currentModel = gemRes3.modelUsed;
+                    // Priority 3: Deep Groq Fallback Cascade (NO GEMINI 1.5)
+                    const groqRes = await callGroqWithFallbacks();
+                    evaluationResult = groqRes.text;
+                    currentModel = groqRes.modelUsed;
                 } catch (e3) {
                     lastErrorMessage = e3.message;
-                    try {
-                        const groqRes = await callGroqWithFallbacks();
-                        evaluationResult = groqRes.text;
-                        currentModel = groqRes.modelUsed;
-                    } catch (e4) {
-                        lastErrorMessage = e4.message;
-                        return res.status(500).json({ evaluation: `**SYSTEM DIAGNOSTIC ERROR**\n\nAll AI fallbacks failed. The final rejection reason from the API was:\n\n*${lastErrorMessage}*\n\nPlease check Vercel Environment Variables and Redeploy.`, modelUsed: "Failed" });
-                    }
+                    return res.status(500).json({ evaluation: `**SYSTEM DIAGNOSTIC ERROR**\n\nAll AI fallbacks failed. The final rejection reason from the API was:\n\n*${lastErrorMessage}*\n\nPlease check Vercel Environment Variables and Redeploy.`, modelUsed: "Failed" });
                 }
             }
         }
