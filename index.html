@@ -1139,14 +1139,9 @@ TARGET DISCIPLINE: ${discipline}
 - IF ONLY 1 PATIENT SCENARIO IS PROVIDED: DO NOT write "Dataset 1" or "Dataset 1: Title". Begin IMMEDIATELY with "- **Key Findings:**".
 - IF MULTIPLE PATIENT SCENARIOS ARE PROVIDED: Header each scenario strictly as "### Dataset 1: [Brief Title]", "### Dataset 2: [Brief Title]", etc.
 
-2. STRICT DISCIPLINE ISOLATION & NEGATIVE CONSTRAINTS:
-You must act strictly as a ${discipline} professional. If a medical emergency requires interventions outside your specific discipline, explicitly state: "Refer to appropriate discipline for acute management."
-- Nursing: Focus on formulating an accurate NANDA-style Nursing Diagnosis, vitals, bedside care, continuous monitoring, positioning, and executing ordered interventions. NEGATIVE: DO NOT provide medical diagnoses, DO NOT prescribe medications, DO NOT order diagnostic imaging.
-- Radiology: Focus on urgent imaging protocols (CT, X-ray, MRI, US). NEGATIVE: DO NOT suggest medications, fluid resuscitation, airway management, or general bedside care.
-- Pharmacy: Focus on medication review, dosing, and contraindications. NEGATIVE: DO NOT suggest imaging, surgical interventions, or bedside nursing triage.
-- Anaesthesia: Focus on airway status, sedation plans, and pre-op vitals. NEGATIVE: DO NOT prescribe long-term ward treatments, radiology, or chronic disease management.
-- Medical Laboratory Technology (MLT): Focus on lab draws, abnormal patterns, and blood/fluid analysis. NEGATIVE: DO NOT suggest imaging, medication administration, or bedside care.
-- Dental: Focus on oral assessment, maxillofacial pathology, and dental interventions. NEGATIVE: DO NOT manage systemic hemodynamics or systemic medical emergencies.
+2. STRICT DISCIPLINE ISOLATION:
+- Act STRICTLY as a ${discipline} professional. Provide actionable, high-quality, and specific interventions relevant ONLY to ${discipline}.
+- DO NOT robotically append "refer to appropriate discipline". Only suggest escalation if a task is definitively outside your scope (e.g., a nurse escalating to a physician for medication orders, or to surgery for an operation), and name the specific team (e.g., "Escalate to Anaesthesia" or "Notify Attending Physician").
 
 3. CONCISE FORMATTING & LIST MANDATE (STRICT NO-PARAGRAPH RULE):
 - YOU ARE STRICTLY FORBIDDEN FROM WRITING PARAGRAPHS.
@@ -1175,7 +1170,7 @@ Output:
 - **Intervention Plan:**
   1. Initiate oral rehydration therapy (ORT) with small, frequent sips if patient is conscious and maintaining airway.
   2. Maintain continuous vital sign monitoring, checking capillary refill, mental status, and urine output closely.
-  3. Escalate to senior medical staff for intraosseous (IO) or ultrasound-guided access; refer to appropriate discipline for acute management.
+  3. Escalate to the Vascular Access Team or Emergency Physician for intraosseous (IO) or ultrasound-guided placement.
 
 ### Evidence-Based References
 1. American Academy of Pediatrics (AAP). (2020). Management of Pediatric Dehydration Guidelines.
@@ -1262,8 +1257,10 @@ CRITICAL SYSTEM INSTRUCTIONS:
 1. Review the following calculation result: ${calcDataSummary}
 2. HEALTHY/NORMAL RULE: If the value represents a healthy, normal clinical state, YOU MUST strictly respond with: "Values are within normal limits. No acute clinical interventions required. Continue routine care."
 3. ABNORMAL RULE: If abnormal, provide a maximum of 2 to 3 short, general clinical action steps formatted strictly as a NUMBERED LIST. DO NOT USE PARAGRAPHS. DO NOT USE THE '•' CHARACTER.
-4. UNIVERSAL LANGUAGE RULE: DO NOT use discipline-specific terms like 'Nursing', 'Nurse', 'Doctor', or 'Medical'. Use universal clinical language.
-5. EVIDENCE-BASED REQUIREMENT: You MUST conclude the response with a distinct section titled "### Evidence-Based References". DO NOT WRITE PARAGRAPHS. Provide exactly 1 to 2 NUMBERED CITATIONS. STRICT RULE: DO NOT invent or hallucinate specific journal articles or page numbers. You MUST ONLY cite universally established organizational guidelines (e.g., 1. World Health Organization (WHO). (2021). Clinical Guideline Title.).
+4. UNIVERSAL LANGUAGE & ESCALATION: Use universal clinical language. Provide strong, actionable interventions. DO NOT robotically repeat "refer to appropriate discipline". If escalation is truly needed, specify the exact team (e.g., "Notify Attending Physician").
+5. EVIDENCE-BASED REQUIREMENT: You MUST conclude the response with a distinct section titled "### Evidence-Based References". DO NOT WRITE PARAGRAPHS HERE. 
+- ANTI-HALLUCINATION RULE: DO NOT invent fake books or fictional journals. Cite real, major clinical organizations (e.g., WHO, CDC).
+- Provide exactly 1 to 2 NUMBERED CITATIONS (e.g., 1. WHO. (2021). Guideline Title.).
             `;
 
             try {
