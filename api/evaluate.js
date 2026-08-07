@@ -1,4 +1,4 @@
-export const maxDuration = 60; // Forces Vercel to allow up to 60 seconds of execution
+export const maxDuration = 60; 
 
 export default async function handler(req, res) {
     if (req.method !== 'POST') {
@@ -47,7 +47,6 @@ export default async function handler(req, res) {
                 await fetch(DOC_WEBHOOK, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    // FIX: 'discipline' is now explicitly passed to the Google Doc Webhook
                     body: JSON.stringify({ uniqueCode, discipline, scenario: rawInput, evaluation: docEvaluation })
                 });
             } catch (err) { 
@@ -81,7 +80,7 @@ export default async function handler(req, res) {
     }
 
     // ==========================================
-    // ACTION 2: AI EVALUATION (WITH 45-SEC TIMEOUTS & NEW FALLBACKS)
+    // ACTION 2: AI EVALUATION 
     // ==========================================
     const GEMINI_KEY = process.env.GEMINI_API_KEY;
     const GROQ_KEY = process.env.GROQ_API_KEY;
