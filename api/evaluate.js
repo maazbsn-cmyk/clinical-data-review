@@ -99,7 +99,7 @@ export default async function handler(req, res) {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ 
                     contents: [{ parts: [{ text: systemPrompt }] }],
-                    generationConfig: { maxOutputTokens: 8192 }
+                    generationConfig: { OutputTokens: 8192 }
                 }),
                 signal: AbortSignal.timeout(45000)
             });
@@ -129,7 +129,7 @@ export default async function handler(req, res) {
                 body: JSON.stringify({ 
                     model: model, 
                     messages: [{ role: "user", content: systemPrompt }],
-                    max_tokens: 8000
+                    max_tokens: 2000 // Lowered to fix the 6000 TPM limit crash
                 }),
                 signal: AbortSignal.timeout(45000)
             });
