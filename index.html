@@ -274,6 +274,43 @@
         .loader { border: 4px solid var(--border); border-top: 4px solid #3b82f6; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 1rem auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
+        /* LOADING PROGRESS BAR & TIPS CSS */
+        .progress-wrapper {
+            width: 100%;
+            max-width: 400px;
+            height: 8px;
+            background: var(--input-bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            margin: 1.5rem auto 1rem auto;
+            overflow: hidden;
+            position: relative;
+        }
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: var(--accent-gradient);
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+        .loading-tip-container {
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 0.5rem;
+        }
+        .loading-tip {
+            font-size: 0.85rem;
+            color: var(--muted);
+            font-style: italic;
+            text-align: center;
+            transition: opacity 0.5s ease;
+            margin: 0;
+            padding: 0 1rem;
+            max-width: 500px;
+        }
+
         .history-list { list-style: none; padding: 0; margin: 0; max-height: 300px; overflow-y: auto; font-size: 0.9rem; }
         .history-list li { padding: 0.75rem; border-bottom: 1px solid var(--border); cursor: pointer; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: background 0.2s; }
         .history-list li:hover { background: var(--tool-bg); color: var(--highlight); }
@@ -358,7 +395,6 @@
             position: relative;
         }
 
-        /* Fixed styling for the modal header and close button */
         .modal-header {
             display: flex;
             justify-content: space-between;
@@ -816,6 +852,96 @@
         let evaluatedReportsStore = [];
         let currentAbortController = null;
         let currentCalcStore = {};
+        
+        // Progress Bar and Tip Variables
+        let tipInterval, progressInterval;
+        const clinicalTips = [
+            "Fact: A Glasgow Coma Scale (GCS) score of 8 or less typically requires immediate airway security (intubation).",
+            "Tip: ROME — Respiratory Opposite (pH & PaCO2), Metabolic Equal (pH & HCO3).",
+            "Fact: Tachycardia is often the earliest compensatory sign of shock or significant hypovolemia.",
+            "Tip: In severe sepsis, target a Mean Arterial Pressure (MAP) of ≥ 65 mmHg to ensure adequate tissue perfusion.",
+            "Fact: A sudden change in a patient's level of consciousness is always an immediate triage priority.",
+            "Tip: For suspected acute ischemic stroke, the critical window for thrombolytic therapy is 3 to 4.5 hours.",
+            "Fact: Hyperkalemia can present on an ECG as tall, peaked T-waves and a widened QRS complex.",
+            "Tip: When treating anaphylaxis, Epinephrine 1:1000 should be administered IM in the anterolateral thigh.",
+            "Fact: Unexplained tachypnea in a post-operative patient is a major red flag for a Pulmonary Embolism.",
+            "Tip: 4-2-1 Rule: 4 mL/kg for the first 10kg, 2 mL/kg for the next 10kg, 1 mL/kg for every kg over 20.",
+            "Fact: Normal intracranial pressure (ICP) ranges from 5 to 15 mmHg.",
+            "Tip: For chest pain suggestive of ACS, administer Aspirin 162-325 mg chewed, unless contraindicated.",
+            "Fact: Decorticate posturing indicates cerebral hemisphere damage; decerebrate indicates brainstem damage.",
+            "Tip: Flumazenil is the specific reversal agent for benzodiazepine toxicity.",
+            "Fact: Cushing's Triad (widened pulse pressure, bradycardia) is a late sign of increased ICP.",
+            "Tip: In DKA, blood glucose drops faster than ketones clear; do not stop insulin drips until the anion gap closes.",
+            "Fact: Hypoglycemia can mimic stroke symptoms, including hemiparesis and altered mental status.",
+            "Tip: For severe asthma exacerbations unresponsive to albuterol, consider IV Magnesium Sulfate.",
+            "Fact: Urine output < 0.5 mL/kg/hr in an adult is a clinical indicator of oliguria and potential AKI.",
+            "Tip: Naloxone has a shorter half-life than many opioids; patients may fall back into respiratory depression.",
+            "Fact: Hypocalcemia often presents with muscle cramps, hyperactive reflexes, and Chvostek's sign.",
+            "Tip: Normal blood pH strictly ranges from 7.35 to 7.45. A pH below 7.25 indicates severe decompensated acidosis.",
+            "Fact: Pain out of proportion to physical exam findings is the hallmark sign of Compartment Syndrome.",
+            "Tip: Nitroglycerin is strictly contraindicated within 24-48 hours of phosphodiesterase inhibitor use.",
+            "Fact: Central cyanosis (lips, tongue) indicates severe arterial hypoxemia.",
+            "Tip: Before administering IV potassium, ensure adequate urine output to prevent iatrogenic hyperkalemia.",
+            "Fact: Atrial Fibrillation carries a high risk of mural thrombus formation and stroke.",
+            "Tip: Suspect an ectopic pregnancy in any female of childbearing age presenting with abdominal pain and shock.",
+            "Fact: The appendix is typically located at McBurney’s point.",
+            "Tip: Never administer hypotonic fluids to a patient with increased intracranial pressure or extensive burns.",
+            "Fact: A 'hot potato' voice accompanied by trismus and uvular deviation suggests a peritonsillar abscess.",
+            "Tip: In mass casualty triage, a patient with a respiratory rate > 30 is immediately tagged as 'Red'.",
+            "Fact: Non-blanching petechial rashes combined with fever require immediate meningitis isolation.",
+            "Tip: Vitamin K and Prothrombin Complex Concentrate (PCC) are used to rapidly reverse Warfarin toxicity.",
+            "Fact: Kehr's sign (referred pain to the left shoulder) is a classic indicator of a ruptured spleen.",
+            "Tip: For severe hyperkalemia with ECG changes, IV Calcium Gluconate is administered first.",
+            "Fact: Hypothyroidism can lead to Myxedema Coma (hypothermia, hypoventilation, profound lethargy).",
+            "Tip: Always verify IV patency before administering vesicant medications like Promethazine.",
+            "Fact: Troponin I and T are the most sensitive and specific cardiac biomarkers for acute myocardial damage.",
+            "Tip: In pediatric patients, bradycardia is often a sign of profound hypoxia rather than a primary cardiac event.",
+            "Fact: Battle's sign and raccoon eyes are late indicators of a basilar skull fracture.",
+            "Tip: Continuous bubbling in the water-seal chamber of a chest tube indicates a persistent air leak.",
+            "Fact: ST-segment elevation in leads II, III, and aVF indicates an inferior wall myocardial infarction.",
+            "Tip: If a patient develops fever or chills during a blood transfusion, stop it immediately.",
+            "Fact: Serum lactate > 4 mmol/L suggests severe tissue hypoperfusion.",
+            "Tip: Glucagon 1mg IM can be used as an emergency antidote for beta-blocker/calcium channel blocker overdoses.",
+            "Fact: Coffee-ground emesis indicates an upper gastrointestinal bleed.",
+            "Tip: Elevate the head of the bed to 30 degrees for intubated patients to reduce VAP risk.",
+            "Fact: Status epilepticus is a continuous seizure lasting > 5 minutes.",
+            "Tip: A rigid, board-like abdomen is a classic sign of peritonitis requiring surgical consultation."
+        ];
+
+        function startLoadingUI() {
+            const tipEl = document.getElementById('loadingTip');
+            const fillEl = document.getElementById('progressFill');
+            if(!tipEl || !fillEl) return;
+            
+            fillEl.style.width = '0%';
+            tipEl.style.opacity = 0;
+            
+            let progress = 0;
+            progressInterval = setInterval(() => {
+                if(progress < 95) {
+                    progress += (95 / 250); 
+                    fillEl.style.width = `${progress}%`;
+                }
+            }, 100);
+
+            const showTip = () => {
+                tipEl.style.opacity = 0;
+                setTimeout(() => {
+                    const randomTip = clinicalTips[Math.floor(Math.random() * clinicalTips.length)];
+                    tipEl.innerText = randomTip;
+                    tipEl.style.opacity = 1;
+                }, 500); 
+            };
+            showTip(); 
+            tipInterval = setInterval(showTip, 4500); 
+        }
+
+        function stopLoadingUI() {
+            clearInterval(tipInterval);
+            clearInterval(progressInterval);
+            const fillEl = document.getElementById('progressFill');
+            if(fillEl) fillEl.style.width = '100%';
+        }
 
         function toggleMobileMenu() {
             const navWrapper = document.getElementById('navWrapper');
@@ -859,7 +985,6 @@
         }
 
         window.addEventListener('DOMContentLoaded', () => {
-            // Theme Loader
             const isLight = localStorage.getItem('cdss_theme') === 'light';
             if (isLight) {
                 document.body.classList.add('light-theme');
@@ -868,14 +993,12 @@
                 document.getElementById('themeToggle').innerHTML = '<span class="theme-icon">💡</span><span class="theme-text"> Light Mode</span>';
             }
 
-            // Welcome & Disclaimer Loader
             if (!localStorage.getItem('cdss_disclaimer_accepted')) {
                 document.getElementById('disclaimerModal').classList.remove('hidden');
                 document.body.style.overflow = 'hidden'; 
             }
         });
 
-        // Disclaimer Accept Function
         function acceptDisclaimer() {
             localStorage.setItem('cdss_disclaimer_accepted', 'true');
             document.getElementById('disclaimerModal').classList.add('hidden');
@@ -1125,13 +1248,20 @@
                 <div class="card" style="text-align:center; padding: 2rem; display: flex; flex-direction: column; align-items: center;">
                     <div class="loader"></div>
                     <p style="font-weight:600; color:var(--highlight); margin-bottom: 0;">Analyzing case for ${discipline}...</p>
-                    <p style="font-size: 0.8rem; color: var(--muted); margin-top: 0.5rem;">(Typically takes 20-30 seconds)</p>
+                    
+                    <div class="progress-wrapper">
+                        <div id="progressFill" class="progress-fill"></div>
+                    </div>
+                    <div class="loading-tip-container">
+                        <p id="loadingTip" class="loading-tip"></p>
+                    </div>
+
                     ${!isFastMode ? `<button class="fast-btn" onclick="evaluateCase(true)">⚡ Answer Now</button>` : `<p style="color: #f59e0b; font-size: 0.85rem; font-weight: bold; margin-top: 1rem;">⚡ Fast Mode Activated</p>`}
                 </div>
             `;
+            
+            startLoadingUI();
 
-            // DYNAMIC NURSING DIAGNOSIS FIX
-            // This completely deletes the 'Nursing Diagnosis' line from the hidden prompt if Nursing is not selected.
             const nursingDiagnosisLine = discipline === 'Nursing' ? "**Nursing Diagnosis:** [1-sentence NANDA-style nursing diagnosis].\n\n" : "";
 
             const strictPrompt = `
@@ -1200,6 +1330,8 @@ ${rawText}
                     body: JSON.stringify({ action: "save", rawInput: rawText, discipline: discipline, tool: "Case Analyzer", evaluation: evalText, modelUsed: currentModel })
                 }).catch(e => console.error("Background sync dropped.", e));
 
+                stopLoadingUI();
+
                 const reportObj = {
                     title: `${discipline} — Case Analysis`,
                     content: evalText,
@@ -1225,6 +1357,7 @@ ${rawText}
                 `;
             } catch (error) {
                 if (error.name === 'AbortError') return; 
+                stopLoadingUI();
                 showNotification("Error: " + error.message);
                 resetTab('scanner');
             }
@@ -1246,10 +1379,19 @@ ${rawText}
                 <div class="card" style="text-align:center; padding: 2rem; display: flex; flex-direction: column; align-items: center;">
                     <div class="loader"></div>
                     <p style="font-weight:600; color:var(--highlight); margin-bottom: 0;">Evaluating concise interventions...</p>
-                    <p style="font-size: 0.8rem; color: var(--muted); margin-top: 0.5rem;">(Typically takes 15-20 seconds)</p>
+                    
+                    <div class="progress-wrapper">
+                        <div id="progressFill" class="progress-fill"></div>
+                    </div>
+                    <div class="loading-tip-container">
+                        <p id="loadingTip" class="loading-tip"></p>
+                    </div>
+
                     ${!isFastMode ? `<button class="fast-btn" onclick="evaluateCalcResult('${tabPrefix}', '${toolName}', true)">⚡ Answer Now</button>` : `<p style="color: #f59e0b; font-size: 0.85rem; font-weight: bold; margin-top: 1rem;">⚡ Fast Mode Activated</p>`}
                 </div>
             `;
+            
+            startLoadingUI();
 
             const strictPrompt = `
 CRITICAL SYSTEM INSTRUCTIONS:
@@ -1283,6 +1425,8 @@ CRITICAL SYSTEM INSTRUCTIONS:
                     body: JSON.stringify({ action: "save", rawInput: calcDataSummary, discipline: 'General Clinical', tool: toolName, evaluation: evalText, modelUsed: currentModel })
                 }).catch(e => console.error("Background sync dropped.", e));
 
+                stopLoadingUI();
+
                 const reportObj = {
                     title: `General Assessment — (${calcDataSummary.split(':')[0]})`,
                     content: evalText,
@@ -1307,6 +1451,7 @@ CRITICAL SYSTEM INSTRUCTIONS:
                 `;
             } catch (error) {
                 if (error.name === 'AbortError') return; 
+                stopLoadingUI();
                 showNotification("Error: " + error.message);
                 resetTab(tabPrefix);
             }
