@@ -99,7 +99,7 @@ export default async function handler(req, res) {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ 
                     contents: [{ parts: [{ text: systemPrompt }] }],
-                    generationConfig: { OutputTokens: 8192 }
+                    generationConfig: { maxOutputTokens: 8192 }
                 }),
                 signal: AbortSignal.timeout(45000)
             });
@@ -119,6 +119,26 @@ export default async function handler(req, res) {
         }
     }
 
+    async function callGeminiWithFallbacks() {
+        const geminiModels = [
+            { id: "gemini-3.6-flash", label: "Gemini 3.6 Flash" },
+            { id: "gemini-3.5-flash", label: "Gemini 3.5 Flash" },
+            { id: "gemini-3.5-flash-lite", label: "Gemini 3.5 Flash Lite" },
+            { id: "gemini-3.1-flash-lite", label: "Gemini 3.1 Flash Lite" }
+        ];
+
+        let geminiError = "";
+        for (const m of geminiModels) {
+            try {
+                return await callGemini(m.id, m.label);
+            } catch (err) {
+                geminiError = err.message;
+                console.warn(`${m.label} failed: ${err.message}`);
+            }
+        }
+        throw new Error(geminiError);
+    }
+
     async function callGroqModel(model) {
         if(!GROQ_KEY) throw new Error("Vercel is missing GROQ_API_KEY.");
         
@@ -129,7 +149,7 @@ export default async function handler(req, res) {
                 body: JSON.stringify({ 
                     model: model, 
                     messages: [{ role: "user", content: systemPrompt }],
-                    max_tokens: 2000 // Lowered to fix the 6000 TPM limit crash
+                    max_tokens: 1500 
                 }),
                 signal: AbortSignal.timeout(45000)
             });
@@ -171,6 +191,7 @@ export default async function handler(req, res) {
         throw new Error(groqError);
     }
 
+    // MAIN EXECUTION LOGIC
     if (fastMode) {
         try {
             const groqRes = await callGroqWithFallbacks();
@@ -179,7 +200,7 @@ export default async function handler(req, res) {
         } catch (e1) {
             lastErrorMessage = e1.message;
             try {
-                const gemRes = await callGemini('gemini-3.6-flash', 'Gemini 3.6 Flash');
+                const gemRes = await callGeminiWithFallbacks();
                 evaluationResult = gemRes.text;
                 currentModel = gemRes.modelUsed;
             } catch (e2) {
@@ -189,25 +210,18 @@ export default async function handler(req, res) {
         }
     } else {
         try {
-            const gemRes = await callGemini('gemini-3.6-flash', 'Gemini 3.6 Flash');
+            const gemRes = await callGeminiWithFallbacks();
             evaluationResult = gemRes.text;
             currentModel = gemRes.modelUsed;
         } catch (e1) {
             lastErrorMessage = e1.message;
             try {
-                const gemRes2 = await callGemini('gemini-3.5-flash', 'Gemini 3.5 Flash');
-                evaluationResult = gemRes2.text;
-                currentModel = gemRes2.modelUsed;
+                const groqRes = await callGroqWithFallbacks();
+                evaluationResult = groqRes.text;
+                currentModel = groqRes.modelUsed;
             } catch (e2) {
                 lastErrorMessage = e2.message;
-                try {
-                    const groqRes = await callGroqWithFallbacks();
-                    evaluationResult = groqRes.text;
-                    currentModel = groqRes.modelUsed;
-                } catch (e3) {
-                    lastErrorMessage = e3.message;
-                    return res.status(500).json({ evaluation: `**SYSTEM DIAGNOSTIC ERROR**\n\nAll AI fallbacks failed. The final rejection reason from the API was:\n\n*${lastErrorMessage}*\n\nPlease check Vercel Environment Variables and Redeploy.`, modelUsed: "Failed" });
-                }
+                return res.status(500).json({ evaluation: `**SYSTEM DIAGNOSTIC ERROR**\n\nAll AI fallbacks failed. The final rejection reason from the API was:\n\n*${lastErrorMessage}*\n\nPlease check Vercel Environment Variables and Redeploy.`, modelUsed: "Failed" });
             }
         }
     }
