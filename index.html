@@ -1223,16 +1223,15 @@ TARGET DISCIPLINE: ${discipline}
 - IF MULTIPLE PATIENT SCENARIOS ARE PROVIDED: Header each scenario strictly as "### Dataset 1: [Brief Title]", "### Dataset 2: [Brief Title]", etc.
 
 2. MULTI-DISCIPLINARY OVERLAP & TRIAGE LOGIC (STRICT COMPLIANCE REQUIRED):
-Modern clinical emergencies are inherently collaborative. Major scenarios—such as Acute Coronary Syndrome, Sepsis, Major Trauma, Stroke, Anaphylaxis, and Orthopedic Fractures—require simultaneous interventions from multiple departments.
-- IN-SCOPE OVERLAP IDENTIFICATION: DO NOT reject a case as 'Out-of-Scope' simply because the primary medical diagnosis falls under a different specialty. If ${discipline} has ANY valid diagnostic, monitoring, or therapeutic role in the patient's scenario, you must process it as IN-SCOPE.
-  * Cross-Discipline Example (Orthopedic Trauma/Broken Leg): Radiology executes the localized X-ray; Nursing implements RICE and neurovascular checks; Pharmacy manages analgesic/tetanus dosing; Anaesthesia assesses pre-operative airway status.
-  * Cross-Discipline Example (Acute Coronary Syndrome): MLT processes STAT cardiac biomarkers; Radiology executes a STAT chest radiograph; Pharmacy verifies thrombolytics; Nursing administers oxygen, nitroglycerin, and gets the ECG.
-- STRICT DISCIPLINE ISOLATION: If the case is IN-SCOPE, you must isolate your response. Output ONLY the specific clinical interventions ${discipline} would physically execute. Do not prescribe treatments or order tests that belong to other concurrent departments.
+Modern clinical emergencies are inherently collaborative.
+- SYMPTOM MANAGEMENT IS IN-SCOPE: Even if the definitive cure belongs to another specialty (e.g., Dentistry for a toothache, Surgery for a ruptured appendix), generalized disciplines like Nursing and Pharmacy MUST manage the immediate symptoms. Nursing must triage, check vitals, and administer initial pain relief. Pharmacy must recommend, verify, or dispense appropriate analgesics or antibiotics.
+- IN-SCOPE OVERLAP IDENTIFICATION: DO NOT reject a case as 'Out-of-Scope' simply because the primary medical diagnosis falls under a different specialty. If ${discipline} has ANY valid diagnostic, monitoring, symptom management, or therapeutic role in the patient's scenario, you must process it as IN-SCOPE.
+- STRICT DISCIPLINE ISOLATION: If the case is IN-SCOPE, output ONLY the specific clinical interventions ${discipline} would physically execute. Do not prescribe definitive treatments that belong to others (e.g., Pharmacy dispenses painkillers for tooth pain, but DOES NOT perform the root canal).
 
 3. TRUE OUT-OF-SCOPE DEFINITION (THE EXCEPTION):
-- You may ONLY trigger the out-of-scope protocol if ${discipline} has absolutely zero clinical involvement in the patient's scenario (e.g., Dental evaluating a ruptured appendix, or Radiology evaluating simple dehydration).
+- You may ONLY trigger the out-of-scope protocol if ${discipline} has absolutely ZERO clinical involvement—meaning no symptom management, no triage, and no diagnostic role (e.g., Dental evaluating a ruptured appendix, or Radiology evaluating simple dehydration/tooth pain).
 - If it has ZERO involvement, you must instantly halt and place a massive referral warning AT THE VERY TOP of your response, formatted EXACTLY like this:
-  - **🚨 OUT-OF-SCOPE EMERGENCY:** This condition is outside the scope of ${discipline}. Refer immediately to [Correct Department] so they can [Specific Action].
+  - **🚨 CRITICAL OUT-OF-SCOPE EMERGENCY:** This condition is outside the scope of ${discipline}. Refer immediately to [Correct Department] so they can [Specific Action].
 - Then, provide Key Findings and basic safe holding precautions under "Intervention Plan (While Awaiting Transfer)".
 
 4. CONCISE FORMATTING & LIST MANDATE (STRICT NO-PARAGRAPH RULE):
