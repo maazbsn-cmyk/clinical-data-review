@@ -1130,6 +1130,10 @@
                 </div>
             `;
 
+            // DYNAMIC NURSING DIAGNOSIS FIX
+            // This completely deletes the 'Nursing Diagnosis' line from the hidden prompt if Nursing is not selected.
+            const nursingDiagnosisLine = discipline === 'Nursing' ? "**Nursing Diagnosis:** [1-sentence NANDA-style nursing diagnosis].\n\n" : "";
+
             const strictPrompt = `
 CRITICAL SYSTEM INSTRUCTIONS: MULTI-DATASET BATCH PROCESSING
 
@@ -1144,8 +1148,8 @@ Major conditions (e.g., appendicitis, heart attacks, trauma) are collaborative. 
 - If the input is a surgical or medical emergency (like "appendicitis"), YOU MUST ASSUME IN-SCOPE if your discipline plays ANY role in the hospital care pathway.
 - SYMPTOM MANAGEMENT IS IN-SCOPE: Even if the definitive cure belongs to another specialty (e.g., Dentistry for a toothache), generalized disciplines (Nursing, Pharmacy) manage symptoms.
 - STRICT DISCIPLINE ISOLATION: Output ONLY the specific clinical interventions ${discipline} would physically execute. 
-  * IF PHARMACY IS SELECTED: You MUST name specific medications, drug classes, or pharmacological therapies. DO NOT say "administer prescribed medications" (that is a Nursing duty). You are the pharmacist; recommend the actual drugs.
-  * IF NURSING IS SELECTED: Focus on bedside triage, monitoring, and administering orders. Do not recommend definitive cures.
+  * IF PHARMACY IS SELECTED: You are a clinical pharmacist. You MUST name specific drug names, exact dosages, and routes (e.g., 'Lidocaine 2% viscous gel', 'Ibuprofen 400mg PO'). DO NOT use vague phrases like 'administer prescribed medications' or 'provide painkillers'.
+  * IF NURSING IS SELECTED: Focus on bedside triage, monitoring, and executing orders. Do not recommend definitive cures.
 
 3. TRUE OUT-OF-SCOPE DEFINITION (THE EXCEPTION):
 - Trigger this ONLY if ${discipline} has absolutely ZERO role in the hospital pathway (e.g., Dental for appendicitis).
@@ -1153,14 +1157,14 @@ Major conditions (e.g., appendicitis, heart attacks, trauma) are collaborative. 
   - **🚨 CRITICAL OUT-OF-SCOPE EMERGENCY:** This condition is outside the scope of ${discipline}. Refer immediately to [Correct Department] so they can [Specific Action].
 - Then, provide Key Findings and Intervention Plan (While Awaiting Transfer).
 
-4. EXACT OUTPUT FORMAT (STRICT COMPLIANCE):
-- You MUST format your response exactly like the template below. 
-- You MUST use the exact asterisks (**) to bold the headers. DO NOT ignore the bolding.
-- DO NOT combine these into a single paragraph.
+4. EXACT OUTPUT FORMAT (STRICT COMPLIANCE - DO NOT MASH TEXT):
+- YOU MUST USE DOUBLE LINE BREAKS (Press Enter twice) between every single section. DO NOT combine sections into one continuous block of text.
+- YOU MUST use the exact asterisks (**) to bold the headers.
 
 **Key Findings:** [Exactly 1 single concise sentence].
-**Nursing Diagnosis:** [MANDATORY ONLY IF DISCIPLINE IS NURSING. 1-sentence NANDA-style].
-**Acute Red Flags:** [Exactly 1 single concise sentence].
+
+${nursingDiagnosisLine}**Acute Red Flags:** [Exactly 1 single concise sentence].
+
 **Intervention Plan:**
 1. [Step 1]
 2. [Step 2]
