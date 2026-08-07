@@ -47,7 +47,8 @@ export default async function handler(req, res) {
                 await fetch(DOC_WEBHOOK, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ uniqueCode, scenario: rawInput, evaluation: docEvaluation })
+                    // FIX: 'discipline' is now explicitly passed to the Google Doc Webhook
+                    body: JSON.stringify({ uniqueCode, discipline, scenario: rawInput, evaluation: docEvaluation })
                 });
             } catch (err) { 
                 console.error("Doc sync failed", err); 
@@ -90,7 +91,6 @@ export default async function handler(req, res) {
     let lastErrorMessage = "Unknown API Error";
     const systemPrompt = scenario || rawInput; 
 
-    // Advanced Gemini Caller with Strict 45-Second Timeout
     async function callGemini(modelName, displayName) {
         if(!GEMINI_KEY) throw new Error(`Vercel is missing GEMINI_API_KEY for ${displayName}.`);
         
@@ -102,7 +102,7 @@ export default async function handler(req, res) {
                     contents: [{ parts: [{ text: systemPrompt }] }],
                     generationConfig: { maxOutputTokens: 8192 }
                 }),
-                signal: AbortSignal.timeout(45000) // 45 SECOND TIMEOUT
+                signal: AbortSignal.timeout(45000)
             });
             
             if (!response.ok) {
@@ -120,7 +120,6 @@ export default async function handler(req, res) {
         }
     }
 
-    // Advanced Groq Caller with Strict 45-Second Timeout
     async function callGroqModel(model) {
         if(!GROQ_KEY) throw new Error("Vercel is missing GROQ_API_KEY.");
         
@@ -133,7 +132,7 @@ export default async function handler(req, res) {
                     messages: [{ role: "user", content: systemPrompt }],
                     max_tokens: 8000
                 }),
-                signal: AbortSignal.timeout(45000) // 45 SECOND TIMEOUT
+                signal: AbortSignal.timeout(45000)
             });
             
             if (!response.ok) {
@@ -151,7 +150,6 @@ export default async function handler(req, res) {
         }
     }
 
-    // New Bulletproof Groq Fallback Chain
     async function callGroqWithFallbacks() {
         const groqModels = [
             { id: "llama-3.3-70b-versatile", label: "Groq (Llama 3.3 70B)" },
@@ -174,7 +172,6 @@ export default async function handler(req, res) {
         throw new Error(groqError);
     }
 
-    // Main Execution Chain
     if (fastMode) {
         try {
             const groqRes = await callGroqWithFallbacks();
@@ -193,21 +190,18 @@ export default async function handler(req, res) {
         }
     } else {
         try {
-            // Priority 1: User's chosen 3.6 Flash
             const gemRes = await callGemini('gemini-3.6-flash', 'Gemini 3.6 Flash');
             evaluationResult = gemRes.text;
             currentModel = gemRes.modelUsed;
         } catch (e1) {
             lastErrorMessage = e1.message;
             try {
-                // Priority 2: Safe drop to 3.5 Flash
                 const gemRes2 = await callGemini('gemini-3.5-flash', 'Gemini 3.5 Flash');
                 evaluationResult = gemRes2.text;
                 currentModel = gemRes2.modelUsed;
             } catch (e2) {
                 lastErrorMessage = e2.message;
                 try {
-                    // Priority 3: Deep Groq Fallback Cascade (NO GEMINI 1.5)
                     const groqRes = await callGroqWithFallbacks();
                     evaluationResult = groqRes.text;
                     currentModel = groqRes.modelUsed;
