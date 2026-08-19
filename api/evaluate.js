@@ -171,11 +171,12 @@ export default async function handler(req, res) {
 
     async function callGroqWithFallbacks() {
         const groqModels = [
-            { id: "llama-3.3-70b-versatile", label: "Groq (Llama 3.3 70B)" },
+            { id: "groq/compound", label: "Groq (Compound)" },
+            { id: "groq/compound-mini", label: "Groq (Compound Mini)" },
             { id: "openai/gpt-oss-120b", label: "Groq (GPT-OSS 120B)" },
             { id: "qwen/qwen3.6-27b", label: "Groq (Qwen 3.6 27B)" },
-            { id: "groq/compound", label: "Groq (Compound)" },
-            { id: "llama-3.1-8b-instant", label: "Groq (Llama 3.1 8B)" }
+            { id: "openai/gpt-oss-20b", label: "Groq (GPT-OSS 20B)" },
+            { id: "allam-2-7b", label: "Groq (Allam 2 7B)" }
         ];
 
         let groqError = "";
